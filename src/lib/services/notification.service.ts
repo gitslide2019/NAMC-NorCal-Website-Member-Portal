@@ -7,9 +7,8 @@
  */
 
 import { PrismaClient } from '@prisma/client'
-import { ProjectWorkflowService } from './project-workflow.service'
-import { EngagementTrackingService } from './engagement-tracking.service'
-import { HubSpotIntegrationService } from './hubspot-integration.service'
+// Using lazy loading to avoid circular dependencies
+// Services will be loaded dynamically when needed
 
 export interface NotificationTemplate {
   id: string
@@ -132,15 +131,37 @@ export interface NotificationContext {
 
 export class NotificationService {
   private prisma: PrismaClient
-  private projectWorkflow: ProjectWorkflowService
-  private engagementTracking: EngagementTrackingService
-  private hubspotIntegration: HubSpotIntegrationService
+  private _projectWorkflow?: any
+  private _engagementTracking?: any
+  private _hubspotIntegration?: any
 
   constructor() {
     this.prisma = new PrismaClient()
-    this.projectWorkflow = new ProjectWorkflowService()
-    this.engagementTracking = new EngagementTrackingService()
-    this.hubspotIntegration = new HubSpotIntegrationService()
+  }
+
+  // Lazy loading to avoid circular dependencies
+  private async getProjectWorkflowService() {
+    if (!this._projectWorkflow) {
+      const { ProjectWorkflowService } = await import('./project-workflow.service')
+      this._projectWorkflow = new ProjectWorkflowService()
+    }
+    return this._projectWorkflow
+  }
+
+  private async getEngagementTrackingService() {
+    if (!this._engagementTracking) {
+      const { EngagementTrackingService } = await import('./engagement-tracking.service')
+      this._engagementTracking = new EngagementTrackingService()
+    }
+    return this._engagementTracking
+  }
+
+  private async getHubSpotIntegrationService() {
+    if (!this._hubspotIntegration) {
+      const { HubSpotIntegrationService } = await import('./hubspot-integration.service')
+      this._hubspotIntegration = new HubSpotIntegrationService()
+    }
+    return this._hubspotIntegration
   }
 
   /**
@@ -1062,9 +1083,16 @@ export class NotificationService {
 
   async disconnect(): Promise<void> {
     await this.prisma.$disconnect()
-    await this.projectWorkflow.disconnect()
-    await this.engagementTracking.disconnect()
-    await this.hubspotIntegration.disconnect()
+    // Only disconnect services if they were initialized
+    if (this._projectWorkflow) {
+      await this._projectWorkflow.disconnect()
+    }
+    if (this._engagementTracking) {
+      await this._engagementTracking.disconnect()
+    }
+    if (this._hubspotIntegration) {
+      await this._hubspotIntegration.disconnect()
+    }
   }
 }
 

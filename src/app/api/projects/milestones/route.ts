@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ProjectWorkflowService } from '@/lib/services/project-workflow.service'
 import { getServerSession } from 'next-auth'
 
+// Force dynamic rendering to prevent static generation during build
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession()

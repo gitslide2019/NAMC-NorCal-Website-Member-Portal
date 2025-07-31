@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { engagementTrackingService } from '@/lib/services/engagement-tracking.service'
 
+// Force dynamic rendering to prevent static generation during build
+export const dynamic = 'force-dynamic'
+
 /**
  * GET /api/engagement/analytics
  * Get engagement analytics and insights

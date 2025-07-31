@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { notificationService } from './notification.service'
+// Using lazy loading to avoid circular dependencies
 
 // HubSpot Integration Service for NAMC Member Portal
 // Integrates engagement tracking with HubSpot CRM for automated workflows
@@ -97,6 +97,7 @@ export class HubSpotIntegrationService {
   private prisma: PrismaClient
   private hubspotApiKey: string
   private hubspotApiUrl = 'https://api.hubapi.com'
+  private _notificationService?: any
 
   constructor() {
     this.prisma = new PrismaClient()
@@ -105,6 +106,15 @@ export class HubSpotIntegrationService {
     if (!this.hubspotApiKey) {
       console.warn('HubSpot API key not found. Integration features will be disabled.')
     }
+  }
+
+  // Lazy loading to avoid circular dependencies
+  private async getNotificationService() {
+    if (!this._notificationService) {
+      const { notificationService } = await import('./notification.service')
+      this._notificationService = notificationService
+    }
+    return this._notificationService
   }
 
   /**
@@ -167,10 +177,11 @@ export class HubSpotIntegrationService {
       console.error('Error syncing member engagement to HubSpot:', error)
       
       // Send failure notification
-      await notificationService.notifyHubSpotSyncFailed(
+      const notificationSvc = await this.getNotificationService()
+      await notificationSvc.notifyHubSpotSyncFailed(
         'member_engagement',
         error instanceof Error ? error.message : 'Unknown error'
-      ).catch(notifyError => {
+      ).catch((notifyError: any) => {
         console.error('Failed to send HubSpot sync failure notification:', notifyError)
       })
       
@@ -294,11 +305,12 @@ export class HubSpotIntegrationService {
     console.log(`Bulk sync completed: ${success} successful, ${failed} failed`)
     
     // Send completion notification
-    await notificationService.notifyHubSpotSyncCompleted(
+    const notificationSvc = await this.getNotificationService()
+    await notificationSvc.notifyHubSpotSyncCompleted(
       'bulk_member_sync',
       success,
       failed
-    ).catch(error => {
+    ).catch((error: any) => {
       console.error('Failed to send HubSpot sync completion notification:', error)
     })
     

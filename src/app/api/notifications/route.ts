@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { notificationService } from '@/lib/services/notification.service'
+// Force dynamic rendering to prevent static generation during build
+export const dynamic = 'force-dynamic'
+
 
 /**
  * GET /api/notifications

@@ -86,19 +86,65 @@ export interface EngagementAnalytics {
 }
 
 export class EngagementTrackingService {
-  private prisma: PrismaClient
+  private prisma: PrismaClient | null = null
+  private initError: Error | null = null
 
   constructor(prisma?: PrismaClient) {
-    this.prisma = prisma || new PrismaClient()
+    try {
+      this.prisma = prisma || new PrismaClient()
+    } catch (error) {
+      this.initError = error instanceof Error ? error : new Error('Failed to initialize Prisma Client')
+      console.error('EngagementTrackingService: Prisma Client initialization failed:', this.initError.message)
+      
+      // During build time, we don't want to fail hard
+      if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+        console.warn('EngagementTrackingService: Running in build mode, database operations will be skipped')
+      }
+    }
+  }
+
+  /**
+   * Check if Prisma Client is available and handle build-time scenarios
+   */
+  private checkPrismaAvailable(): boolean {
+    if (!this.prisma || this.initError) {
+      // During build time or when database is not available, return false
+      if (process.env.NODE_ENV === 'production' && process.env.VERCEL && !process.env.VERCEL_ENV) {
+        console.warn('EngagementTrackingService: Database not available during build time')
+        return false
+      }
+      
+      if (this.initError) {
+        console.error('EngagementTrackingService: Prisma Client not available:', this.initError.message)
+        return false
+      }
+    }
+    return true
+  }
+
+  /**
+   * Get Prisma client with proper error handling
+   */
+  private getPrismaClient(): PrismaClient {
+    if (!this.checkPrismaAvailable()) {
+      throw new Error('Database not available')
+    }
+    return this.prisma!
   }
 
   /**
    * Track a project view
    */
   async trackProjectView(viewData: ProjectView): Promise<string> {
+    if (!this.checkPrismaAvailable()) {
+      console.warn('EngagementTrackingService: Skipping project view tracking - database not available')
+      return 'skipped'
+    }
+
     try {
       // Use raw SQL to insert into our custom engagement tables
-      const result = await this.prisma.$executeRaw`
+      const prisma = this.getPrismaClient()
+      const result = await prisma.$executeRaw`
         INSERT INTO project_views (
           project_id, user_id, view_duration, pages_viewed, 
           referrer_source, device_type, ip_address, user_agent
@@ -128,8 +174,14 @@ export class EngagementTrackingService {
    * Track member interest in a project
    */
   async trackProjectInterest(interestData: ProjectInterest): Promise<string> {
+    if (!this.checkPrismaAvailable()) {
+      console.warn('EngagementTrackingService: Skipping project interest tracking - database not available')
+      return 'skipped'
+    }
+
     try {
-      const result = await this.prisma.$executeRaw`
+      const prisma = this.getPrismaClient()
+      const result = await prisma.$executeRaw`
         INSERT INTO project_interests (
           project_id, user_id, interest_level, interest_type, notes, metadata
         ) VALUES (
@@ -162,7 +214,7 @@ export class EngagementTrackingService {
    */
   async trackDocumentAccess(accessData: DocumentAccess): Promise<string> {
     try {
-      const result = await this.prisma.$executeRaw`
+      const result = await this.getPrismaClient().$executeRaw`
         INSERT INTO project_document_access (
           project_id, document_id, user_id, access_type, ip_address, user_agent
         ) VALUES (
@@ -190,7 +242,7 @@ export class EngagementTrackingService {
    */
   async trackProjectInquiry(inquiryData: ProjectInquiry): Promise<string> {
     try {
-      const result = await this.prisma.$executeRaw`
+      const result = await this.getPrismaClient().$executeRaw`
         INSERT INTO project_inquiries (
           project_id, user_id, inquiry_type, subject, message, priority_level
         ) VALUES (
@@ -227,7 +279,7 @@ export class EngagementTrackingService {
    */
   async getMemberEngagementScore(userId: string, projectId: string): Promise<EngagementScore | null> {
     try {
-      const result = await this.prisma.$queryRaw<EngagementScore[]>`
+      const result = await this.getPrismaClient().$queryRaw<EngagementScore[]>`
         SELECT 
           user_id as "userId",
           project_id as "projectId",
@@ -255,7 +307,7 @@ export class EngagementTrackingService {
    */
   async getTopEngagedMembers(projectId: string, limit: number = 10): Promise<EngagementScore[]> {
     try {
-      const result = await this.prisma.$queryRaw<EngagementScore[]>`
+      const result = await this.getPrismaClient().$queryRaw<EngagementScore[]>`
         SELECT 
           mes.user_id as "userId",
           mes.project_id as "projectId",
@@ -292,7 +344,7 @@ export class EngagementTrackingService {
   async getProjectEngagementAnalytics(projectId: string): Promise<EngagementAnalytics | null> {
     try {
       // Get basic engagement metrics
-      const analyticsResult = await this.prisma.$queryRaw<any[]>`
+      const analyticsResult = await this.getPrismaClient().$queryRaw<any[]>`
         SELECT 
           COALESCE(pa.total_views, 0) as "totalViews",
           COALESCE(pa.unique_viewers, 0) as "uniqueViewers",
@@ -308,7 +360,7 @@ export class EngagementTrackingService {
       `
 
       // Get referrer source breakdown
-      const referrerResult = await this.prisma.$queryRaw<Array<{source: string, count: number}>>`
+      const referrerResult = await this.getPrismaClient().$queryRaw<Array<{source: string, count: number}>>`
         SELECT 
           COALESCE(referrer_source, 'Direct') as source,
           COUNT(*) as count
@@ -320,7 +372,7 @@ export class EngagementTrackingService {
       `
 
       // Get device breakdown
-      const deviceResult = await this.prisma.$queryRaw<Array<{device: string, count: number}>>`
+      const deviceResult = await this.getPrismaClient().$queryRaw<Array<{device: string, count: number}>>`
         SELECT 
           device_type as device,
           COUNT(*) as count
@@ -331,7 +383,7 @@ export class EngagementTrackingService {
       `
 
       // Get engagement trends (last 30 days)
-      const trendsResult = await this.prisma.$queryRaw<Array<{date: string, score: number}>>`
+      const trendsResult = await this.getPrismaClient().$queryRaw<Array<{date: string, score: number}>>`
         SELECT 
           DATE(pv.created_at) as date,
           AVG(mes.engagement_score) as score
@@ -369,7 +421,7 @@ export class EngagementTrackingService {
    */
   async getMemberEngagementOverview(userId: string): Promise<any> {
     try {
-      const result = await this.prisma.$queryRaw<any[]>`
+      const result = await this.getPrismaClient().$queryRaw<any[]>`
         SELECT 
           u.id as user_id,
           u.first_name,
@@ -406,7 +458,7 @@ export class EngagementTrackingService {
   private async updateEngagementScore(userId: string, projectId: string): Promise<void> {
     try {
       // Call the database function to calculate and update engagement score
-      await this.prisma.$executeRaw`
+      await this.getPrismaClient().$executeRaw`
         INSERT INTO member_engagement_scores (user_id, project_id, engagement_score)
         VALUES (
           ${userId}::uuid, 
@@ -419,7 +471,7 @@ export class EngagementTrackingService {
       `
 
       // Update project analytics
-      await this.prisma.$executeRaw`
+      await this.getPrismaClient().$executeRaw`
         SELECT update_project_analytics(${projectId}::uuid)
       `
 
@@ -442,7 +494,7 @@ export class EngagementTrackingService {
       // Check for high engagement (score >= 80)
       if (engagementScore.engagementScore >= 80) {
         // Only notify once per day for high engagement
-        const lastNotification = await this.prisma.$queryRaw<Array<{ created_at: Date }>>`
+        const lastNotification = await this.getPrismaClient().$queryRaw<Array<{ created_at: Date }>>`
           SELECT created_at FROM project_notifications 
           WHERE user_id = ${userId}::uuid 
           AND notification_type = 'member_engagement_high'
@@ -464,7 +516,7 @@ export class EngagementTrackingService {
       // Check for low engagement (score < 20 and trending down)
       if (engagementScore.engagementScore < 20 && engagementScore.engagementTrend === 'decreasing') {
         // Only notify weekly for low engagement
-        const lastNotification = await this.prisma.$queryRaw<Array<{ created_at: Date }>>`
+        const lastNotification = await this.getPrismaClient().$queryRaw<Array<{ created_at: Date }>>`
           SELECT created_at FROM project_notifications 
           WHERE user_id = ${userId}::uuid 
           AND notification_type = 'member_engagement_low'
@@ -527,7 +579,7 @@ export class EngagementTrackingService {
    */
   async getEngagementLeaderboard(limit: number = 50): Promise<any[]> {
     try {
-      const result = await this.prisma.$queryRaw<any[]>`
+      const result = await this.getPrismaClient().$queryRaw<any[]>`
         SELECT 
           u.id as user_id,
           u.first_name,
@@ -578,7 +630,7 @@ export class EngagementTrackingService {
       const projectFilter = projectId ? `AND pv.project_id = '${projectId}'::uuid` : ''
 
       // Get summary statistics
-      const summaryResult = await this.prisma.$queryRaw<any[]>`
+      const summaryResult = await this.getPrismaClient().$queryRaw<any[]>`
         SELECT 
           COUNT(pv.id) as total_views,
           COUNT(DISTINCT pv.user_id) as unique_members,
@@ -590,7 +642,7 @@ export class EngagementTrackingService {
       `
 
       // Get top projects by engagement
-      const topProjectsResult = await this.prisma.$queryRaw<any[]>`
+      const topProjectsResult = await this.getPrismaClient().$queryRaw<any[]>`
         SELECT 
           p.id as project_id,
           p.title,
@@ -605,7 +657,7 @@ export class EngagementTrackingService {
       `
 
       // Get top members by engagement
-      const topMembersResult = await this.prisma.$queryRaw<any[]>`
+      const topMembersResult = await this.getPrismaClient().$queryRaw<any[]>`
         SELECT 
           u.id as user_id,
           CONCAT(u.first_name, ' ', u.last_name) as name,
@@ -620,7 +672,7 @@ export class EngagementTrackingService {
       `
 
       // Get trends data
-      const trendsResult = await this.prisma.$queryRaw<any[]>`
+      const trendsResult = await this.getPrismaClient().$queryRaw<any[]>`
         SELECT 
           DATE(pv.created_at) as date,
           COUNT(pv.id) as views,
@@ -669,7 +721,7 @@ export class EngagementTrackingService {
       const cutoffDate = new Date()
       cutoffDate.setDate(cutoffDate.getDate() - daysToKeep)
 
-      const result = await this.prisma.$executeRaw`
+      const result = await this.getPrismaClient().$executeRaw`
         DELETE FROM project_views 
         WHERE created_at < ${cutoffDate}
       `
@@ -700,7 +752,7 @@ export class EngagementTrackingService {
     activityStreak: number
   }>> {
     try {
-      const result = await this.prisma.$queryRaw<Array<{
+      const result = await this.getPrismaClient().$queryRaw<Array<{
         userId: string
         email: string
         avgEngagementScore: number
@@ -777,7 +829,7 @@ export class EngagementTrackingService {
     activityStreak: number
   } | null> {
     try {
-      const result = await this.prisma.$queryRaw<Array<{
+      const result = await this.getPrismaClient().$queryRaw<Array<{
         userId: string
         email: string
         avgEngagementScore: number
@@ -853,7 +905,7 @@ export class EngagementTrackingService {
     timeline?: string
   }): Promise<string> {
     try {
-      await this.prisma.$executeRaw`
+      await this.getPrismaClient().$executeRaw`
         INSERT INTO project_inquiries (
           project_id, user_id, inquiry_type, subject, message, 
           contact_method, budget_expectation, timeline_expectation
@@ -880,9 +932,28 @@ export class EngagementTrackingService {
   }
 
   async disconnect(): Promise<void> {
-    await this.prisma.$disconnect()
+    try {
+      if (this.prisma && this.checkPrismaAvailable()) {
+        await this.getPrismaClient().$disconnect()
+      }
+    } catch (error) {
+      console.warn('EngagementTrackingService: Error disconnecting from database:', error)
+    }
   }
 }
 
-// Export singleton instance
-export const engagementTrackingService = new EngagementTrackingService()
+// Export singleton instance with safe initialization
+let engagementTrackingServiceInstance: EngagementTrackingService | null = null
+
+export const engagementTrackingService = (() => {
+  try {
+    if (!engagementTrackingServiceInstance) {
+      engagementTrackingServiceInstance = new EngagementTrackingService()
+    }
+    return engagementTrackingServiceInstance
+  } catch (error) {
+    console.error('Failed to initialize EngagementTrackingService singleton:', error)
+    // Return a service instance that will gracefully handle unavailable database
+    return new EngagementTrackingService()
+  }
+})()

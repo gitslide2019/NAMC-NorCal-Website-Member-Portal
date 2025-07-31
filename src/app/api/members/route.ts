@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+// Force dynamic rendering to prevent static generation during build
+export const dynamic = 'force-dynamic'
+
 import { authOptions } from '@/lib/auth'
 
 // Mock member data based on the Excel data we imported
