@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --namc-yellow: 255, 215, 0;
+    --namc-black: 26, 26, 26;
+    --accent-yellow: 255, 165, 0;
+    --light-yellow: 255, 248, 220;
+    --dark-gray: 42, 42, 42;
+  }
+
+  * {
+    @apply border-gray-200;
+  }
+
+  body {
+    @apply bg-white text-namc-black font-source-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-inter font-bold;
+  }
+}
+
+@layer components {
+  /* Glass morphism effect */
+  .glass {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-md bg-namc-black/10 border border-namc-black/20;
+  }
+
+  .glass-yellow {
+    @apply backdrop-blur-md bg-namc-yellow/10 border border-namc-yellow/20;
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 text-namc-black bg-namc-yellow font-semibold rounded-lg hover:bg-accent-yellow transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 text-white bg-namc-black font-semibold rounded-lg hover:bg-dark-gray transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+
+  .btn-glass {
+    @apply inline-flex items-center justify-center px-6 py-3 text-namc-black font-semibold rounded-lg glass hover:bg-white/20 transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+
+  /* Card styles */
+  .card {
+    @apply glass rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300;
+  }
+
+  .card-dark {
+    @apply glass-dark rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300;
+  }
+
+  /* Form styles */
+  .form-input {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-namc-yellow focus:ring-2 focus:ring-namc-yellow/20 transition-all duration-200;
+  }
+
+  .form-label {
+    @apply block text-sm font-semibold text-gray-700 mb-2;
+  }
+
+  /* Timeline styles */
+  .timeline-item {
+    @apply relative pl-8 pb-8 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-namc-yellow;
+  }
+
+  .timeline-dot {
+    @apply absolute left-[-5px] top-2 w-3 h-3 bg-namc-yellow rounded-full border-2 border-white;
+  }
+
+  /* Animations */
+  .animate-count {
+    @apply animate-count-up;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-namc-yellow rounded-full hover:bg-accent-yellow;
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+}
+
+@layer utilities {
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-yellow-gradient;
+  }
+
+  /* Hover animations */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  /* Focus styles */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-namc-yellow focus:ring-offset-2;
+  }
+}
