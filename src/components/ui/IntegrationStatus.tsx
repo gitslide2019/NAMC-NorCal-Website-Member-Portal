@@ -118,7 +118,7 @@ const IntegrationStatus: React.FC<IntegrationStatusProps> = ({
         results.arcgis_coords = coords;
       } catch (error) {
         results.arcgis_geocoding = 'failed';
-        results.arcgis_error = error.message;
+        results.arcgis_error = error instanceof Error ? error.message : 'Unknown error';
       }
     }
 
@@ -134,7 +134,7 @@ const IntegrationStatus: React.FC<IntegrationStatusProps> = ({
         results.shovels_count = permits.length;
       } catch (error) {
         results.shovels_search = 'failed';
-        results.shovels_error = error.message;
+        results.shovels_error = error instanceof Error ? error.message : 'Unknown error';
       }
     }
 

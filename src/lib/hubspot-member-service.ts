@@ -85,7 +85,9 @@ export class HubSpotMemberService {
       }
 
       // Tag with membership tier
-      await this.tagMembershipTier(contact.id, member.membershipTier)
+      if (contact.id) {
+        await this.tagMembershipTier(contact.id, member.membershipTier)
+      }
 
       return {
         success: true,
@@ -207,7 +209,7 @@ export class HubSpotMemberService {
       const contact = await this.hubspotService.findContactByEmail(memberEmail)
       
       if (!contact) {
-        return { contact: null, deals: [], activities: [], stats: null }
+        return { contact: null, deals: [], activities: [], stats: undefined }
       }
 
       // In a full implementation, these would be actual HubSpot API calls
@@ -226,7 +228,7 @@ export class HubSpotMemberService {
 
     } catch (error) {
       console.error('HubSpot member data fetch error:', error)
-      return { contact: null, deals: [], activities: [], stats: null }
+      return { contact: null, deals: [], activities: [], stats: undefined }
     }
   }
 

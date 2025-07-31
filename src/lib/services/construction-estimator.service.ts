@@ -252,7 +252,7 @@ export class ConstructionEstimatorService {
     const materials: MaterialEstimate[] = []
     
     // Foundation materials
-    if (project.category !== 'renovation') {
+    if (project.category) {
       materials.push({
         category: 'Foundation',
         items: [

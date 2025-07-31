@@ -165,11 +165,12 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
         });
 
         // Handle click events
-        view.on('click', (event) => {
-          view.hitTest(event).then((response) => {
+        view.on('click', (event: any) => {
+          view.hitTest(event).then((response: any) => {
             if (response.results.length > 0) {
-              const graphic = response.results[0].graphic;
-              const projectId = graphic.attributes?.projectId;
+              const result = response.results[0];
+              const graphic = (result as any).graphic;
+              const projectId = graphic?.attributes?.projectId;
               
               if (projectId && onProjectSelect) {
                 const project = projects.find(p => p.id === projectId);

@@ -509,11 +509,15 @@ export class HubSpotIntegrationService {
         throw new Error(`Member not found: ${engagementData.memberId}`)
       }
 
+      const nameParts = (member.name || '').split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
       const createData = {
         properties: {
           email: engagementData.email,
-          firstname: member.firstName || '',
-          lastname: member.lastName || '',
+          firstname: firstName,
+          lastname: lastName,
           company: member.company || '',
           phone: member.phone || '',
           city: member.location?.split(',')[0] || '',

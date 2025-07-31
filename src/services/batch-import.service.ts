@@ -118,13 +118,13 @@ export class BatchImportService {
           }
 
         } catch (error) {
-          console.error(`❌ Batch ${batchNumber} failed completely:`, error.message);
+          console.error(`❌ Batch ${batchNumber} failed completely:`, (error as Error).message);
           
           // Mark all contacts in this batch as failed
           batch.forEach(contact => {
             result.errors.push({
               contactData: contact,
-              error: `Batch processing failed: ${error.message}`,
+              error: `Batch processing failed: ${(error as Error).message}`,
               details: error
             });
           });
@@ -147,7 +147,7 @@ export class BatchImportService {
       console.error('❌ Import process failed:', error);
       result.errors.push({
         contactData: null,
-        error: `Import process failed: ${error.message}`,
+        error: `Import process failed: ${(error as Error).message}`,
         details: error
       });
       
@@ -168,9 +168,9 @@ export class BatchImportService {
     const batchResult = {
       successful: 0,
       failed: 0,
-      errors: [],
-      warnings: [],
-      importedContacts: []
+      errors: [] as ImportError[],
+      warnings: [] as string[],
+      importedContacts: [] as any[]
     };
 
     // Process contacts individually for better error handling
@@ -198,11 +198,11 @@ export class BatchImportService {
         batchResult.failed++;
         batchResult.errors.push({
           contactData,
-          error: error.message,
+          error: (error as Error).message,
           details: error
         });
         
-        console.log(`   ❌ Failed: ${contactData.properties.firstname} ${contactData.properties.lastname} - ${error.message}`);
+        console.log(`   ❌ Failed: ${contactData.properties.firstname} ${contactData.properties.lastname} - ${(error as Error).message}`);
       }
     }
 
@@ -261,13 +261,13 @@ export class BatchImportService {
   // Utility method to validate contacts before import
   validateContacts(contacts: any[]): { valid: any[]; invalid: any[]; errors: string[] } {
     const result = {
-      valid: [],
-      invalid: [],
-      errors: []
+      valid: [] as any[],
+      invalid: [] as any[],
+      errors: [] as string[]
     };
 
     contacts.forEach((contact, index) => {
-      const errors = [];
+      const errors = [] as string[];
       
       // Required fields validation
       if (!contact.properties.email) {
@@ -380,10 +380,10 @@ export class BatchImportService {
         await this.hubspotService.createCustomProperty('contacts', property);
         console.log(`   ✅ Created/verified property: ${property.name}`);
       } catch (error) {
-        if (error.message.includes('already exists') || error.message.includes('409')) {
+        if ((error as Error).message.includes('already exists') || (error as Error).message.includes('409')) {
           console.log(`   ℹ️  Property already exists: ${property.name}`);
         } else {
-          console.warn(`   ⚠️  Could not create property ${property.name}: ${error.message}`);
+          console.warn(`   ⚠️  Could not create property ${property.name}: ${(error as Error).message}`);
         }
       }
     }

@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import * as moment from 'moment';
+import moment from 'moment';
 
 interface MemberData {
   firstName: string;
@@ -123,7 +123,7 @@ export class ExcelProcessorService {
           result.stats.validRows++;
 
         } catch (error) {
-          result.errors.push(`Row ${rowIndex}: ${error.message}`);
+          result.errors.push(`Row ${rowIndex}: ${(error as Error).message}`);
           result.stats.skippedRows++;
         }
       }
@@ -140,7 +140,7 @@ export class ExcelProcessorService {
       }
 
     } catch (error) {
-      result.errors.push(`Failed to process Excel file: ${error.message}`);
+      result.errors.push(`Failed to process Excel file: ${(error as Error).message}`);
     }
 
     return result;
@@ -151,8 +151,8 @@ export class ExcelProcessorService {
 
     // Map Excel columns to member data fields
     headers.forEach((header, index) => {
-      if (header && this.fieldMapping[header.trim()]) {
-        const fieldName = this.fieldMapping[header.trim()];
+      if (header && (this.fieldMapping as any)[header.trim()]) {
+        const fieldName = (this.fieldMapping as any)[header.trim()];
         const rawValue = row[index];
         
         if (rawValue !== undefined && rawValue !== '' && rawValue !== null) {
@@ -249,7 +249,7 @@ export class ExcelProcessorService {
       console.warn(`Row ${rowIndex}: Could not parse date value: ${value}`);
       return null;
     } catch (error) {
-      console.warn(`Row ${rowIndex}: Date parsing error for value ${value}: ${error.message}`);
+      console.warn(`Row ${rowIndex}: Date parsing error for value ${value}: ${(error as Error).message}`);
       return null;
     }
   }
@@ -290,7 +290,7 @@ export class ExcelProcessorService {
         
         // Custom NAMC properties
         license_number: memberData.licenseNumber,
-        membership_tier: this.mapMembershipTier(memberData.membershipType),
+        membership_tier: this.mapMembershipTier(memberData.membershipType || ''),
         membership_status: 'Active',
         annual_fee: memberData.annualFee?.toString(),
         certifications: memberData.certifications,
@@ -310,8 +310,8 @@ export class ExcelProcessorService {
 
     // Remove null/undefined properties
     Object.keys(hubspotContact.properties).forEach(key => {
-      if (hubspotContact.properties[key] === null || hubspotContact.properties[key] === undefined) {
-        delete hubspotContact.properties[key];
+      if ((hubspotContact.properties as any)[key] === null || (hubspotContact.properties as any)[key] === undefined) {
+        delete (hubspotContact.properties as any)[key];
       }
     });
 

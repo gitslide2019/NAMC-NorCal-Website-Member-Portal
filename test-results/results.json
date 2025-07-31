@@ -1,0 +1,1283 @@
+{
+  "config": {
+    "configFile": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/playwright.config.ts",
+    "rootDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/results.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Microsoft Edge",
+        "name": "Microsoft Edge",
+        "testDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Google Chrome",
+        "name": "Google Chrome",
+        "testDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "accessibility",
+        "name": "accessibility",
+        "testDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/accessibility/*.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "performance",
+        "name": "performance",
+        "testDir": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/performance/*.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.54.1",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "e2e/homepage.spec.ts",
+      "file": "e2e/homepage.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Homepage User Journey",
+          "file": "e2e/homepage.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load homepage with all sections visible",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 5976,
+                      "error": {
+                        "message": "Error: expect.toBeVisible: Error: strict mode violation: locator('text=1969') resolved to 5 elements:\n    1) <span class=\"block text-namc-yellow\">Since 1969</span> aka getByText('Since 1969', { exact: true })\n    2) <p class=\"text-gray-600 text-lg mb-6\">The National Association of Minority Contractors …</p> aka getByText('The National Association of')\n    3) <p class=\"text-gray-600 mb-4\">Explore our 55-year journey from 1969 to present …</p> aka getByText('Explore our 55-year journey')\n    4) <span class=\"font-inter font-bold text-namc-black\">1969</span> aka getByText('1969', { exact: true })\n    5) <p class=\"text-gray-400 mb-4\">Building Excellence Since 1969. Supporting minori…</p> aka getByText('Building Excellence Since')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=1969')\u001b[22m\n",
+                        "stack": "Error: expect.toBeVisible: Error: strict mode violation: locator('text=1969') resolved to 5 elements:\n    1) <span class=\"block text-namc-yellow\">Since 1969</span> aka getByText('Since 1969', { exact: true })\n    2) <p class=\"text-gray-600 text-lg mb-6\">The National Association of Minority Contractors …</p> aka getByText('The National Association of')\n    3) <p class=\"text-gray-600 mb-4\">Explore our 55-year journey from 1969 to present …</p> aka getByText('Explore our 55-year journey')\n    4) <span class=\"font-inter font-bold text-namc-black\">1969</span> aka getByText('1969', { exact: true })\n    5) <p class=\"text-gray-400 mb-4\">Building Excellence Since 1969. Supporting minori…</p> aka getByText('Building Excellence Since')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=1969')\u001b[22m\n\n    at HomePage.verifyTimelineSection (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:182:55)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:27:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:26:5",
+                        "location": {
+                          "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts",
+                          "column": 55,
+                          "line": 182
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mpages/HomePage.ts:182\n\n  180 |     const timelineYears = [1969, 1980, 2000, 2025]\n  181 |     for (const year of timelineYears) {\n> 182 |       await expect(this.page.locator(`text=${year}`)).toBeVisible()\n      |                                                       ^\n  183 |     }\n  184 |     \n  185 |     // Check \"Explore Full Timeline\" button"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts",
+                            "column": 55,
+                            "line": 182
+                          },
+                          "message": "Error: expect.toBeVisible: Error: strict mode violation: locator('text=1969') resolved to 5 elements:\n    1) <span class=\"block text-namc-yellow\">Since 1969</span> aka getByText('Since 1969', { exact: true })\n    2) <p class=\"text-gray-600 text-lg mb-6\">The National Association of Minority Contractors …</p> aka getByText('The National Association of')\n    3) <p class=\"text-gray-600 mb-4\">Explore our 55-year journey from 1969 to present …</p> aka getByText('Explore our 55-year journey')\n    4) <span class=\"font-inter font-bold text-namc-black\">1969</span> aka getByText('1969', { exact: true })\n    5) <p class=\"text-gray-400 mb-4\">Building Excellence Since 1969. Supporting minori…</p> aka getByText('Building Excellence Since')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=1969')\u001b[22m\n\n\n   at pages/HomePage.ts:182\n\n  180 |     const timelineYears = [1969, 1980, 2000, 2025]\n  181 |     for (const year of timelineYears) {\n> 182 |       await expect(this.page.locator(`text=${year}`)).toBeVisible()\n      |                                                       ^\n  183 |     }\n  184 |     \n  185 |     // Check \"Explore Full Timeline\" button\n    at HomePage.verifyTimelineSection (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:182:55)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:27:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:26:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Verify hero section",
+                          "duration": 149
+                        },
+                        {
+                          "title": "Verify stats section",
+                          "duration": 470
+                        },
+                        {
+                          "title": "Verify features section",
+                          "duration": 179
+                        },
+                        {
+                          "title": "Verify timeline section",
+                          "duration": 82,
+                          "error": {
+                            "message": "Error: expect.toBeVisible: Error: strict mode violation: locator('text=1969') resolved to 5 elements:\n    1) <span class=\"block text-namc-yellow\">Since 1969</span> aka getByText('Since 1969', { exact: true })\n    2) <p class=\"text-gray-600 text-lg mb-6\">The National Association of Minority Contractors …</p> aka getByText('The National Association of')\n    3) <p class=\"text-gray-600 mb-4\">Explore our 55-year journey from 1969 to present …</p> aka getByText('Explore our 55-year journey')\n    4) <span class=\"font-inter font-bold text-namc-black\">1969</span> aka getByText('1969', { exact: true })\n    5) <p class=\"text-gray-400 mb-4\">Building Excellence Since 1969. Supporting minori…</p> aka getByText('Building Excellence Since')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=1969')\u001b[22m\n",
+                            "stack": "Error: expect.toBeVisible: Error: strict mode violation: locator('text=1969') resolved to 5 elements:\n    1) <span class=\"block text-namc-yellow\">Since 1969</span> aka getByText('Since 1969', { exact: true })\n    2) <p class=\"text-gray-600 text-lg mb-6\">The National Association of Minority Contractors …</p> aka getByText('The National Association of')\n    3) <p class=\"text-gray-600 mb-4\">Explore our 55-year journey from 1969 to present …</p> aka getByText('Explore our 55-year journey')\n    4) <span class=\"font-inter font-bold text-namc-black\">1969</span> aka getByText('1969', { exact: true })\n    5) <p class=\"text-gray-400 mb-4\">Building Excellence Since 1969. Supporting minori…</p> aka getByText('Building Excellence Since')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=1969')\u001b[22m\n\n    at HomePage.verifyTimelineSection (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:182:55)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:27:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:26:5",
+                            "location": {
+                              "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts",
+                              "column": 55,
+                              "line": 182
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39mpages/HomePage.ts:182\n\n  180 |     const timelineYears = [1969, 1980, 2000, 2025]\n  181 |     for (const year of timelineYears) {\n> 182 |       await expect(this.page.locator(`text=${year}`)).toBeVisible()\n      |                                                       ^\n  183 |     }\n  184 |     \n  185 |     // Check \"Explore Full Timeline\" button"
+                          }
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:27.707Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-e9e33-e-with-all-sections-visible-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-e9e33-e-with-all-sections-visible-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-e9e33-e-with-all-sections-visible-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts",
+                        "column": 55,
+                        "line": 182
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-6df3d8e913d6919e1769",
+              "file": "e2e/homepage.spec.ts",
+              "line": 13,
+              "column": 7
+            },
+            {
+              "title": "should navigate to registration from \"Become a Member\" CTA",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 14497,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Click \"Become a Member\" button",
+                          "duration": 8939
+                        },
+                        {
+                          "title": "Verify navigation to registration page",
+                          "duration": 72
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:27.718Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-fc2b508c825d7646aed3",
+              "file": "e2e/homepage.spec.ts",
+              "line": 38,
+              "column": 7
+            },
+            {
+              "title": "should navigate to about page from \"Learn More\" CTA",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 14453,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Click \"Learn More\" button",
+                          "duration": 9894
+                        },
+                        {
+                          "title": "Verify navigation to about page",
+                          "duration": 82
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:27.734Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-b7915220f8c84ab24e9d",
+              "file": "e2e/homepage.spec.ts",
+              "line": 49,
+              "column": 7
+            },
+            {
+              "title": "should scroll through all sections with proper animations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 11572,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Section animations detected: 3\n"
+                        },
+                        {
+                          "text": "Section animations detected: 5\n"
+                        },
+                        {
+                          "text": "Section animations detected: 2\n"
+                        },
+                        {
+                          "text": "Section animations detected: 5\n"
+                        },
+                        {
+                          "text": "Section animations detected: 5\n"
+                        },
+                        {
+                          "text": "Section animations detected: 1\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Scroll through sections",
+                          "duration": 7315
+                        },
+                        {
+                          "title": "Verify no layout issues during scroll",
+                          "duration": 14
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:27.744Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-453cf6d490ec0ab1babe",
+              "file": "e2e/homepage.spec.ts",
+              "line": 59,
+              "column": 7
+            },
+            {
+              "title": "should handle newsletter signup",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9137,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Test newsletter signup",
+                          "duration": 2321
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:38.430Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-b91ea507c1a1c9250257",
+              "file": "e2e/homepage.spec.ts",
+              "line": 72,
+              "column": 7
+            },
+            {
+              "title": "should display feature cards with proper hover effects",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 7572,
+                      "error": {
+                        "message": "Error: expect.toBeVisible: Error: strict mode violation: locator('a[href=\"/timeline\"]') resolved to 3 elements:\n    1) <a href=\"/timeline\" class=\"text-gray-700 hover:text-namc-yellow font-medium transition-colors duration-200\">Timeline</a> aka getByRole('link', { name: 'Timeline', exact: true })\n    2) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore' }).first()\n    3) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('a[href=\"/timeline\"]')\u001b[22m\n",
+                        "stack": "Error: expect.toBeVisible: Error: strict mode violation: locator('a[href=\"/timeline\"]') resolved to 3 elements:\n    1) <a href=\"/timeline\" class=\"text-gray-700 hover:text-namc-yellow font-medium transition-colors duration-200\">Timeline</a> aka getByRole('link', { name: 'Timeline', exact: true })\n    2) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore' }).first()\n    3) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('a[href=\"/timeline\"]')\u001b[22m\n\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:92:35\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:87:16",
+                        "location": {
+                          "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                          "column": 35,
+                          "line": 92
+                        },
+                        "snippet": "  90 |       for (const link of featureLinks) {\n  91 |         const linkElement = page.locator(`a[href=\"${link}\"]`)\n> 92 |         await expect(linkElement).toBeVisible()\n     |                                   ^\n  93 |         await expect(linkElement).toHaveAttribute('href', link)\n  94 |       }\n  95 |     })"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                            "column": 35,
+                            "line": 92
+                          },
+                          "message": "Error: expect.toBeVisible: Error: strict mode violation: locator('a[href=\"/timeline\"]') resolved to 3 elements:\n    1) <a href=\"/timeline\" class=\"text-gray-700 hover:text-namc-yellow font-medium transition-colors duration-200\">Timeline</a> aka getByRole('link', { name: 'Timeline', exact: true })\n    2) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore' }).first()\n    3) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('a[href=\"/timeline\"]')\u001b[22m\n\n\n  90 |       for (const link of featureLinks) {\n  91 |         const linkElement = page.locator(`a[href=\"${link}\"]`)\n> 92 |         await expect(linkElement).toBeVisible()\n     |                                   ^\n  93 |         await expect(linkElement).toHaveAttribute('href', link)\n  94 |       }\n  95 |     })\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:92:35\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:87:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Test feature card interactions",
+                          "duration": 2264
+                        },
+                        {
+                          "title": "Verify feature card links are valid",
+                          "duration": 125,
+                          "error": {
+                            "message": "Error: expect.toBeVisible: Error: strict mode violation: locator('a[href=\"/timeline\"]') resolved to 3 elements:\n    1) <a href=\"/timeline\" class=\"text-gray-700 hover:text-namc-yellow font-medium transition-colors duration-200\">Timeline</a> aka getByRole('link', { name: 'Timeline', exact: true })\n    2) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore' }).first()\n    3) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('a[href=\"/timeline\"]')\u001b[22m\n",
+                            "stack": "Error: expect.toBeVisible: Error: strict mode violation: locator('a[href=\"/timeline\"]') resolved to 3 elements:\n    1) <a href=\"/timeline\" class=\"text-gray-700 hover:text-namc-yellow font-medium transition-colors duration-200\">Timeline</a> aka getByRole('link', { name: 'Timeline', exact: true })\n    2) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore' }).first()\n    3) <a href=\"/timeline\">…</a> aka getByRole('link', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('a[href=\"/timeline\"]')\u001b[22m\n\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:92:35\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:87:16",
+                            "location": {
+                              "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                              "column": 35,
+                              "line": 92
+                            },
+                            "snippet": "  90 |       for (const link of featureLinks) {\n  91 |         const linkElement = page.locator(`a[href=\"${link}\"]`)\n> 92 |         await expect(linkElement).toBeVisible()\n     |                                   ^\n  93 |         await expect(linkElement).toHaveAttribute('href', link)\n  94 |       }\n  95 |     })"
+                          }
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:41.717Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-0a66b-s-with-proper-hover-effects-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-0a66b-s-with-proper-hover-effects-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-0a66b-s-with-proper-hover-effects-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                        "column": 35,
+                        "line": 92
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-587b77e6b98a336bc455",
+              "file": "e2e/homepage.spec.ts",
+              "line": 82,
+              "column": 7
+            },
+            {
+              "title": "should be responsive across all breakpoints",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 4804,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeFalsy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mtrue\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeFalsy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mtrue\u001b[39m\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:111:28\n    at Function.testAllBreakpoints (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts:152:7)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:100:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:99:5",
+                        "location": {
+                          "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                          "column": 28,
+                          "line": 111
+                        },
+                        "snippet": "  109 |           document.documentElement.scrollWidth > document.documentElement.clientWidth\n  110 |         )\n> 111 |         expect(hasHScroll).toBeFalsy()\n      |                            ^\n  112 |       })\n  113 |     })\n  114 |   })"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                            "column": 28,
+                            "line": 111
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeFalsy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mtrue\u001b[39m\n\n  109 |           document.documentElement.scrollWidth > document.documentElement.clientWidth\n  110 |         )\n> 111 |         expect(hasHScroll).toBeFalsy()\n      |                            ^\n  112 |       })\n  113 |     })\n  114 |   })\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:111:28\n    at Function.testAllBreakpoints (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts:152:7)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:100:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:99:5"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "Testing mobile breakpoint\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Test responsive design",
+                          "duration": 810,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeFalsy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mtrue\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeFalsy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mtrue\u001b[39m\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:111:28\n    at Function.testAllBreakpoints (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts:152:7)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:100:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:99:5",
+                            "location": {
+                              "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                              "column": 28,
+                              "line": 111
+                            },
+                            "snippet": "  109 |           document.documentElement.scrollWidth > document.documentElement.clientWidth\n  110 |         )\n> 111 |         expect(hasHScroll).toBeFalsy()\n      |                            ^\n  112 |       })\n  113 |     })\n  114 |   })"
+                          }
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:44.886Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-1a49a-sive-across-all-breakpoints-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-1a49a-sive-across-all-breakpoints-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-1a49a-sive-across-all-breakpoints-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                        "column": 28,
+                        "line": 111
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-09cbd726efda87e17456",
+              "file": "e2e/homepage.spec.ts",
+              "line": 98,
+              "column": 7
+            },
+            {
+              "title": "should handle mobile navigation properly",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 4679,
+                      "error": {
+                        "message": "Error: locator.isVisible: Error: strict mode violation: locator('button:has(svg)') resolved to 8 elements:\n    1) <button class=\"lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors\">…</button> aka getByRole('button').filter({ hasText: /^$/ })\n    2) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-8 py-4 text-lg w-full sm:w-auto\">…</button> aka getByRole('button', { name: 'Become a Member' })\n    3) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-6 py-3\">…</button> aka getByRole('button', { name: 'Learn More About Us' })\n    4) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).first()\n    5) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(1)\n    6) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(2)\n    7) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka locator('div').filter({ hasText: /^Borrow professional tools and equipment to help complete your projects\\.Explore$/ }).getByRole('button')\n    8) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-6 py-3\">…</button> aka getByRole('button', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('button:has(svg)')\u001b[22m\n",
+                        "stack": "Error: locator.isVisible: Error: strict mode violation: locator('button:has(svg)') resolved to 8 elements:\n    1) <button class=\"lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors\">…</button> aka getByRole('button').filter({ hasText: /^$/ })\n    2) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-8 py-4 text-lg w-full sm:w-auto\">…</button> aka getByRole('button', { name: 'Become a Member' })\n    3) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-6 py-3\">…</button> aka getByRole('button', { name: 'Learn More About Us' })\n    4) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).first()\n    5) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(1)\n    6) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(2)\n    7) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka locator('div').filter({ hasText: /^Borrow professional tools and equipment to help complete your projects\\.Explore$/ }).getByRole('button')\n    8) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-6 py-3\">…</button> aka getByRole('button', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('button:has(svg)')\u001b[22m\n\n    at HomePage.isMobileMenuVisible (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/BasePage.ts:36:40)\n    at HomePage.testResponsiveNavigation (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:243:20)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:118:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:117:5",
+                        "location": {
+                          "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/BasePage.ts",
+                          "column": 40,
+                          "line": 36
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mpages/BasePage.ts:36\n\n  34 |    */\n  35 |   async isMobileMenuVisible(): Promise<boolean> {\n> 36 |     return await this.mobileMenuButton.isVisible()\n     |                                        ^\n  37 |   }\n  38 |\n  39 |   /**"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/BasePage.ts",
+                            "column": 40,
+                            "line": 36
+                          },
+                          "message": "Error: locator.isVisible: Error: strict mode violation: locator('button:has(svg)') resolved to 8 elements:\n    1) <button class=\"lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors\">…</button> aka getByRole('button').filter({ hasText: /^$/ })\n    2) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-8 py-4 text-lg w-full sm:w-auto\">…</button> aka getByRole('button', { name: 'Become a Member' })\n    3) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-6 py-3\">…</button> aka getByRole('button', { name: 'Learn More About Us' })\n    4) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).first()\n    5) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(1)\n    6) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(2)\n    7) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka locator('div').filter({ hasText: /^Borrow professional tools and equipment to help complete your projects\\.Explore$/ }).getByRole('button')\n    8) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-6 py-3\">…</button> aka getByRole('button', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('button:has(svg)')\u001b[22m\n\n\n   at pages/BasePage.ts:36\n\n  34 |    */\n  35 |   async isMobileMenuVisible(): Promise<boolean> {\n> 36 |     return await this.mobileMenuButton.isVisible()\n     |                                        ^\n  37 |   }\n  38 |\n  39 |   /**\n    at HomePage.isMobileMenuVisible (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/BasePage.ts:36:40)\n    at HomePage.testResponsiveNavigation (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:243:20)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:118:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:117:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Test mobile navigation",
+                          "duration": 1445,
+                          "error": {
+                            "message": "Error: locator.isVisible: Error: strict mode violation: locator('button:has(svg)') resolved to 8 elements:\n    1) <button class=\"lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors\">…</button> aka getByRole('button').filter({ hasText: /^$/ })\n    2) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-8 py-4 text-lg w-full sm:w-auto\">…</button> aka getByRole('button', { name: 'Become a Member' })\n    3) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-6 py-3\">…</button> aka getByRole('button', { name: 'Learn More About Us' })\n    4) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).first()\n    5) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(1)\n    6) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(2)\n    7) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka locator('div').filter({ hasText: /^Borrow professional tools and equipment to help complete your projects\\.Explore$/ }).getByRole('button')\n    8) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-6 py-3\">…</button> aka getByRole('button', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('button:has(svg)')\u001b[22m\n",
+                            "stack": "Error: locator.isVisible: Error: strict mode violation: locator('button:has(svg)') resolved to 8 elements:\n    1) <button class=\"lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors\">…</button> aka getByRole('button').filter({ hasText: /^$/ })\n    2) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-8 py-4 text-lg w-full sm:w-auto\">…</button> aka getByRole('button', { name: 'Become a Member' })\n    3) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-6 py-3\">…</button> aka getByRole('button', { name: 'Learn More About Us' })\n    4) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).first()\n    5) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(1)\n    6) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka getByRole('button', { name: 'Explore' }).nth(2)\n    7) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full\">…</button> aka locator('div').filter({ hasText: /^Borrow professional tools and equipment to help complete your projects\\.Explore$/ }).getByRole('button')\n    8) <button class=\"inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-6 py-3\">…</button> aka getByRole('button', { name: 'Explore Full Timeline' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('button:has(svg)')\u001b[22m\n\n    at HomePage.isMobileMenuVisible (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/BasePage.ts:36:40)\n    at HomePage.testResponsiveNavigation (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:243:20)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:118:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:117:5",
+                            "location": {
+                              "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/BasePage.ts",
+                              "column": 40,
+                              "line": 36
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39mpages/BasePage.ts:36\n\n  34 |    */\n  35 |   async isMobileMenuVisible(): Promise<boolean> {\n> 36 |     return await this.mobileMenuButton.isVisible()\n     |                                        ^\n  37 |   }\n  38 |\n  39 |   /**"
+                          }
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:44.887Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-ddeb8--mobile-navigation-properly-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-ddeb8--mobile-navigation-properly-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-ddeb8--mobile-navigation-properly-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/BasePage.ts",
+                        "column": 40,
+                        "line": 36
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-8a8c6387d0a2ccf8dc26",
+              "file": "e2e/homepage.spec.ts",
+              "line": 116,
+              "column": 7
+            },
+            {
+              "title": "should meet performance benchmarks",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 7366,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m4297.700000017881\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m4297.700000017881\u001b[39m\n    at HomePage.verifyPerformanceMetrics (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:282:41)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:124:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:123:5",
+                        "location": {
+                          "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts",
+                          "column": 41,
+                          "line": 282
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mpages/HomePage.ts:282\n\n  280 |     \n  281 |     // Performance assertions (adjust thresholds as needed)\n> 282 |     expect(performanceMetrics.loadTime).toBeLessThan(3000) // 3 seconds\n      |                                         ^\n  283 |     expect(performanceMetrics.domContentLoaded).toBeLessThan(2000) // 2 seconds\n  284 |     \n  285 |     console.log('Performance metrics:', performanceMetrics)"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts",
+                            "column": 41,
+                            "line": 282
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m4297.700000017881\u001b[39m\n\n   at pages/HomePage.ts:282\n\n  280 |     \n  281 |     // Performance assertions (adjust thresholds as needed)\n> 282 |     expect(performanceMetrics.loadTime).toBeLessThan(3000) // 3 seconds\n      |                                         ^\n  283 |     expect(performanceMetrics.domContentLoaded).toBeLessThan(2000) // 2 seconds\n  284 |     \n  285 |     console.log('Performance metrics:', performanceMetrics)\n    at HomePage.verifyPerformanceMetrics (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:282:41)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:124:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:123:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Check page load performance",
+                          "duration": 8,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m4297.700000017881\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m4297.700000017881\u001b[39m\n    at HomePage.verifyPerformanceMetrics (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:282:41)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:124:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:123:5",
+                            "location": {
+                              "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts",
+                              "column": 41,
+                              "line": 282
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39mpages/HomePage.ts:282\n\n  280 |     \n  281 |     // Performance assertions (adjust thresholds as needed)\n> 282 |     expect(performanceMetrics.loadTime).toBeLessThan(3000) // 3 seconds\n      |                                         ^\n  283 |     expect(performanceMetrics.domContentLoaded).toBeLessThan(2000) // 2 seconds\n  284 |     \n  285 |     console.log('Performance metrics:', performanceMetrics)"
+                          }
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:48.572Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-4823f-meet-performance-benchmarks-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-4823f-meet-performance-benchmarks-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-4823f-meet-performance-benchmarks-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts",
+                        "column": 41,
+                        "line": 282
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-15a283247c6c2c762ee0",
+              "file": "e2e/homepage.spec.ts",
+              "line": 122,
+              "column": 7
+            },
+            {
+              "title": "should be accessible via keyboard navigation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 5015,
+                      "error": {
+                        "message": "Error: locator.evaluate: Error: strict mode violation: locator('a[href=\"/auth/register\"]') resolved to 2 elements:\n    1) <a href=\"/auth/register\">…</a> aka getByRole('navigation').getByRole('link', { name: 'Become a Member' })\n    2) <a href=\"/auth/register\">…</a> aka getByRole('main').getByRole('link', { name: 'Become a Member' })\n\nCall log:\n\u001b[2m  - waiting for locator('a[href=\"/auth/register\"]')\u001b[22m\n",
+                        "stack": "Error: locator.evaluate: Error: strict mode violation: locator('a[href=\"/auth/register\"]') resolved to 2 elements:\n    1) <a href=\"/auth/register\">…</a> aka getByRole('navigation').getByRole('link', { name: 'Become a Member' })\n    2) <a href=\"/auth/register\">…</a> aka getByRole('main').getByRole('link', { name: 'Become a Member' })\n\nCall log:\n\u001b[2m  - waiting for locator('a[href=\"/auth/register\"]')\u001b[22m\n\n    at Function.testKeyboardNavigation (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts:368:68)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:150:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:143:5",
+                        "location": {
+                          "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts",
+                          "column": 68,
+                          "line": 368
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mutils/test-helpers.ts:368\n\n  366 |       const focusedElement = page.locator(':focus')\n  367 |       const matchesExpected = await focusedElement.locator(expectedSelector).count() > 0 ||\n> 368 |                               await page.locator(expectedSelector).evaluate((el) => el === document.activeElement)\n      |                                                                    ^\n  369 |       \n  370 |       if (!matchesExpected) {\n  371 |         console.warn(`Keyboard navigation mismatch at step ${i + 1}. Expected: ${expectedSelector}`)"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts",
+                            "column": 68,
+                            "line": 368
+                          },
+                          "message": "Error: locator.evaluate: Error: strict mode violation: locator('a[href=\"/auth/register\"]') resolved to 2 elements:\n    1) <a href=\"/auth/register\">…</a> aka getByRole('navigation').getByRole('link', { name: 'Become a Member' })\n    2) <a href=\"/auth/register\">…</a> aka getByRole('main').getByRole('link', { name: 'Become a Member' })\n\nCall log:\n\u001b[2m  - waiting for locator('a[href=\"/auth/register\"]')\u001b[22m\n\n\n   at utils/test-helpers.ts:368\n\n  366 |       const focusedElement = page.locator(':focus')\n  367 |       const matchesExpected = await focusedElement.locator(expectedSelector).count() > 0 ||\n> 368 |                               await page.locator(expectedSelector).evaluate((el) => el === document.activeElement)\n      |                                                                    ^\n  369 |       \n  370 |       if (!matchesExpected) {\n  371 |         console.warn(`Keyboard navigation mismatch at step ${i + 1}. Expected: ${expectedSelector}`)\n    at Function.testKeyboardNavigation (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts:368:68)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:150:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:143:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [
+                        {
+                          "text": "Keyboard navigation mismatch at step 1. Expected: a[href=\"/\"]\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Test keyboard accessibility",
+                          "duration": 542
+                        },
+                        {
+                          "title": "Test keyboard navigation flow",
+                          "duration": 60,
+                          "error": {
+                            "message": "Error: locator.evaluate: Error: strict mode violation: locator('a[href=\"/auth/register\"]') resolved to 2 elements:\n    1) <a href=\"/auth/register\">…</a> aka getByRole('navigation').getByRole('link', { name: 'Become a Member' })\n    2) <a href=\"/auth/register\">…</a> aka getByRole('main').getByRole('link', { name: 'Become a Member' })\n\nCall log:\n\u001b[2m  - waiting for locator('a[href=\"/auth/register\"]')\u001b[22m\n",
+                            "stack": "Error: locator.evaluate: Error: strict mode violation: locator('a[href=\"/auth/register\"]') resolved to 2 elements:\n    1) <a href=\"/auth/register\">…</a> aka getByRole('navigation').getByRole('link', { name: 'Become a Member' })\n    2) <a href=\"/auth/register\">…</a> aka getByRole('main').getByRole('link', { name: 'Become a Member' })\n\nCall log:\n\u001b[2m  - waiting for locator('a[href=\"/auth/register\"]')\u001b[22m\n\n    at Function.testKeyboardNavigation (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts:368:68)\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:150:7\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:143:5",
+                            "location": {
+                              "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts",
+                              "column": 68,
+                              "line": 368
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39mutils/test-helpers.ts:368\n\n  366 |       const focusedElement = page.locator(':focus')\n  367 |       const matchesExpected = await focusedElement.locator(expectedSelector).count() > 0 ||\n> 368 |                               await page.locator(expectedSelector).evaluate((el) => el === document.activeElement)\n      |                                                                    ^\n  369 |       \n  370 |       if (!matchesExpected) {\n  371 |         console.warn(`Keyboard navigation mismatch at step ${i + 1}. Expected: ${expectedSelector}`)"
+                          }
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:50.838Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-8ac62-ble-via-keyboard-navigation-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-8ac62-ble-via-keyboard-navigation-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-8ac62-ble-via-keyboard-navigation-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts",
+                        "column": 68,
+                        "line": 368
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-e51b5c451912e776a65c",
+              "file": "e2e/homepage.spec.ts",
+              "line": 138,
+              "column": 7
+            },
+            {
+              "title": "should pass accessibility audit",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 5279,
+                      "error": {
+                        "message": "TypeError: Cannot read properties of undefined (reading 'length')",
+                        "stack": "TypeError: Cannot read properties of undefined (reading 'length')\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:164:22\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:155:5",
+                        "location": {
+                          "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                          "column": 22,
+                          "line": 164
+                        },
+                        "snippet": "  162 |       \n  163 |       // Allow some violations but log them\n> 164 |       if (violations.length > 0) {\n      |                      ^\n  165 |         console.warn(`Found ${violations.length} accessibility violations`)\n  166 |       }\n  167 |       "
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                            "column": 22,
+                            "line": 164
+                          },
+                          "message": "TypeError: Cannot read properties of undefined (reading 'length')\n\n  162 |       \n  163 |       // Allow some violations but log them\n> 164 |       if (violations.length > 0) {\n      |                      ^\n  165 |         console.warn(`Found ${violations.length} accessibility violations`)\n  166 |       }\n  167 |       \n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:164:22\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:155:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [
+                        {
+                          "text": "Accessibility check error: unknown rule `keyboard-navigation` in options.rules\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Run accessibility check",
+                          "duration": 889,
+                          "error": {
+                            "message": "TypeError: Cannot read properties of undefined (reading 'length')",
+                            "stack": "TypeError: Cannot read properties of undefined (reading 'length')\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:164:22\n    at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:155:5",
+                            "location": {
+                              "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                              "column": 22,
+                              "line": 164
+                            },
+                            "snippet": "  162 |       \n  163 |       // Allow some violations but log them\n> 164 |       if (violations.length > 0) {\n      |                      ^\n  165 |         console.warn(`Found ${violations.length} accessibility violations`)\n  166 |       }\n  167 |       "
+                          }
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:50.845Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-487a0-ld-pass-accessibility-audit-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-487a0-ld-pass-accessibility-audit-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/test-results/e2e-homepage-Homepage-User-487a0-ld-pass-accessibility-audit-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts",
+                        "column": 22,
+                        "line": 164
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-9b4d92a0a7acc1ae52da",
+              "file": "e2e/homepage.spec.ts",
+              "line": 154,
+              "column": 7
+            },
+            {
+              "title": "should handle slow network conditions gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 18559,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Simulate slow network",
+                          "duration": 14374
+                        },
+                        {
+                          "title": "Restore network conditions",
+                          "duration": 3
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:50.837Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-30b332ebb0b87777eef1",
+              "file": "e2e/homepage.spec.ts",
+              "line": 174,
+              "column": 7
+            },
+            {
+              "title": "should handle broken images gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6262,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Mock broken image responses",
+                          "duration": 3496
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:56.743Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-7b6da1ddfe6c6aef3f75",
+              "file": "e2e/homepage.spec.ts",
+              "line": 192,
+              "column": 7
+            },
+            {
+              "title": "should handle JavaScript disabled scenario",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 9070,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Disable JavaScript",
+                          "duration": 5075
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:57.204Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-a4015968f9a1cbd26364",
+              "file": "e2e/homepage.spec.ts",
+              "line": 208,
+              "column": 7
+            },
+            {
+              "title": "should display proper error states",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4805,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Test form error handling",
+                          "duration": 1606
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:15:57.787Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-06bb5aa8681bd63b0315",
+              "file": "e2e/homepage.spec.ts",
+              "line": 225,
+              "column": 7
+            },
+            {
+              "title": "should handle multiple concurrent users",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 10509,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Simulate concurrent usage",
+                          "duration": 7613
+                        }
+                      ],
+                      "startTime": "2025-07-31T21:16:02.952Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16f603ea19510c43cb6a-0bce8600ae0893286949",
+              "file": "e2e/homepage.spec.ts",
+              "line": 241,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-07-31T21:15:21.512Z",
+    "duration": 52109.880000000005,
+    "expected": 9,
+    "skipped": 0,
+    "unexpected": 7,
+    "flaky": 0
+  }
+}

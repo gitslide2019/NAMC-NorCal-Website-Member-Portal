@@ -23,6 +23,12 @@ interface HubSpotContact {
     membership_status?: string;
     years_experience?: string;
     certifications?: string;
+    last_portal_activity?: string;
+    portal_activity_type?: string;
+    portal_activity_details?: string;
+    namc_member?: string;
+    hubspot_owner_id?: string;
+    [key: string]: any; // Allow additional custom properties
   };
 }
 
@@ -99,7 +105,7 @@ export class HubSpotService {
     // Check if contact exists
     const existingContact = await this.findContactByEmail(userData.email);
     
-    if (existingContact) {
+    if (existingContact && existingContact.id) {
       return await this.updateContact(existingContact.id, contactData);
     } else {
       return await this.createContact(contactData);
@@ -313,8 +319,8 @@ export class HubSpotService {
 
     // Remove undefined properties
     Object.keys(taskUpdates.properties).forEach(key => {
-      if (taskUpdates.properties[key] === undefined) {
-        delete taskUpdates.properties[key];
+      if ((taskUpdates.properties as any)[key] === undefined) {
+        delete (taskUpdates.properties as any)[key];
       }
     });
 

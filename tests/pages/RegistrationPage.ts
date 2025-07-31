@@ -352,7 +352,7 @@ export class RegistrationPage extends BasePage {
     
     // Verify mobile layout
     const card = this.page.locator('.card, .max-w-4xl').first()
-    const cardWidth = await card.evaluate(el => el.offsetWidth)
+    const cardWidth = await card.evaluate(el => (el as HTMLElement).offsetWidth)
     
     // Should be responsive and not overflow
     expect(cardWidth).toBeLessThanOrEqual(375)

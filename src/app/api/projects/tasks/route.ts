@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 // Mock database - replace with actual database implementation
 let projectTasks: any[] = [];
@@ -101,7 +101,8 @@ export async function POST(request: NextRequest) {
       createdAt: new Date(),
       updatedAt: new Date(),
       tags,
-      attachments: []
+      attachments: [],
+      hubspotTaskId: undefined as string | undefined
     };
 
     projectTasks.push(newTask);

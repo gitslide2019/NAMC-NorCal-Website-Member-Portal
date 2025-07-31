@@ -18,7 +18,7 @@ import {
   AlertTriangle,
   Clock,
   Settings,
-  Sync,
+  RefreshCcw as Sync,
   Database,
   BarChart3,
   UserCheck,

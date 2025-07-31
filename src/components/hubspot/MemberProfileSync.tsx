@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { 
-  Sync, 
+  RefreshCcw as Sync, 
   CheckCircle, 
   XCircle, 
   AlertTriangle,

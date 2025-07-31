@@ -52,6 +52,9 @@ export interface ProjectInquiry {
   message: string
   status: 'pending' | 'answered' | 'closed'
   priorityLevel: 'low' | 'medium' | 'high' | 'urgent'
+  contactMethod?: string
+  budget?: string
+  timeline?: string
 }
 
 export interface EngagementScore {
@@ -432,7 +435,7 @@ export class EngagementTrackingService {
    */
   private async checkEngagementThresholds(userId: string, projectId: string): Promise<void> {
     try {
-      const engagementScore = await this.getEngagementScore(userId, projectId)
+      const engagementScore = await this.getMemberEngagementScore(userId, projectId)
       
       if (!engagementScore) return
 
@@ -840,7 +843,7 @@ export class EngagementTrackingService {
   /**
    * Track project inquiry with enhanced data for HubSpot integration
    */
-  async trackProjectInquiry(inquiryData: {
+  async trackEnhancedProjectInquiry(inquiryData: {
     projectId: string
     userId: string
     inquiryType: string

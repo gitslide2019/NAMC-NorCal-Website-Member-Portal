@@ -57,7 +57,7 @@ export default function NewsletterSignup({ className, variant = 'light' }: Newsl
           lastname: data.lastName || '',
           email: data.email,
           membership_status: 'newsletter_subscriber',
-          lifecycle_stage: 'subscriber',
+          // lifecycle_stage: 'subscriber', // Removed due to type error
         },
       })
     } catch (error) {

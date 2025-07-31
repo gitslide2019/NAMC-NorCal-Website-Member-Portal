@@ -130,7 +130,17 @@ export async function POST(request: NextRequest) {
       timeline: {
         estimatedStartDate: new Date(timeline.estimatedStartDate),
         estimatedEndDate: new Date(timeline.estimatedEndDate),
-        currentPhase: 'planning',
+        currentPhase: {
+          id: 'planning',
+          name: 'Planning',
+          description: 'Initial project planning and setup phase',
+          startDate: new Date(timeline.estimatedStartDate),
+          endDate: new Date(new Date(timeline.estimatedStartDate).getTime() + (30 * 24 * 60 * 60 * 1000)), // 30 days
+          progress: 0,
+          status: 'in_progress' as const,
+          dependencies: [],
+          milestones: []
+        },
         phases: timeline.phases || [],
         milestones: timeline.milestones || [],
         criticalPath: [],
@@ -150,7 +160,7 @@ export async function POST(request: NextRequest) {
       inspections: [],
       documents: [],
       drawings: [],
-      hubspotSyncStatus: autoSyncHubSpot ? 'pending' : 'disabled',
+      hubspotSyncStatus: autoSyncHubSpot ? 'pending' : 'error',
       status: 'draft',
       priority: 'medium',
       riskLevel: 'low',

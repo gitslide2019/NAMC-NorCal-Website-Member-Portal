@@ -237,7 +237,7 @@ export class EstimatePDFService {
     doc.rect(80, yPos - 8, meterWidth, meterHeight)
     
     const fillColor = confidence > 80 ? [76, 175, 80] : confidence > 60 ? [255, 193, 7] : [244, 67, 54]
-    doc.setFillColor(...fillColor)
+    doc.setFillColor(fillColor[0], fillColor[1], fillColor[2])
     doc.rect(80, yPos - 8, (meterWidth * confidence) / 100, meterHeight, 'F')
     
     doc.text(`${confidence}%`, 185, yPos)
@@ -278,7 +278,7 @@ export class EstimatePDFService {
     ]
     
     legendItems.forEach((item, index) => {
-      doc.setFillColor(...item.color)
+      doc.setFillColor(item.color[0], item.color[1], item.color[2])
       doc.rect(60, yPos + (index * 8), 5, 5, 'F')
       doc.setFontSize(10)
       doc.setTextColor(60, 60, 60)

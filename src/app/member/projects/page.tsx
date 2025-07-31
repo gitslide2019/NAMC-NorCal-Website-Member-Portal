@@ -132,10 +132,10 @@ function ProjectCard({ project, onView }: { project: ProjectSummary; onView: (id
           <div className="flex items-center space-x-2">
             {/* Warning indicators */}
             {isOverBudget && (
-              <AlertTriangle className="w-4 h-4 text-red-500" title="Over Budget" />
+              <AlertTriangle className="w-4 h-4 text-red-500" />
             )}
             {isBehindSchedule && (
-              <Clock className="w-4 h-4 text-orange-500" title="Behind Schedule" />
+              <Clock className="w-4 h-4 text-orange-500" />
             )}
             {/* HubSpot sync status */}
             <div className={`w-2 h-2 rounded-full ${

@@ -467,7 +467,7 @@ export class MemberDashboardPage extends BasePage {
         domContentLoaded: navigation.domContentLoadedEventEnd - navigation.fetchStart,
         resourceCount: resources.length,
         totalResourceSize: resources.reduce((total, resource) => {
-          return total + (resource.transferSize || 0)
+          return total + ((resource as any).transferSize || 0)
         }, 0)
       }
     })

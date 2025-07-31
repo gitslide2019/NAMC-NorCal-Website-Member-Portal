@@ -232,7 +232,7 @@ export class TestHelpers {
         
         // Resource metrics
         resourceCount: resources.length,
-        totalSize: resources.reduce((total, resource) => total + (resource.transferSize || 0), 0),
+        totalSize: resources.reduce((total, resource) => total + ((resource as any).transferSize || 0), 0),
         
         // Memory usage (if available)
         // @ts-ignore

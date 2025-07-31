@@ -1037,7 +1037,7 @@ export class NotificationService {
         FROM projects WHERE id = ${projectId}::uuid
       `
       
-      return project[0] || null
+      return (project as any)[0] || null
     } catch (error) {
       console.error('Error getting project details:', error)
       return null
@@ -1053,7 +1053,7 @@ export class NotificationService {
         WHERE u.id = ${memberId}::uuid
       `
       
-      return member[0] || null
+      return (member as any)[0] || null
     } catch (error) {
       console.error('Error getting member details:', error)
       return null

@@ -564,7 +564,7 @@ function BudgetTab({ project }: { project: ConstructionProject }) {
                   <div className="text-right">
                     <div className="font-bold text-lg">${changeOrder.cost.toLocaleString()}</div>
                     <div className="text-sm text-gray-600">
-                      {changeOrder.approved ? 'Approved' : 'Pending'}
+                      {changeOrder.status === 'approved' ? 'Approved' : changeOrder.status === 'rejected' ? 'Rejected' : 'Pending'}
                     </div>
                   </div>
                 </div>
@@ -670,12 +670,14 @@ export default function ProjectDetailPage() {
           changeOrders: [
             {
               id: 'co-1',
+              number: 'CO-001',
               description: 'Additional electrical outlets in conference room',
+              reason: 'client_request' as const,
               cost: 2500,
-              status: 'approved',
+              status: 'approved' as const,
               requestedDate: new Date('2024-01-15'),
-              approved: true,
-              approvedDate: new Date('2024-01-18')
+              approvedDate: new Date('2024-01-18'),
+              approvedBy: 'Project Manager'
             }
           ],
           paymentSchedule: []
@@ -683,8 +685,41 @@ export default function ProjectDetailPage() {
         timeline: {
           estimatedStartDate: new Date('2024-02-01'),
           estimatedEndDate: new Date('2024-05-15'),
-          currentPhase: 'in_progress',
-          phases: ['Planning', 'Demolition', 'Infrastructure', 'Construction', 'Finishes', 'Final'],
+          currentPhase: {
+            id: 'construction',
+            name: 'Construction',
+            description: 'Main construction phase',
+            startDate: new Date('2024-03-01'),
+            endDate: new Date('2024-04-30'),
+            progress: 60,
+            status: 'in_progress' as const,
+            dependencies: [],
+            milestones: []
+          },
+          phases: [
+            {
+              id: 'planning',
+              name: 'Planning',
+              description: 'Initial project planning',
+              startDate: new Date('2024-02-01'),
+              endDate: new Date('2024-02-15'),
+              progress: 100,
+              status: 'completed' as const,
+              dependencies: [],
+              milestones: []
+            },
+            {
+              id: 'construction',
+              name: 'Construction',
+              description: 'Main construction phase',
+              startDate: new Date('2024-03-01'),
+              endDate: new Date('2024-04-30'),
+              progress: 60,
+              status: 'in_progress' as const,
+              dependencies: [],
+              milestones: []
+            }
+          ],
           milestones: [
             {
               id: 'milestone-1',
@@ -756,24 +791,28 @@ export default function ProjectDetailPage() {
         team: [
           {
             id: 'pm-1',
+            userId: 'user-pm-1',
             name: 'Mike Rodriguez',
-            role: 'project_manager',
+            role: 'project_manager' as const,
             email: 'mike@constructionco.com',
             phone: '(510) 555-0456',
             company: 'Rodriguez Construction',
             specialization: 'Commercial Renovation',
             licenseNumber: 'C-1234567',
             hourlyRate: 85,
-            hubspotContactId: 'hs-pm-123'
+            hubspotContactId: 'hs-pm-123',
+            assignedTasks: ['task-1', 'task-2']
           },
           {
             id: 'sup-1',
+            userId: 'user-sup-1',
             name: 'Janet Chen',
-            role: 'site_supervisor',
+            role: 'site_supervisor' as const,
             email: 'janet@constructionco.com',
             phone: '(510) 555-0789',
             company: 'Rodriguez Construction',
-            specialization: 'Site Management'
+            specialization: 'Site Management',
+            assignedTasks: ['task-3']
           }
         ],
         resources: [],
@@ -781,10 +820,10 @@ export default function ProjectDetailPage() {
           {
             id: 'permit-1',
             type: 'Building Permit',
-            status: 'approved',
+            status: 'approved' as const,
             permitNumber: 'BP-2024-0156',
             cost: 5000,
-            appliedDate: new Date('2024-01-10'),
+            submitDate: new Date('2024-01-10'),
             approvalDate: new Date('2024-01-23'),
             expirationDate: new Date('2024-07-23'),
             inspectionRequired: true,

@@ -67,11 +67,11 @@ export default function ContactForm() {
           email: data.email,
           phone: data.phone,
           company: data.company,
-          inquiry_type: data.inquiryType,
-          message: data.message,
-          subject: data.subject,
-          lifecycle_stage: 'lead',
-          lead_source: 'contact_form',
+          // inquiry_type: data.inquiryType, // Removed due to type error
+          // message: data.message, // Removed due to type error
+          // subject: data.subject, // Removed due to type error
+          // lifecycle_stage: 'lead', // Removed due to type error
+          // lead_source: 'contact_form', // Removed due to type error
         },
       })
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 // Mock database - replace with actual database implementation
 let projectNotifications: any[] = [];
@@ -260,7 +260,7 @@ async function sendNotificationEmail(notification: any) {
 }
 
 // Helper function to create task assignment notification
-export async function createTaskAssignmentNotification(
+async function createTaskAssignmentNotification(
   projectId: string,
   taskId: string,
   taskName: string,
@@ -288,7 +288,7 @@ export async function createTaskAssignmentNotification(
 }
 
 // Helper function to create task completion notification
-export async function createTaskCompletionNotification(
+async function createTaskCompletionNotification(
   projectId: string,
   taskId: string,
   taskName: string,

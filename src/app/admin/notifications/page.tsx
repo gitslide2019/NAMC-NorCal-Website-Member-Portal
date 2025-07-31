@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
+import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -453,7 +453,7 @@ export default function NotificationsManagement() {
               <div className="flex items-center justify-between">
                 <CardTitle>Create Notification Template</CardTitle>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={() => setShowCreateForm(false)}
                 >
@@ -517,7 +517,7 @@ export default function NotificationsManagement() {
                       <Button
                         key={channel}
                         type="button"
-                        variant={formData.channels.includes(channel) ? "default" : "outline"}
+                        variant={formData.channels.includes(channel) ? "primary" : "outline"}
                         size="sm"
                         onClick={() => {
                           const newChannels = formData.channels.includes(channel)

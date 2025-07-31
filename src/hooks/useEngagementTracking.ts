@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 
 /**
@@ -281,6 +281,6 @@ export function withEngagementTracking<P extends object>(
   return function EnhancedComponent(props: P) {
     const engagement = useEngagementTracking(trackingOptions)
 
-    return React.createElement(WrappedComponent, { ...props, engagement } as P)
+    return React.createElement(WrappedComponent, { ...props, engagement } as any)
   }
 }

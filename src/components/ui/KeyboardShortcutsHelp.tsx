@@ -2,7 +2,20 @@ import React from 'react';
 import { X, Keyboard } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from './Button';
-import { KeyboardShortcut, groupShortcutsByCategory, formatShortcut } from '@/hooks/useKeyboardShortcuts';
+import { KEYBOARD_SHORTCUTS, groupShortcutsByCategory, formatShortcut } from '@/hooks/useKeyboardShortcuts';
+
+// Define the type here since it's not exported
+type KeyboardShortcut = {
+  id?: string;
+  key: string;
+  ctrlKey?: boolean;
+  shiftKey?: boolean;
+  altKey?: boolean;
+  metaKey?: boolean;
+  action: () => void;
+  description: string;
+  category?: string;
+};
 
 interface KeyboardShortcutsHelpProps {
   isOpen: boolean;

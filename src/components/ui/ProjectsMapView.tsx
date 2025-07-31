@@ -68,7 +68,7 @@ const ProjectsMapView: React.FC<ProjectsMapViewProps> = ({
       projectType: project.category as 'construction' | 'renovation' | 'inspection' | 'meeting',
       startDate: project.timeline.startDate,
       endDate: project.timeline.endDate,
-      assignedTeam: project.assignedMembers?.map(m => m.id) || [],
+      assignedTeam: project.collaborators?.map(c => c.memberId) || [],
       description: project.description
     }));
   }, [projects]);
@@ -118,10 +118,10 @@ const ProjectsMapView: React.FC<ProjectsMapViewProps> = ({
           <DollarSign className="w-4 h-4" />
           <span>${project.budget.allocated.toLocaleString()}</span>
         </div>
-        {project.assignedMembers && project.assignedMembers.length > 0 && (
+        {project.collaborators && project.collaborators.length > 0 && (
           <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
             <Users className="w-4 h-4" />
-            <span>{project.assignedMembers.length} team members</span>
+            <span>{project.collaborators.length} team members</span>
           </div>
         )}
       </div>
@@ -161,7 +161,7 @@ const ProjectsMapView: React.FC<ProjectsMapViewProps> = ({
           {/* View Toggle */}
           <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <Button
-              variant={viewMode === 'map' ? 'default' : 'ghost'}
+              variant={viewMode === 'map' ? 'primary' : 'outline'}
               size="sm"
               onClick={() => setViewMode('map')}
               className="px-3 py-2"
@@ -170,7 +170,7 @@ const ProjectsMapView: React.FC<ProjectsMapViewProps> = ({
               Map View
             </Button>
             <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              variant={viewMode === 'grid' ? 'primary' : 'outline'}
               size="sm"
               onClick={() => setViewMode('grid')}
               className="px-3 py-2"

@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
       { 
         success: false, 
         message: 'Failed to fetch engagement analytics',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
       },
       { status: 500 }
     )
@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
       { 
         success: false, 
         message: 'Failed to bulk track engagement',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
       },
       { status: 500 }
     )

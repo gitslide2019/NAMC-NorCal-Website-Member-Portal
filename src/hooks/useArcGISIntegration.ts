@@ -39,7 +39,7 @@ export const useArcGISIntegration = (): ArcGISIntegration => {
         
         // Check localStorage for user configuration
         const saved = localStorage.getItem('namc-map-settings');
-        let savedConfig = {};
+        let savedConfig: any = {};
         
         if (saved) {
           savedConfig = JSON.parse(saved);
@@ -75,7 +75,7 @@ export const useArcGISIntegration = (): ArcGISIntegration => {
     
     try {
       // Save to localStorage (excluding environment variables)
-      const configToSave = { ...updatedSettings };
+      const configToSave: any = { ...updatedSettings };
       if (process.env.NEXT_PUBLIC_ARCGIS_API_KEY) {
         delete configToSave.apiKey; // Don't override env var
       }

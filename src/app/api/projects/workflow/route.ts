@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const projectId = searchParams.get('projectId')
     const status = searchParams.get('status')?.split(',') as ProjectStatus[]
     const phase = searchParams.get('phase')?.split(',') as ProjectPhase[]
-    const assignedTo = searchParams.get('assignedTo')
+    const assignedTo = searchParams.get('assignedTo') || undefined
     const priority = searchParams.get('priority')?.split(',')
     const overdue = searchParams.get('overdue') === 'true'
 

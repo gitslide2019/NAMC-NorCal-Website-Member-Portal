@@ -82,7 +82,7 @@ interface MemberEngagement {
 interface EngagementAnalytics {
   totalMembers: number
   activeMembers: number
-  atRiskMembers: number
+  atRiskMembersCount: number
   avgEngagementScore: number
   engagementDistribution: {
     high: number
@@ -268,7 +268,7 @@ export default function MemberEngagementAnalytics() {
   const mockAnalyticsData: EngagementAnalytics = {
     totalMembers: 156,
     activeMembers: 89,
-    atRiskMembers: 23,
+    atRiskMembersCount: 23,
     avgEngagementScore: 67.2,
     engagementDistribution: {
       high: 34,
@@ -504,7 +504,7 @@ export default function MemberEngagementAnalytics() {
             },
             {
               title: 'At Risk Members',
-              value: analyticsData.atRiskMembers,
+              value: analyticsData.atRiskMembersCount,
               change: '-3',
               changeType: 'positive',
               icon: UserX,

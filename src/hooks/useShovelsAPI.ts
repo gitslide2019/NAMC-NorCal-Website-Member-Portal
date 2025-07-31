@@ -111,7 +111,7 @@ export const useShovelsAPI = (): ShovelsAPIHook => {
         
         // Check localStorage for user configuration
         const saved = localStorage.getItem('namc-shovels-config');
-        let savedConfig = {};
+        let savedConfig: any = {};
         
         if (saved) {
           savedConfig = JSON.parse(saved);
@@ -147,7 +147,7 @@ export const useShovelsAPI = (): ShovelsAPIHook => {
     
     try {
       // Save to localStorage (excluding environment variables)
-      const configToSave = { ...updatedConfig };
+      const configToSave: any = { ...updatedConfig };
       if (process.env.NEXT_PUBLIC_SHOVELS_API_KEY) {
         delete configToSave.apiKey; // Don't override env var
       }
