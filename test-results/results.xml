@@ -1,355 +1,60 @@
-<testsuites id="" name="" tests="16" failures="7" skipped="0" errors="0" time="52.109880000000004">
-<testsuite name="e2e/homepage.spec.ts" timestamp="2025-07-31T21:15:26.866Z" hostname="chromium" tests="16" failures="7" skipped="0" time="139.555" errors="0">
-<testcase name="Homepage User Journey › should load homepage with all sections visible" classname="e2e/homepage.spec.ts" time="5.976">
-<failure message="homepage.spec.ts:13:7 should load homepage with all sections visible" type="FAILURE">
-<![CDATA[  [chromium] › e2e/homepage.spec.ts:13:7 › Homepage User Journey › should load homepage with all sections visible › Verify timeline section 
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="13.768707000000001">
+<testsuite name="project-functionality-validation.spec.ts" timestamp="2025-07-31T23:49:44.516Z" hostname="chromium" tests="1" failures="1" skipped="0" time="12.58" errors="0">
+<testcase name="Project Functionality Validation › Validate actual project features and user journey" classname="project-functionality-validation.spec.ts" time="12.58">
+<failure message="project-functionality-validation.spec.ts:11:7 Validate actual project features and user journey" type="FAILURE">
+<![CDATA[  [chromium] › project-functionality-validation.spec.ts:11:7 › Project Functionality Validation › Validate actual project features and user journey 
 
-    Error: expect.toBeVisible: Error: strict mode violation: locator('text=1969') resolved to 5 elements:
-        1) <span class="block text-namc-yellow">Since 1969</span> aka getByText('Since 1969', { exact: true })
-        2) <p class="text-gray-600 text-lg mb-6">The National Association of Minority Contractors …</p> aka getByText('The National Association of')
-        3) <p class="text-gray-600 mb-4">Explore our 55-year journey from 1969 to present …</p> aka getByText('Explore our 55-year journey')
-        4) <span class="font-inter font-bold text-namc-black">1969</span> aka getByText('1969', { exact: true })
-        5) <p class="text-gray-400 mb-4">Building Excellence Since 1969. Supporting minori…</p> aka getByText('Building Excellence Since')
-
-    Call log:
-      - Expect "toBeVisible" with timeout 10000ms
-      - waiting for locator('text=1969')
-
-
-       at pages/HomePage.ts:182
-
-      180 |     const timelineYears = [1969, 1980, 2000, 2025]
-      181 |     for (const year of timelineYears) {
-    > 182 |       await expect(this.page.locator(`text=${year}`)).toBeVisible()
-          |                                                       ^
-      183 |     }
-      184 |     
-      185 |     // Check "Explore Full Timeline" button
-        at HomePage.verifyTimelineSection (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:182:55)
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:27:7
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:26:5
+    Error: page.evaluate: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:contains("Create"), a:contains("Create")' is not a valid selector.
+        at eval (eval at evaluate (:291:30), <anonymous>:20:37)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:291:30), <anonymous>:20:37)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/project-functionality-validation.spec.ts:95:45
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-e9e33-e-with-all-sections-visible-chromium/test-failed-1.png
+    ../test-results/project-functionality-vali-d5c40-t-features-and-user-journey-chromium/test-failed-1.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-e9e33-e-with-all-sections-visible-chromium/video.webm
+    ../test-results/project-functionality-vali-d5c40-t-features-and-user-journey-chromium/video.webm
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-    Error Context: ../test-results/e2e-homepage-Homepage-User-e9e33-e-with-all-sections-visible-chromium/error-context.md
+    Error Context: ../test-results/project-functionality-vali-d5c40-t-features-and-user-journey-chromium/error-context.md
 ]]>
 </failure>
 <system-out>
-<![CDATA[
-[[ATTACHMENT|e2e-homepage-Homepage-User-e9e33-e-with-all-sections-visible-chromium/test-failed-1.png]]
+<![CDATA[🔍 Starting project functionality validation...
+📋 Validating member portal routes...
 
-[[ATTACHMENT|e2e-homepage-Homepage-User-e9e33-e-with-all-sections-visible-chromium/video.webm]]
+🔗 Testing route: /member/dashboard
+  ✅ Member Dashboard accessible
+  📊 Interactive elements: {"buttons":5,"links":29,"forms":1,"inputs":3}
 
-[[ATTACHMENT|e2e-homepage-Homepage-User-e9e33-e-with-all-sections-visible-chromium/error-context.md]]
+🔗 Testing route: /member/projects
+  ✅ Member Projects accessible
+  📊 Interactive elements: {"buttons":5,"links":29,"forms":1,"inputs":3}
+  🏗️ Project elements: {"cards":1,"lists":2,"headings":4}
+
+🔗 Testing route: /member/projects/create
+  ✅ Create Project accessible
+  📊 Interactive elements: {"buttons":5,"links":29,"forms":1,"inputs":3}
+  🏗️ Project elements: {"cards":1,"lists":2,"headings":4}
+
+🔗 Testing route: /member/directory
+  ✅ Member Directory accessible
+  📊 Interactive elements: {"buttons":5,"links":29,"forms":1,"inputs":3}
+
+📋 Testing project listing functionality...
+
+[[ATTACHMENT|project-functionality-vali-d5c40-t-features-and-user-journey-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|project-functionality-vali-d5c40-t-features-and-user-journey-chromium/video.webm]]
+
+[[ATTACHMENT|project-functionality-vali-d5c40-t-features-and-user-journey-chromium/error-context.md]]
 ]]>
 </system-out>
-</testcase>
-<testcase name="Homepage User Journey › should navigate to registration from &quot;Become a Member&quot; CTA" classname="e2e/homepage.spec.ts" time="14.497">
-</testcase>
-<testcase name="Homepage User Journey › should navigate to about page from &quot;Learn More&quot; CTA" classname="e2e/homepage.spec.ts" time="14.453">
-</testcase>
-<testcase name="Homepage User Journey › should scroll through all sections with proper animations" classname="e2e/homepage.spec.ts" time="11.572">
-<system-out>
-<![CDATA[Section animations detected: 3
-Section animations detected: 5
-Section animations detected: 2
-Section animations detected: 5
-Section animations detected: 5
-Section animations detected: 1
-]]>
-</system-out>
-</testcase>
-<testcase name="Homepage User Journey › should handle newsletter signup" classname="e2e/homepage.spec.ts" time="9.137">
-</testcase>
-<testcase name="Homepage User Journey › should display feature cards with proper hover effects" classname="e2e/homepage.spec.ts" time="7.572">
-<failure message="homepage.spec.ts:82:7 should display feature cards with proper hover effects" type="FAILURE">
-<![CDATA[  [chromium] › e2e/homepage.spec.ts:82:7 › Homepage User Journey › should display feature cards with proper hover effects › Verify feature card links are valid 
-
-    Error: expect.toBeVisible: Error: strict mode violation: locator('a[href="/timeline"]') resolved to 3 elements:
-        1) <a href="/timeline" class="text-gray-700 hover:text-namc-yellow font-medium transition-colors duration-200">Timeline</a> aka getByRole('link', { name: 'Timeline', exact: true })
-        2) <a href="/timeline">…</a> aka getByRole('link', { name: 'Explore' }).first()
-        3) <a href="/timeline">…</a> aka getByRole('link', { name: 'Explore Full Timeline' })
-
-    Call log:
-      - Expect "toBeVisible" with timeout 10000ms
-      - waiting for locator('a[href="/timeline"]')
-
-
-      90 |       for (const link of featureLinks) {
-      91 |         const linkElement = page.locator(`a[href="${link}"]`)
-    > 92 |         await expect(linkElement).toBeVisible()
-         |                                   ^
-      93 |         await expect(linkElement).toHaveAttribute('href', link)
-      94 |       }
-      95 |     })
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:92:35
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:87:16
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-0a66b-s-with-proper-hover-effects-chromium/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-0a66b-s-with-proper-hover-effects-chromium/video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ../test-results/e2e-homepage-Homepage-User-0a66b-s-with-proper-hover-effects-chromium/error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|e2e-homepage-Homepage-User-0a66b-s-with-proper-hover-effects-chromium/test-failed-1.png]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-0a66b-s-with-proper-hover-effects-chromium/video.webm]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-0a66b-s-with-proper-hover-effects-chromium/error-context.md]]
-]]>
-</system-out>
-</testcase>
-<testcase name="Homepage User Journey › should be responsive across all breakpoints" classname="e2e/homepage.spec.ts" time="4.804">
-<failure message="homepage.spec.ts:98:7 should be responsive across all breakpoints" type="FAILURE">
-<![CDATA[  [chromium] › e2e/homepage.spec.ts:98:7 › Homepage User Journey › should be responsive across all breakpoints › Test responsive design 
-
-    Error: expect(received).toBeFalsy()
-
-    Received: true
-
-      109 |           document.documentElement.scrollWidth > document.documentElement.clientWidth
-      110 |         )
-    > 111 |         expect(hasHScroll).toBeFalsy()
-          |                            ^
-      112 |       })
-      113 |     })
-      114 |   })
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:111:28
-        at Function.testAllBreakpoints (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts:152:7)
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:100:7
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:99:5
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-1a49a-sive-across-all-breakpoints-chromium/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-1a49a-sive-across-all-breakpoints-chromium/video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ../test-results/e2e-homepage-Homepage-User-1a49a-sive-across-all-breakpoints-chromium/error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[Testing mobile breakpoint
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-1a49a-sive-across-all-breakpoints-chromium/test-failed-1.png]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-1a49a-sive-across-all-breakpoints-chromium/video.webm]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-1a49a-sive-across-all-breakpoints-chromium/error-context.md]]
-]]>
-</system-out>
-</testcase>
-<testcase name="Homepage User Journey › should handle mobile navigation properly" classname="e2e/homepage.spec.ts" time="4.679">
-<failure message="homepage.spec.ts:116:7 should handle mobile navigation properly" type="FAILURE">
-<![CDATA[  [chromium] › e2e/homepage.spec.ts:116:7 › Homepage User Journey › should handle mobile navigation properly › Test mobile navigation 
-
-    Error: locator.isVisible: Error: strict mode violation: locator('button:has(svg)') resolved to 8 elements:
-        1) <button class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">…</button> aka getByRole('button').filter({ hasText: /^$/ })
-        2) <button class="inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-8 py-4 text-lg w-full sm:w-auto">…</button> aka getByRole('button', { name: 'Become a Member' })
-        3) <button class="inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 btn-primary px-6 py-3">…</button> aka getByRole('button', { name: 'Learn More About Us' })
-        4) <button class="inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full">…</button> aka getByRole('button', { name: 'Explore' }).first()
-        5) <button class="inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full">…</button> aka getByRole('button', { name: 'Explore' }).nth(1)
-        6) <button class="inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full">…</button> aka getByRole('button', { name: 'Explore' }).nth(2)
-        7) <button class="inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-4 py-2 text-sm w-full">…</button> aka locator('div').filter({ hasText: /^Borrow professional tools and equipment to help complete your projects\.Explore$/ }).getByRole('button')
-        8) <button class="inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 border-2 border-namc-yellow text-namc-yellow hover:bg-namc-yellow hover:text-namc-black px-6 py-3">…</button> aka getByRole('button', { name: 'Explore Full Timeline' })
-
-    Call log:
-        - checking visibility of locator('button:has(svg)')
-
-
-       at pages/BasePage.ts:36
-
-      34 |    */
-      35 |   async isMobileMenuVisible(): Promise<boolean> {
-    > 36 |     return await this.mobileMenuButton.isVisible()
-         |                                        ^
-      37 |   }
-      38 |
-      39 |   /**
-        at HomePage.isMobileMenuVisible (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/BasePage.ts:36:40)
-        at HomePage.testResponsiveNavigation (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:243:20)
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:118:7
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:117:5
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-ddeb8--mobile-navigation-properly-chromium/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-ddeb8--mobile-navigation-properly-chromium/video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ../test-results/e2e-homepage-Homepage-User-ddeb8--mobile-navigation-properly-chromium/error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|e2e-homepage-Homepage-User-ddeb8--mobile-navigation-properly-chromium/test-failed-1.png]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-ddeb8--mobile-navigation-properly-chromium/video.webm]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-ddeb8--mobile-navigation-properly-chromium/error-context.md]]
-]]>
-</system-out>
-</testcase>
-<testcase name="Homepage User Journey › should meet performance benchmarks" classname="e2e/homepage.spec.ts" time="7.366">
-<failure message="homepage.spec.ts:122:7 should meet performance benchmarks" type="FAILURE">
-<![CDATA[  [chromium] › e2e/homepage.spec.ts:122:7 › Homepage User Journey › should meet performance benchmarks › Check page load performance 
-
-    Error: expect(received).toBeLessThan(expected)
-
-    Expected: < 3000
-    Received:   4297.700000017881
-
-       at pages/HomePage.ts:282
-
-      280 |     
-      281 |     // Performance assertions (adjust thresholds as needed)
-    > 282 |     expect(performanceMetrics.loadTime).toBeLessThan(3000) // 3 seconds
-          |                                         ^
-      283 |     expect(performanceMetrics.domContentLoaded).toBeLessThan(2000) // 2 seconds
-      284 |     
-      285 |     console.log('Performance metrics:', performanceMetrics)
-        at HomePage.verifyPerformanceMetrics (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/pages/HomePage.ts:282:41)
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:124:7
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:123:5
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-4823f-meet-performance-benchmarks-chromium/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-4823f-meet-performance-benchmarks-chromium/video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ../test-results/e2e-homepage-Homepage-User-4823f-meet-performance-benchmarks-chromium/error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|e2e-homepage-Homepage-User-4823f-meet-performance-benchmarks-chromium/test-failed-1.png]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-4823f-meet-performance-benchmarks-chromium/video.webm]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-4823f-meet-performance-benchmarks-chromium/error-context.md]]
-]]>
-</system-out>
-</testcase>
-<testcase name="Homepage User Journey › should be accessible via keyboard navigation" classname="e2e/homepage.spec.ts" time="5.015">
-<failure message="homepage.spec.ts:138:7 should be accessible via keyboard navigation" type="FAILURE">
-<![CDATA[  [chromium] › e2e/homepage.spec.ts:138:7 › Homepage User Journey › should be accessible via keyboard navigation › Test keyboard navigation flow 
-
-    Error: locator.evaluate: Error: strict mode violation: locator('a[href="/auth/register"]') resolved to 2 elements:
-        1) <a href="/auth/register">…</a> aka getByRole('navigation').getByRole('link', { name: 'Become a Member' })
-        2) <a href="/auth/register">…</a> aka getByRole('main').getByRole('link', { name: 'Become a Member' })
-
-    Call log:
-      - waiting for locator('a[href="/auth/register"]')
-
-
-       at utils/test-helpers.ts:368
-
-      366 |       const focusedElement = page.locator(':focus')
-      367 |       const matchesExpected = await focusedElement.locator(expectedSelector).count() > 0 ||
-    > 368 |                               await page.locator(expectedSelector).evaluate((el) => el === document.activeElement)
-          |                                                                    ^
-      369 |       
-      370 |       if (!matchesExpected) {
-      371 |         console.warn(`Keyboard navigation mismatch at step ${i + 1}. Expected: ${expectedSelector}`)
-        at Function.testKeyboardNavigation (/Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/utils/test-helpers.ts:368:68)
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:150:7
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:143:5
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-8ac62-ble-via-keyboard-navigation-chromium/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-8ac62-ble-via-keyboard-navigation-chromium/video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ../test-results/e2e-homepage-Homepage-User-8ac62-ble-via-keyboard-navigation-chromium/error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|e2e-homepage-Homepage-User-8ac62-ble-via-keyboard-navigation-chromium/test-failed-1.png]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-8ac62-ble-via-keyboard-navigation-chromium/video.webm]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-8ac62-ble-via-keyboard-navigation-chromium/error-context.md]]
-]]>
-</system-out>
-<system-err>
-<![CDATA[Keyboard navigation mismatch at step 1. Expected: a[href="/"]
-]]>
-</system-err>
-</testcase>
-<testcase name="Homepage User Journey › should pass accessibility audit" classname="e2e/homepage.spec.ts" time="5.279">
-<failure message="homepage.spec.ts:154:7 should pass accessibility audit" type="FAILURE">
-<![CDATA[  [chromium] › e2e/homepage.spec.ts:154:7 › Homepage User Journey › should pass accessibility audit › Run accessibility check 
-
-    TypeError: Cannot read properties of undefined (reading 'length')
-
-      162 |       
-      163 |       // Allow some violations but log them
-    > 164 |       if (violations.length > 0) {
-          |                      ^
-      165 |         console.warn(`Found ${violations.length} accessibility violations`)
-      166 |       }
-      167 |       
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:164:22
-        at /Users/revalue.io/NAMC NorCal Website & Member Portal/NAMC-NorCal-Website-Member-Portal/tests/e2e/homepage.spec.ts:155:5
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-487a0-ld-pass-accessibility-audit-chromium/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ../test-results/e2e-homepage-Homepage-User-487a0-ld-pass-accessibility-audit-chromium/video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ../test-results/e2e-homepage-Homepage-User-487a0-ld-pass-accessibility-audit-chromium/error-context.md
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|e2e-homepage-Homepage-User-487a0-ld-pass-accessibility-audit-chromium/test-failed-1.png]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-487a0-ld-pass-accessibility-audit-chromium/video.webm]]
-
-[[ATTACHMENT|e2e-homepage-Homepage-User-487a0-ld-pass-accessibility-audit-chromium/error-context.md]]
-]]>
-</system-out>
-<system-err>
-<![CDATA[Accessibility check error: unknown rule `keyboard-navigation` in options.rules
-]]>
-</system-err>
-</testcase>
-<testcase name="Homepage User Journey › should handle slow network conditions gracefully" classname="e2e/homepage.spec.ts" time="18.559">
-</testcase>
-<testcase name="Homepage User Journey › should handle broken images gracefully" classname="e2e/homepage.spec.ts" time="6.262">
-</testcase>
-<testcase name="Homepage User Journey › should handle JavaScript disabled scenario" classname="e2e/homepage.spec.ts" time="9.07">
-</testcase>
-<testcase name="Homepage User Journey › should display proper error states" classname="e2e/homepage.spec.ts" time="4.805">
-</testcase>
-<testcase name="Homepage User Journey › should handle multiple concurrent users" classname="e2e/homepage.spec.ts" time="10.509">
 </testcase>
 </testsuite>
 </testsuites>

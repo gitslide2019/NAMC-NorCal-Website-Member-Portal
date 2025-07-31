@@ -1,0 +1,120 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - navigation:
+    - link "N NAMC NorCal":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - link "Timeline":
+      - /url: /timeline
+    - link "Projects":
+      - /url: /projects
+    - link "Shop":
+      - /url: /shop
+    - link "News":
+      - /url: /news
+    - link "Sponsors":
+      - /url: /sponsors
+    - link "Contact":
+      - /url: /contact
+    - link "Sign In":
+      - /url: /auth/signin
+      - button "Sign In"
+    - link "Become a Member":
+      - /url: /auth/register
+      - button "Become a Member"
+- main:
+  - text: "N"
+  - heading "Welcome Back" [level=2]
+  - paragraph: Sign in to your NAMC NorCal account
+  - text: Email Address
+  - img
+  - textbox "Enter your email"
+  - text: Password
+  - img
+  - textbox "Enter your password"
+  - button:
+    - img
+  - checkbox "Remember me"
+  - text: Remember me
+  - link "Forgot password?":
+    - /url: /auth/forgot-password
+  - button "Sign In"
+  - paragraph:
+    - text: Don't have an account?
+    - link "Become a Member":
+      - /url: /auth/register
+  - heading "Demo Credentials:" [level=4]
+  - paragraph:
+    - strong: "Admin:"
+    - text: admin@namc-norcal.org / admin123
+  - paragraph:
+    - strong: "Member:"
+    - text: member@namc-norcal.org / member123
+- contentinfo:
+  - text: N NAMC NorCal
+  - paragraph: Building Excellence Since 1969. Supporting minority contractors throughout Northern California.
+  - link:
+    - /url: "#"
+    - img
+  - link:
+    - /url: "#"
+    - img
+  - link:
+    - /url: "#"
+    - img
+  - link:
+    - /url: "#"
+    - img
+  - heading "Quick Links" [level=3]
+  - list:
+    - listitem:
+      - link "About Us":
+        - /url: /about
+    - listitem:
+      - link "Membership":
+        - /url: /membership
+    - listitem:
+      - link "Projects":
+        - /url: /projects
+    - listitem:
+      - link "News & Events":
+        - /url: /news
+    - listitem:
+      - link "Contact Us":
+        - /url: /contact
+  - heading "Resources" [level=3]
+  - list:
+    - listitem:
+      - link "Member Portal":
+        - /url: /member/portal
+    - listitem:
+      - link "Learning Center":
+        - /url: /learning
+    - listitem:
+      - link "Tool Library":
+        - /url: /tools
+    - listitem:
+      - link "Resources":
+        - /url: /resources
+    - listitem:
+      - link "FAQ":
+        - /url: /faq
+  - heading "Contact Us" [level=3]
+  - img
+  - paragraph: 123 Construction Way Oakland, CA 94612
+  - img
+  - paragraph: (510) 555-0123
+  - img
+  - paragraph: info@namc-norcal.org
+  - paragraph: © 2025 NAMC Northern California. All rights reserved.
+  - link "Privacy Policy":
+    - /url: /privacy
+  - link "Terms of Service":
+    - /url: /terms
+  - link "Accessibility":
+    - /url: /accessibility
+- alert
+```
