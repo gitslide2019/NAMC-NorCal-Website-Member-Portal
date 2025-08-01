@@ -13,6 +13,7 @@
     "jsx": "preserve",
     "incremental": true,
     "downlevelIteration": true,
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
@@ -21,6 +22,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/components/*": ["./src/components/*"],
+      "@/components/ui/*": ["./src/components/ui/*"],
       "@/lib/*": ["./src/lib/*"],
       "@/hooks/*": ["./src/hooks/*"],
       "@/types/*": ["./src/types/*"],

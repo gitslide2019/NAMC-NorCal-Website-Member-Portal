@@ -18,8 +18,7 @@ import {
   Trash2,
   Settings
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
+import { Card, CardContent, CardHeader, CardTitle, Button } from '@/components/ui'
 
 // Mock data - in production, this would come from your API
 const dashboardData = {

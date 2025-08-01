@@ -18,9 +18,7 @@ import {
   Clock,
   Activity
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
+import { Card, CardContent, CardHeader, CardTitle, Button, Input } from '@/components/ui'
 import MemberProfileSync from '@/components/hubspot/MemberProfileSync'
 import ProjectDealSync from '@/components/hubspot/ProjectDealSync'
 
