@@ -33,22 +33,7 @@ import Input from '@/components/ui/Input'
 import { ConstructionProject } from '@/types/construction-project.types'
 import { EnhancedProject } from '@/types'
 import dynamic from 'next/dynamic'
-
-// Temporarily disable ArcGIS and use simple map placeholder
-const ProjectsMapView = () => (
-  <div className="h-96 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
-    <div className="text-center p-8">
-      <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">Interactive Map</h3>
-      <p className="text-gray-600 mb-4">
-        Map functionality is temporarily disabled while we resolve technical issues.
-      </p>
-      <p className="text-sm text-gray-500">
-        Please use Grid View to see all project details.
-      </p>
-    </div>
-  </div>
-)
+import MapboxProjectsView from '@/components/ui/MapboxProjectsView'
 // Temporarily disable ArcGIS integration
 // import { useArcGISIntegration } from '@/hooks/useArcGISIntegration'
 import toast from 'react-hot-toast'
@@ -620,12 +605,23 @@ export default function ProjectsPage() {
         {/* Map View */}
         {viewMode === 'map' ? (
           <div className="relative">
-            <ProjectsMapView />
-            <div className="mt-4 text-center">
-              <Button variant="outline" onClick={() => setViewMode('grid')}>
-                Switch to Grid View
-              </Button>
-            </div>
+            <MapboxProjectsView 
+              projects={projects.map(project => ({
+                ...project,
+                location: {
+                  ...project.location,
+                  coordinates: {
+                    lat: 37.7749 + (Math.random() - 0.5) * 0.2, // Mock coordinates for demo
+                    lng: -122.4194 + (Math.random() - 0.5) * 0.2
+                  }
+                }
+              }))}
+              onProjectSelect={(project) => {
+                console.log('Selected project:', project)
+                // You can add additional logic here for project selection
+              }}
+              className="mb-4"
+            />
           </div>
         ) : (
           /* Grid View */
