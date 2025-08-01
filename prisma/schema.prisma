@@ -1,473 +1,111 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
+// Simplified Prisma schema for SQLite development
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-// User management
+// Simplified User model
 model User {
   id            String   @id @default(cuid())
   email         String   @unique
   name          String?
   phone         String?
   company       String?
-  memberType    MemberType @default(REGULAR)
+  memberType    String   @default("REGULAR") // REGULAR, PREMIUM, EXECUTIVE, ADMIN
   location      String?
-  serviceAreas  String?
-  specialties   String[]
+  website       String?
   joinDate      DateTime @default(now())
   lastActive    DateTime @default(now())
   isActive      Boolean  @default(true)
   
-  // Profile information
-  profileImage  String?
-  bio          String?
-  website      String?
-  linkedIn     String?
-  
-  // Subscription & billing
-  subscriptionStatus String @default("active")
-  subscriptionTier   String @default("basic")
-  
-  // Timestamps
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  // Relations
-  projects        Project[]
-  eventRegistrations EventRegistration[]
-  messages        Message[]
-  sentMessages    Message[] @relation("SentMessages")
-  notifications   Notification[]
-  engagementEvents EngagementEvent[]
-  projectViews    ProjectView[]
-  projectInterests ProjectInterest[]
-  documentAccess  DocumentAccess[]
-  inquiries       ProjectInquiry[]
-  taskAssignments TaskAssignment[]
-  adminActions    AdminAction[]
-  
-  // HubSpot integration
-  hubspotContactId String?
-  hubspotSyncDate  DateTime?
-  
-  @@map("users")
-}
-
-enum MemberType {
-  REGULAR
-  PREMIUM 
-  EXECUTIVE
-  ADMIN
-}
-
-// Project management
-model Project {
-  id             String   @id @default(cuid())
-  title          String
-  description    String
-  category       String
-  location       String?
-  budget         Float?
-  status         ProjectStatus @default(ACTIVE)
-  priority       Priority @default(MEDIUM)
-  
-  // Dates
-  startDate      DateTime?
-  endDate        DateTime?
-  bidDeadline    DateTime?
-  
-  // Project details
-  scope          String?
-  requirements   String[]
-  tags           String[]
-  attachments    String[] // File URLs
-  
-  // Contact information
-  contactName    String?
-  contactEmail   String?
-  contactPhone   String?
-  
-  // Owner
-  ownerId        String
-  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  
-  // Timestamps
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  
-  // Relations
-  views          ProjectView[]
-  interests      ProjectInterest[]
-  inquiries      ProjectInquiry[]
-  events         Event[]
-  tasks          Task[]
-  milestones     ProjectMilestone[]
-  
-  // HubSpot integration
-  hubspotDealId  String?
-  hubspotSyncDate DateTime?
-  
-  @@map("projects")
-}
-
-enum ProjectStatus {
-  DRAFT
-  ACTIVE
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-  ON_HOLD
-}
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-// Project engagement tracking
-model ProjectView {
-  id          String   @id @default(cuid())
-  userId      String
-  projectId   String
-  duration    Int?     // seconds
-  pagesViewed String[]
-  deviceType  String?
-  ipAddress   String?
-  userAgent   String?
-  referrer    String?
-  
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
-  
-  @@map("project_views")
-}
-
-model ProjectInterest {
-  id            String   @id @default(cuid())
-  userId        String
-  projectId     String
-  interestLevel InterestLevel @default(MEDIUM)
-  interestType  String?
-  notes         String?
-  metadata      Json?
-  
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
   createdAt     DateTime @default(now())
-  
-  @@unique([userId, projectId])
-  @@map("project_interests")
+  updatedAt     DateTime @updatedAt
 }
 
-enum InterestLevel {
-  LOW
-  MEDIUM
-  HIGH
+// Simplified Opportunity model for NAMC project opportunities
+model Opportunity {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  type            String   // Construction, Training, Outreach, Other
+  status          String   // Active, In Progress, Completed, Under Review
+  datePosted      DateTime
+  deadline        DateTime?
+  contactInfo     String?
+  location        String?
+  estimatedValue  Float?
+  
+  // Requirements and tags as JSON strings
+  requirements    String?  // JSON array as string
+  tags            String?  // JSON array as string
+  
+  // AI Analysis fields
+  claudeAnalysis   String?  // JSON as string
+  opportunityScore Float?
+  complexityScore  Float?
+  matchScore       Float?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
-model ProjectInquiry {
-  id           String   @id @default(cuid())
-  userId       String
-  projectId    String
-  inquiryType  InquiryType @default(QUESTION)
-  subject      String
-  message      String
-  priorityLevel Priority @default(MEDIUM)
-  status       InquiryStatus @default(PENDING)
-  
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  @@map("project_inquiries")
-}
-
-enum InquiryType {
-  QUESTION
-  BID_REQUEST
-  PARTNERSHIP
-  INFORMATION
-}
-
-enum InquiryStatus {
-  PENDING
-  RESPONDED
-  CLOSED
-}
-
-// Task management
-model Task {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  status      TaskStatus @default(TODO)
-  priority    Priority @default(MEDIUM)
-  
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
-  dueDate     DateTime?
-  completedAt DateTime?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  assignments TaskAssignment[]
-  
-  @@map("tasks")
-}
-
-enum TaskStatus {
-  TODO
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-model TaskAssignment {
+// Chat conversation model for Construction Assistant
+model ChatConversation {
   id        String   @id @default(cuid())
-  taskId    String
-  userId    String
-  role      String?
+  memberId  String
+  title     String?
+  metadata  String?  // JSON as string for conversation context
   
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  assignedAt DateTime @default(now())
-  
-  @@unique([taskId, userId])
-  @@map("task_assignments")
-}
-
-model ProjectMilestone {
-  id          String   @id @default(cuid())
-  projectId   String
-  title       String
-  description String?
-  dueDate     DateTime
-  status      MilestoneStatus @default(PENDING)
-  
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@map("project_milestones")
-}
-
-enum MilestoneStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  OVERDUE
-}
-
-// Event management
-model Event {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  eventType   EventType @default(MEETING)
-  
-  startDate   DateTime
-  endDate     DateTime
-  location    String?
-  isVirtual   Boolean  @default(false)
-  meetingUrl  String?
-  
-  // Capacity
-  maxAttendees Int?
-  registrationDeadline DateTime?
-  
-  // Related project (optional)
-  projectId   String?
-  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  registrations EventRegistration[]
-  
-  @@map("events")
-}
-
-enum EventType {
-  MEETING
-  WORKSHOP
-  NETWORKING
-  TRAINING
-  CONFERENCE
-  WEBINAR
-}
-
-model EventRegistration {
-  id        String   @id @default(cuid())
-  userId    String
-  eventId   String
-  status    RegistrationStatus @default(REGISTERED)
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  
-  registeredAt DateTime @default(now())
-  
-  @@unique([userId, eventId])
-  @@map("event_registrations")
-}
-
-enum RegistrationStatus {
-  REGISTERED
-  ATTENDED
-  NO_SHOW
-  CANCELLED
-}
-
-// Communication
-model Message {
-  id          String   @id @default(cuid())
-  subject     String
-  content     String
-  
-  senderId    String
-  recipientId String
-  
-  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  recipient   User     @relation(fields: [recipientId], references: [id], onDelete: Cascade)
-  
-  isRead      Boolean  @default(false)
-  readAt      DateTime?
-  
-  createdAt   DateTime @default(now())
-  
-  @@map("messages")
-}
-
-// Notifications
-model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String
-  message   String
-  type      NotificationType @default(INFO)
-  channel   NotificationChannel @default(IN_APP)
-  
-  isRead    Boolean  @default(false)
-  readAt    DateTime?
-  
-  // Optional related entities
-  projectId String?
-  eventId   String?
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
   
   createdAt DateTime @default(now())
-  
-  @@map("notifications")
-}
-
-enum NotificationType {
-  INFO
-  SUCCESS
-  WARNING
-  ERROR
-  REMINDER
-}
-
-enum NotificationChannel {
-  IN_APP
-  EMAIL
-  SMS
-  PUSH
-}
-
-// Document management
-model DocumentAccess {
-  id         String   @id @default(cuid())
-  userId     String
-  documentId String
-  accessType AccessType @default(VIEW)
-  
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt  DateTime @default(now())
-  
-  @@map("document_access")
-}
-
-enum AccessType {
-  VIEW
-  DOWNLOAD
-  EDIT
-}
-
-// Engagement tracking
-model EngagementEvent {
-  id           String   @id @default(cuid())
-  userId       String
-  eventType    String
-  entityType   String?  // project, event, document, etc.
-  entityId     String?
-  
-  metadata     Json?
-  deviceType   String?
-  ipAddress    String?
-  userAgent    String?
-  
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt    DateTime @default(now())
-  
-  @@map("engagement_events")
-}
-
-// Admin features
-model AdminAction {
-  id          String   @id @default(cuid())
-  adminId     String
-  action      String
-  entityType  String?
-  entityId    String?
-  description String?
-  metadata    Json?
-  
-  admin       User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
-  
-  @@map("admin_actions")
-}
-
-// System configuration
-model Setting {
-  id    String @id @default(cuid())
-  key   String @unique
-  value String
-  type  SettingType @default(STRING)
-  
   updatedAt DateTime @updatedAt
-  
-  @@map("settings")
 }
 
-enum SettingType {
-  STRING
-  NUMBER
-  BOOLEAN
-  JSON
+// Chat message model
+model ChatMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           String   // 'user' or 'assistant'
+  content        String
+  metadata       String?  // JSON as string for message metadata
+  
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// Cost estimate model for AI cost estimation feature
+model CostEstimate {
+  id                String   @id @default(cuid())
+  memberId          String
+  projectName       String
+  projectType       String
+  location          String
+  squareFootage     Float?
+  stories           Int?
+  duration          Int?
+  description       String?
+  
+  // Scope and requirements as JSON strings
+  scope             String?  // JSON array as string
+  requirements      String?  // JSON array as string
+  
+  // Cost breakdown
+  totalEstimate     Float
+  costBreakdown     String?  // JSON as string
+  confidenceScore   Float?
+  riskLevel         String?
+  
+  // AI insights
+  aiInsights        String?  // JSON as string
+  recommendations   String?  // JSON as string
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }

@@ -25,7 +25,6 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   cancelText = 'Cancel',
   isLoading = false
 }) => {
-  if (!isOpen) return null;
 
   const getIcon = () => {
     switch (type) {
@@ -87,6 +86,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, isLoading, onClose]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
