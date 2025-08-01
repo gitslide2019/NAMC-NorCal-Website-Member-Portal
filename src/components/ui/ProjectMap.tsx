@@ -83,6 +83,7 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
   ]);
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapLoading, setMapLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   // Filter projects based on search query
   const filteredProjects = projects.filter(project =>
@@ -90,9 +91,25 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
     project.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Component mount tracking
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+      // Clean up any existing map instance
+      if (map?.view) {
+        try {
+          map.view.destroy();
+        } catch (error) {
+          console.warn('Error cleaning up map view:', error);
+        }
+      }
+    };
+  }, []);
+
   // Initialize ArcGIS Map
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !isMounted) return;
     
     // Require valid API key
     if (!apiKey) {
@@ -211,11 +228,22 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
     };
 
     initializeMap();
-  }, [apiKey, center, zoom, showControls]);
+    
+    // Cleanup function
+    return () => {
+      if (map?.view && isMounted) {
+        try {
+          map.view.destroy();
+        } catch (error) {
+          console.warn('Error cleaning up map view during reinitialization:', error);
+        }
+      }
+    };
+  }, [apiKey, center, zoom, showControls, isMounted]);
 
   // Update markers when projects change
   useEffect(() => {
-    if (!map?.view) return;
+    if (!map?.view || !isMounted) return;
 
     // Clear existing graphics
     map.view.graphics.removeAll();
@@ -273,7 +301,7 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
         console.error('Error adding project marker:', error);
       }
     });
-  }, [filteredProjects, map]);
+  }, [filteredProjects, map, isMounted]);
 
   const getProjectColor = (status: string) => {
     switch (status) {
@@ -296,14 +324,18 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
   };
 
   const goToProject = (project: ProjectLocation) => {
-    if (map?.view) {
-      map.view.goTo({
-        center: [project.coordinates.longitude, project.coordinates.latitude],
-        zoom: 15
-      });
-      setSelectedProject(project);
-      if (onProjectSelect) {
-        onProjectSelect(project);
+    if (map?.view && isMounted) {
+      try {
+        map.view.goTo({
+          center: [project.coordinates.longitude, project.coordinates.latitude],
+          zoom: 15
+        });
+        setSelectedProject(project);
+        if (onProjectSelect) {
+          onProjectSelect(project);
+        }
+      } catch (error) {
+        console.warn('Error navigating to project:', error);
       }
     }
   };
@@ -318,8 +350,16 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
         style={{ height: isFullscreen ? '100vh' : height }}
       >
         {/* Map */}
-        <div ref={mapRef} className="w-full h-full">
-          {mapLoading && (
+        {!isMounted ? (
+          <div className="flex items-center justify-center h-full bg-gray-100">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p className="text-sm text-gray-600">Initializing map...</p>
+            </div>
+          </div>
+        ) : (
+          <div ref={mapRef} className="w-full h-full">
+            {mapLoading && (
             <div className="flex items-center justify-center h-full bg-gray-100">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
@@ -336,7 +376,8 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
               </div>
             </div>
           )}
-        </div>
+          </div>
+        )}
 
         {/* Map Controls */}
         {showControls && (
