@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-08-01T08:39:52.002Z",
+  "testResults": {
+    "mapUnavailableMessages": 1,
+    "mapContainers": 3,
+    "projectMarkers": 0,
+    "projectCards": 0,
+    "toggleFunctional": true
+  },
+  "arcgisRequests": [],
+  "consoleMessages": [
+    {
+      "type": "error",
+      "text": "Auto HubSpot sync failed: Error: Member service sync failed\n    at s (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/app/member/dashboard/page-d41ba2a182d7832c.js:1:18897)",
+      "timestamp": "2025-08-01T08:39:32.582Z"
+    }
+  ],
+  "networkSummary": {
+    "totalRequests": 106,
+    "arcgisRequestCount": 0
+  }
+}
