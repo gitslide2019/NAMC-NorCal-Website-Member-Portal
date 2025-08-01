@@ -1,5 +1,4 @@
 'use client'
-// Force deployment trigger
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -582,18 +581,9 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        {/* Debug Info */}
-        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h4 className="font-semibold text-yellow-800">ArcGIS Debug Info:</h4>
-          <p className="text-sm text-yellow-700">
-            API Key configured: {arcgis.isConfigured ? 'Yes' : 'No'}<br/>
-            API Key (first 10 chars): {arcgis.settings.apiKey ? arcgis.settings.apiKey.substring(0, 10) + '...' : 'Not found'}<br/>
-            Is Loaded: {arcgis.isLoaded ? 'Yes' : 'No'}
-          </p>
-        </div>
 
-        {/* Map View - Always show for debugging */}
-        {viewMode === 'map' ? (
+        {/* Map View */}
+        {viewMode === 'map' && arcgis.isConfigured ? (
           <ProjectsMapView
             projects={enhancedProjects.filter(project => {
               const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -621,8 +611,19 @@ export default function ProjectsPage() {
             onCategoryChange={setCategoryFilter}
             showFilters={showFilters}
             onToggleFilters={() => setShowFilters(!showFilters)}
-            apiKey={arcgis.settings.apiKey || 'demo-key'}
+            apiKey={arcgis.settings.apiKey}
           />
+        ) : viewMode === 'map' && !arcgis.isConfigured ? (
+          <Card className="p-8 text-center">
+            <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Map View Unavailable</h3>
+            <p className="text-gray-600 mb-4">
+              ArcGIS integration is not configured. Please contact your administrator to enable map features.
+            </p>
+            <Button variant="outline" onClick={() => setViewMode('grid')}>
+              Switch to Grid View
+            </Button>
+          </Card>
         ) : (
           /* Grid View */
           filteredProjects.length > 0 ? (

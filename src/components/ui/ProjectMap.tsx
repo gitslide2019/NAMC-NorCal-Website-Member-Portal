@@ -84,9 +84,6 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapLoading, setMapLoading] = useState(true);
 
-  // Debug logging
-  console.log('ProjectMap props:', { apiKey: apiKey?.substring(0, 10) + '...', projectsCount: projects.length });
-
   // Filter projects based on search query
   const filteredProjects = projects.filter(project =>
     project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,9 +94,9 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
   useEffect(() => {
     if (!mapRef.current) return;
     
-    // If no API key, show a simple fallback
-    if (!apiKey || apiKey === 'demo-key') {
-      setMapError('ArcGIS API key not configured. Using demo view.');
+    // Require valid API key
+    if (!apiKey) {
+      setMapError('ArcGIS API key not configured.');
       setMapLoading(false);
       return;
     }
@@ -108,7 +105,6 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
       try {
         setMapLoading(true);
         setMapError(null);
-        console.log('Initializing ArcGIS map with API key:', apiKey?.substring(0, 10) + '...');
         
         // Load ArcGIS API with type assertions
         const [Map, MapView, Graphic, Point, SimpleMarkerSymbol, PopupTemplate] = await Promise.all([
@@ -119,8 +115,6 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
           import('@arcgis/core/symbols/SimpleMarkerSymbol').then(m => m.default),
           import('@arcgis/core/PopupTemplate').then(m => m.default)
         ]) as [any, any, any, any, any, any];
-
-        console.log('ArcGIS modules loaded successfully');
 
         // Configure API key
         const { default: esriConfig } = await import('@arcgis/core/config');
@@ -206,7 +200,6 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
 
         setMap({ instance: mapInstance, view });
         setMapLoading(false);
-        console.log('Map initialized successfully');
 
       } catch (error) {
         console.error('Failed to initialize ArcGIS map:', error);
