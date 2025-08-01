@@ -222,7 +222,7 @@ export default function ProjectsPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [viewMode, setViewMode] = useState<'map' | 'grid'>('map')
-  const [selectedProject, setSelectedProject] = useState<ProjectSummary | null>(null)
+  const [selectedProject, setSelectedProject] = useState<EnhancedProject | null>(null)
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
@@ -395,7 +395,7 @@ export default function ProjectsPage() {
     router.push(`/member/projects/${projectId}`)
   }
 
-  const handleProjectSelect = (project: any) => {
+  const handleProjectSelect = (project: EnhancedProject) => {
     setSelectedProject(project)
   }
 
@@ -623,17 +623,6 @@ export default function ProjectsPage() {
             onToggleFilters={() => setShowFilters(!showFilters)}
             apiKey={arcgis.settings.apiKey || 'demo-key'}
           />
-        ) : viewMode === 'map' && !arcgis.isConfigured ? (
-          <Card className="p-8 text-center">
-            <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Map View Unavailable</h3>
-            <p className="text-gray-600 mb-4">
-              ArcGIS integration is not configured. Please contact your administrator to enable map features.
-            </p>
-            <Button variant="outline" onClick={() => setViewMode('grid')}>
-              Switch to Grid View
-            </Button>
-          </Card>
         ) : (
           /* Grid View */
           filteredProjects.length > 0 ? (

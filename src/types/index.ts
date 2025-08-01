@@ -26,7 +26,7 @@ export interface Project {
     address?: string
   }
   deadline: Date
-  category: 'residential' | 'commercial' | 'industrial'
+  category: 'residential' | 'commercial' | 'industrial' | 'infrastructure'
   permits: Permit[]
   bids: Bid[]
   status: 'open' | 'in_progress' | 'completed' | 'cancelled'
@@ -222,7 +222,7 @@ export interface DetailedProject {
   title: string
   description: string
   client: string
-  category: 'residential' | 'commercial' | 'industrial'
+  category: 'residential' | 'commercial' | 'industrial' | 'infrastructure'
   budget: ProjectBudget
   timeline: ProjectTimeline
   status: 'open' | 'in_progress' | 'completed' | 'on_hold'
