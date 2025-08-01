@@ -224,9 +224,24 @@ export default function ProjectsPage() {
   const [viewMode, setViewMode] = useState<'map' | 'grid'>('map')
   const [selectedProject, setSelectedProject] = useState<EnhancedProject | null>(null)
   const [showFilters, setShowFilters] = useState(false)
+  const [mapError, setMapError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchProjects()
+  }, [])
+
+  // Error boundary for map component
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      if (event.error && event.error.message && 
+          (event.error.message.includes('ArcGIS') || event.error.message.includes('@arcgis'))) {
+        setMapError(`Map loading failed: ${event.error.message}`)
+        console.error('ArcGIS Map Error:', event.error)
+      }
+    }
+
+    window.addEventListener('error', handleError)
+    return () => window.removeEventListener('error', handleError)
   }, [])
 
   const fetchProjects = async () => {
@@ -584,36 +599,54 @@ export default function ProjectsPage() {
 
 
         {/* Map View */}
-        {viewMode === 'map' && arcgis.isConfigured ? (
-          <ProjectsMapView
-            projects={enhancedProjects.filter(project => {
-              const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                   project.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                   project.location.city.toLowerCase().includes(searchTerm.toLowerCase())
-              
-              const matchesStatus = statusFilter === 'all' || project.status === statusFilter
-              const matchesCategory = categoryFilter === 'all' || project.category === categoryFilter
-              
-              return matchesSearch && matchesStatus && matchesCategory
-            })}
-            selectedProject={selectedProject}
-            onProjectSelect={(project) => {
-              setSelectedProject(project)
-              // Optionally navigate to project detail
-              if (project.id) {
-                handleViewProject(project.id)
-              }
-            }}
-            searchQuery={searchTerm}
-            onSearchChange={setSearchTerm}
-            selectedStatus={statusFilter}
-            onStatusChange={setStatusFilter}
-            selectedCategory={categoryFilter}
-            onCategoryChange={setCategoryFilter}
-            showFilters={showFilters}
-            onToggleFilters={() => setShowFilters(!showFilters)}
-            apiKey={arcgis.settings.apiKey}
-          />
+        {viewMode === 'map' && arcgis.isConfigured && !mapError ? (
+          <div className="relative">
+            <ProjectsMapView
+              projects={enhancedProjects.filter(project => {
+                const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                     project.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                     project.location.city.toLowerCase().includes(searchTerm.toLowerCase())
+                
+                const matchesStatus = statusFilter === 'all' || project.status === statusFilter
+                const matchesCategory = categoryFilter === 'all' || project.category === categoryFilter
+                
+                return matchesSearch && matchesStatus && matchesCategory
+              })}
+              selectedProject={selectedProject}
+              onProjectSelect={(project) => {
+                setSelectedProject(project)
+                // Optionally navigate to project detail
+                if (project.id) {
+                  handleViewProject(project.id)
+                }
+              }}
+              searchQuery={searchTerm}
+              onSearchChange={setSearchTerm}
+              selectedStatus={statusFilter}
+              onStatusChange={setStatusFilter}
+              selectedCategory={categoryFilter}
+              onCategoryChange={setCategoryFilter}
+              showFilters={showFilters}
+              onToggleFilters={() => setShowFilters(!showFilters)}
+              apiKey={arcgis.settings.apiKey}
+            />
+          </div>
+        ) : viewMode === 'map' && mapError ? (
+          <Card className="p-8 text-center">
+            <MapPin className="w-16 h-16 text-red-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Map Loading Error</h3>
+            <p className="text-red-600 mb-4">
+              {mapError}
+            </p>
+            <div className="space-x-2">
+              <Button variant="outline" onClick={() => setViewMode('grid')}>
+                Switch to Grid View
+              </Button>
+              <Button onClick={() => setMapError(null)}>
+                Try Again
+              </Button>
+            </div>
+          </Card>
         ) : viewMode === 'map' && !arcgis.isConfigured ? (
           <Card className="p-8 text-center">
             <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />

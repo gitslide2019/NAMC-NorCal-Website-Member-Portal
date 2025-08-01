@@ -106,18 +106,20 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
         setMapLoading(true);
         setMapError(null);
         
-        // Load ArcGIS API with type assertions
+        // Load ArcGIS API with proper error handling
         const [Map, MapView, Graphic, Point, SimpleMarkerSymbol, PopupTemplate] = await Promise.all([
-          import('@arcgis/core/Map').then(m => m.default),
-          import('@arcgis/core/views/MapView').then(m => m.default),
-          import('@arcgis/core/Graphic').then(m => m.default),
-          import('@arcgis/core/geometry/Point').then(m => m.default),
-          import('@arcgis/core/symbols/SimpleMarkerSymbol').then(m => m.default),
-          import('@arcgis/core/PopupTemplate').then(m => m.default)
+          import('@arcgis/core/Map').then(m => m.default).catch(e => { throw new Error('Failed to load ArcGIS Map module: ' + e.message) }),
+          import('@arcgis/core/views/MapView').then(m => m.default).catch(e => { throw new Error('Failed to load ArcGIS MapView module: ' + e.message) }),
+          import('@arcgis/core/Graphic').then(m => m.default).catch(e => { throw new Error('Failed to load ArcGIS Graphic module: ' + e.message) }),
+          import('@arcgis/core/geometry/Point').then(m => m.default).catch(e => { throw new Error('Failed to load ArcGIS Point module: ' + e.message) }),
+          import('@arcgis/core/symbols/SimpleMarkerSymbol').then(m => m.default).catch(e => { throw new Error('Failed to load ArcGIS SimpleMarkerSymbol module: ' + e.message) }),
+          import('@arcgis/core/PopupTemplate').then(m => m.default).catch(e => { throw new Error('Failed to load ArcGIS PopupTemplate module: ' + e.message) })
         ]) as [any, any, any, any, any, any];
 
         // Configure API key
-        const { default: esriConfig } = await import('@arcgis/core/config');
+        const { default: esriConfig } = await import('@arcgis/core/config').catch(e => { 
+          throw new Error('Failed to load ArcGIS config module: ' + e.message) 
+        });
         (esriConfig as any).apiKey = apiKey;
 
         // Create map
