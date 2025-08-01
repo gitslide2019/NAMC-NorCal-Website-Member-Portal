@@ -7,14 +7,14 @@ const users = [
   {
     id: '1',
     email: 'admin@namc-norcal.org',
-    password: '$2a$12$IovcTF3qgqDxQQj/9HTP8upuVMnlspwZJXDfQW41wuCXFxTReLIHW', // 'admin123'
+    password: '$2a$12$KG8wAhDCc269phR19VbUg.lAXnjsclN7FacDuhinJ4RvFYNI9FqD6', // 'admin123'
     name: 'Admin User',
     role: 'admin',
   },
   {
     id: '2',
     email: 'member@namc-norcal.org',
-    password: '$2a$12$ZX1N1qGpcSGSnPInLERrN.V7QL0GDsh1OwZH1.ixsRK6ZdSfyXAHK', // 'member123'
+    password: '$2a$12$799sPEhlCFgG/VHczPCuaeWOOrAXDUBtRs3ibl2WkJedR7rHFh5ra', // 'member123'
     name: 'John Doe',
     role: 'member',
   },

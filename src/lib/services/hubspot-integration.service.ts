@@ -101,7 +101,7 @@ export class HubSpotIntegrationService {
 
   constructor() {
     this.prisma = new PrismaClient()
-    this.hubspotApiKey = process.env.HUBSPOT_API_KEY || ''
+    this.hubspotApiKey = process.env.HUBSPOT_ACCESS_TOKEN || process.env.HUBSPOT_API_KEY || ''
     
     if (!this.hubspotApiKey) {
       console.warn('HubSpot API key not found. Integration features will be disabled.')
