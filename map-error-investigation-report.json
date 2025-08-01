@@ -1,0 +1,211 @@
+{
+  "timestamp": "2025-08-01T09:25:15.074Z",
+  "url": "https://namc-nor-cal-website-member-portal.vercel.app/member/projects",
+  "investigation": {
+    "totalConsoleMessages": 19,
+    "totalErrors": 0,
+    "totalNetworkErrors": 0,
+    "hydrationErrors": 0
+  },
+  "consoleMessages": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/news?_rsc=1wtp7",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:54.663Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/shop?_rsc=1wtp7",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:54.679Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/sponsors?_rsc=1wtp7",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:54.767Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/favicon.ico",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:54.946Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/auth/forgot-password?_rsc=1ghh7",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:56.195Z"
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/auth/signin",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:56.262Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/member/learning?_rsc=n4ug5",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.614Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/member/tools?_rsc=n4ug5",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.641Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/member/events?_rsc=n4ug5",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.641Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/member/messages?_rsc=n4ug5",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.644Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/member/settings?_rsc=n4ug5",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.644Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/member/activity?_rsc=n4ug5",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.651Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/api/member/hubspot-activity",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.676Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/api/member/hubspot-sync",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.762Z"
+    },
+    {
+      "type": "error",
+      "text": "Auto HubSpot sync failed: Error: Member service sync failed\n    at s (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/app/member/dashboard/page-d41ba2a182d7832c.js:1:18897)",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/52117-0387d9fd16a08f7a.js",
+        "lineNumber": 0,
+        "columnNumber": 4064
+      },
+      "timestamp": "2025-08-01T09:24:57.762Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/api/member/hubspot-activity",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.810Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 ()",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/api/member/hubspot-activity",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": "2025-08-01T09:24:57.899Z"
+    },
+    {
+      "type": "info",
+      "text": "Using Calcite Components 3.2.1 [Date: 2025-05-29, Revision: 618973fec]",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/56320.b48263e2eabe5f08.js",
+        "lineNumber": 0,
+        "columnNumber": 44041
+      },
+      "timestamp": "2025-08-01T09:24:58.203Z"
+    },
+    {
+      "type": "error",
+      "text": "NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.\n    at a2 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:76641)\n    at a6 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:78225)\n    at a5 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:81027)\n    at a6 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:78375)\n    at a5 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:81027)\n    at a6 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:78375)\n    at a5 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:81027)\n    at a6 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:78375)\n    at a5 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:78500)\n    at a6 (https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/fd9d1056-4136b3e707537148.js:1:78375)",
+      "location": {
+        "url": "https://namc-nor-cal-website-member-portal.vercel.app/_next/static/chunks/52117-0387d9fd16a08f7a.js",
+        "lineNumber": 0,
+        "columnNumber": 4064
+      },
+      "timestamp": "2025-08-01T09:24:58.323Z"
+    }
+  ],
+  "pageErrors": [],
+  "networkErrors": [],
+  "arcgisScripts": [],
+  "summary": {
+    "mapContainerFound": false,
+    "arcgisScriptsLoaded": false,
+    "hasHydrationIssues": false,
+    "hasMapErrors": true
+  }
+}

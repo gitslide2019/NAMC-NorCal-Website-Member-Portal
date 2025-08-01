@@ -109,6 +109,8 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
 
   // Initialize ArcGIS Map
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
     if (!mapRef.current || !isMounted) return;
     
     // Require valid API key

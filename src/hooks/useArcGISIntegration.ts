@@ -34,6 +34,9 @@ export const useArcGISIntegration = (): ArcGISIntegration => {
   useEffect(() => {
     const loadSettings = () => {
       try {
+        // Only run on client side
+        if (typeof window === 'undefined') return;
+        
         // Check for environment variable first
         const envApiKey = process.env.NEXT_PUBLIC_ARCGIS_API_KEY;
         

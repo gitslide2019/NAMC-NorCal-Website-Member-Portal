@@ -32,7 +32,20 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import { ConstructionProject } from '@/types/construction-project.types'
 import { EnhancedProject } from '@/types'
-import ProjectsMapView from '@/components/ui/ProjectsMapView'
+import dynamic from 'next/dynamic'
+
+// Dynamically import ProjectsMapView to avoid SSR issues with ArcGIS
+const ProjectsMapView = dynamic(() => import('@/components/ui/ProjectsMapView'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+        <p className="text-sm text-gray-600">Loading map component...</p>
+      </div>
+    </div>
+  )
+})
 import { useArcGISIntegration } from '@/hooks/useArcGISIntegration'
 import toast from 'react-hot-toast'
 
