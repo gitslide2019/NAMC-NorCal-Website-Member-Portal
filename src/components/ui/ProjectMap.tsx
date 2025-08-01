@@ -32,6 +32,58 @@ interface ProjectLocation {
   description?: string;
 }
 
+// ArcGIS type declarations for proper TypeScript support
+declare module '@arcgis/core/Map' {
+  export default class Map {
+    constructor(properties?: any);
+  }
+}
+
+declare module '@arcgis/core/views/MapView' {
+  export default class MapView {
+    constructor(properties?: any);
+    graphics: any;
+    on(type: string, handler: (event: any) => void): void;
+    hitTest(event: any): Promise<any>;
+    goTo(target: any): Promise<any>;
+  }
+}
+
+declare module '@arcgis/core/Graphic' {
+  export default class Graphic {
+    constructor(properties?: any);
+    geometry?: any;
+    symbol?: any;
+    popupTemplate?: any;
+    attributes?: any;
+  }
+}
+
+declare module '@arcgis/core/geometry/Point' {
+  export default class Point {
+    constructor(properties?: any);
+  }
+}
+
+declare module '@arcgis/core/symbols/SimpleMarkerSymbol' {
+  export default class SimpleMarkerSymbol {
+    constructor(properties?: any);
+  }
+}
+
+declare module '@arcgis/core/PopupTemplate' {
+  export default class PopupTemplate {
+    constructor(properties?: any);
+  }
+}
+
+declare module '@arcgis/core/config' {
+  const esriConfig: {
+    apiKey: string;
+  };
+  export { esriConfig as default };
+}
+
 interface MapLayer {
   id: string;
   name: string;
