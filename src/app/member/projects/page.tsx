@@ -30,6 +30,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import { ConstructionProject } from '@/types/construction-project.types'
+import { EnhancedProject } from '@/types'
 import ProjectsMapView from '@/components/ui/ProjectsMapView'
 import { useArcGISIntegration } from '@/hooks/useArcGISIntegration'
 import toast from 'react-hot-toast'
@@ -398,30 +399,70 @@ export default function ProjectsPage() {
   }
 
   // Transform projects to enhanced format for map view
-  const enhancedProjects = projects.map(project => ({
-    ...project,
+  const enhancedProjects: EnhancedProject[] = projects.map(project => ({
+    id: project.id,
+    title: project.title,
     description: `${project.category} project in ${project.location.city}`,
-    collaborators: project.team.count > 0 ? [{
-      memberId: '1',
-      memberName: project.team.projectManager,
-      role: 'Project Manager'
+    client: project.client.companyName,
+    category: project.category,
+    budget: {
+      allocated: project.budget.estimated,
+      spent: project.budget.actual,
+      remaining: project.budget.estimated - project.budget.actual,
+      percentage: project.budget.estimated > 0 ? (project.budget.actual / project.budget.estimated) * 100 : 0
+    },
+    timeline: {
+      startDate: project.timeline.startDate.toISOString(),
+      endDate: project.timeline.endDate.toISOString(),
+      currentPhase: project.status,
+      progress: project.timeline.progress
+    },
+    status: project.status as 'open' | 'in_progress' | 'completed' | 'on_hold',
+    priority: project.priority as 'low' | 'medium' | 'high' | 'critical',
+    team: project.team.projectManager ? [{
+      name: project.team.projectManager,
+      role: 'Project Manager',
+      company: 'NAMC'
     }] : [],
+    milestones: [],
     location: {
-      ...project.location,
       address: `${project.location.city}, ${project.location.state}`,
+      city: project.location.city,
+      state: project.location.state,
       coordinates: {
         lat: 37.7749 + (Math.random() - 0.5) * 0.2, // Mock coordinates for demo
         lng: -122.4194 + (Math.random() - 0.5) * 0.2
       }
     },
-    budget: {
-      allocated: project.budget.estimated,
-      spent: project.budget.actual,
-      variance: project.budget.estimated - project.budget.actual
+    documents: [],
+    createdAt: project.createdAt.toISOString(),
+    updatedAt: project.updatedAt.toISOString(),
+    collaborators: project.team.count > 0 ? [{
+      id: '1',
+      projectId: project.id,
+      memberId: '1',
+      memberName: project.team.projectManager || 'Not assigned',
+      memberEmail: 'pm@example.com',
+      role: 'manager' as const,
+      permissions: [],
+      addedAt: project.createdAt,
+      addedBy: 'system'
+    }] : [],
+    workflows: [],
+    activities: [],
+    notifications: [],
+    taskCount: {
+      total: 0,
+      completed: 0,
+      inProgress: 0,
+      overdue: 0
     },
-    timeline: {
-      ...project.timeline,
-      duration: Math.ceil((project.timeline.endDate.getTime() - project.timeline.startDate.getTime()) / (1000 * 60 * 60 * 24))
+    settings: {
+      allowMemberSelfAssign: true,
+      requireApprovalForTasks: false,
+      enableTimeTracking: false,
+      enableAutomaticNotifications: true,
+      defaultTaskDuration: 8
     }
   }))
 
@@ -545,7 +586,7 @@ export default function ProjectsPage() {
           <ProjectsMapView
             projects={enhancedProjects.filter(project => {
               const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                   project.client.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                   project.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                    project.location.city.toLowerCase().includes(searchTerm.toLowerCase())
               
               const matchesStatus = statusFilter === 'all' || project.status === statusFilter
