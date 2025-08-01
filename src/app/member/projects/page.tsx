@@ -34,19 +34,23 @@ import { ConstructionProject } from '@/types/construction-project.types'
 import { EnhancedProject } from '@/types'
 import dynamic from 'next/dynamic'
 
-// Dynamically import ProjectsMapView to avoid SSR issues with ArcGIS
-const ProjectsMapView = dynamic(() => import('@/components/ui/ProjectsMapView'), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-        <p className="text-sm text-gray-600">Loading map component...</p>
-      </div>
+// Temporarily disable ArcGIS and use simple map placeholder
+const ProjectsMapView = () => (
+  <div className="h-96 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+    <div className="text-center p-8">
+      <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">Interactive Map</h3>
+      <p className="text-gray-600 mb-4">
+        Map functionality is temporarily disabled while we resolve technical issues.
+      </p>
+      <p className="text-sm text-gray-500">
+        Please use Grid View to see all project details.
+      </p>
     </div>
-  )
-})
-import { useArcGISIntegration } from '@/hooks/useArcGISIntegration'
+  </div>
+)
+// Temporarily disable ArcGIS integration
+// import { useArcGISIntegration } from '@/hooks/useArcGISIntegration'
 import toast from 'react-hot-toast'
 
 interface ProjectSummary {
@@ -228,7 +232,9 @@ function ProjectCard({ project, onView }: { project: ProjectSummary; onView: (id
 
 export default function ProjectsPage() {
   const router = useRouter()
-  const arcgis = useArcGISIntegration()
+  // Temporarily disable ArcGIS integration
+  // const arcgis = useArcGISIntegration()
+  const arcgis = { isConfigured: false, isLoaded: true, settings: { apiKey: '' } }
   const [projects, setProjects] = useState<ProjectSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -612,65 +618,15 @@ export default function ProjectsPage() {
 
 
         {/* Map View */}
-        {viewMode === 'map' && arcgis.isConfigured && !mapError ? (
+        {viewMode === 'map' ? (
           <div className="relative">
-            <ProjectsMapView
-              projects={enhancedProjects.filter(project => {
-                const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                     project.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                     project.location.city.toLowerCase().includes(searchTerm.toLowerCase())
-                
-                const matchesStatus = statusFilter === 'all' || project.status === statusFilter
-                const matchesCategory = categoryFilter === 'all' || project.category === categoryFilter
-                
-                return matchesSearch && matchesStatus && matchesCategory
-              })}
-              selectedProject={selectedProject}
-              onProjectSelect={(project) => {
-                setSelectedProject(project)
-                // Optionally navigate to project detail
-                if (project.id) {
-                  handleViewProject(project.id)
-                }
-              }}
-              searchQuery={searchTerm}
-              onSearchChange={setSearchTerm}
-              selectedStatus={statusFilter}
-              onStatusChange={setStatusFilter}
-              selectedCategory={categoryFilter}
-              onCategoryChange={setCategoryFilter}
-              showFilters={showFilters}
-              onToggleFilters={() => setShowFilters(!showFilters)}
-              apiKey={arcgis.settings.apiKey}
-            />
-          </div>
-        ) : viewMode === 'map' && mapError ? (
-          <Card className="p-8 text-center">
-            <MapPin className="w-16 h-16 text-red-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Map Loading Error</h3>
-            <p className="text-red-600 mb-4">
-              {mapError}
-            </p>
-            <div className="space-x-2">
+            <ProjectsMapView />
+            <div className="mt-4 text-center">
               <Button variant="outline" onClick={() => setViewMode('grid')}>
                 Switch to Grid View
               </Button>
-              <Button onClick={() => setMapError(null)}>
-                Try Again
-              </Button>
             </div>
-          </Card>
-        ) : viewMode === 'map' && !arcgis.isConfigured ? (
-          <Card className="p-8 text-center">
-            <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Map View Unavailable</h3>
-            <p className="text-gray-600 mb-4">
-              ArcGIS integration is not configured. Please contact your administrator to enable map features.
-            </p>
-            <Button variant="outline" onClick={() => setViewMode('grid')}>
-              Switch to Grid View
-            </Button>
-          </Card>
+          </div>
         ) : (
           /* Grid View */
           filteredProjects.length > 0 ? (
