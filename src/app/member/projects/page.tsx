@@ -582,8 +582,18 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        {/* Map View */}
-        {viewMode === 'map' && arcgis.isConfigured ? (
+        {/* Debug Info */}
+        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h4 className="font-semibold text-yellow-800">ArcGIS Debug Info:</h4>
+          <p className="text-sm text-yellow-700">
+            API Key configured: {arcgis.isConfigured ? 'Yes' : 'No'}<br/>
+            API Key (first 10 chars): {arcgis.settings.apiKey ? arcgis.settings.apiKey.substring(0, 10) + '...' : 'Not found'}<br/>
+            Is Loaded: {arcgis.isLoaded ? 'Yes' : 'No'}
+          </p>
+        </div>
+
+        {/* Map View - Always show for debugging */}
+        {viewMode === 'map' ? (
           <ProjectsMapView
             projects={enhancedProjects.filter(project => {
               const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -611,7 +621,7 @@ export default function ProjectsPage() {
             onCategoryChange={setCategoryFilter}
             showFilters={showFilters}
             onToggleFilters={() => setShowFilters(!showFilters)}
-            apiKey={arcgis.settings.apiKey}
+            apiKey={arcgis.settings.apiKey || 'demo-key'}
           />
         ) : viewMode === 'map' && !arcgis.isConfigured ? (
           <Card className="p-8 text-center">

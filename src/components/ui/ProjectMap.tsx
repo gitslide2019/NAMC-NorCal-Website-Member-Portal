@@ -81,6 +81,11 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
     { id: 'permits', name: 'Permits', visible: false, type: 'permits', color: '#8B5CF6' },
     { id: 'utilities', name: 'Utilities', visible: false, type: 'utilities', color: '#EF4444' }
   ]);
+  const [mapError, setMapError] = useState<string | null>(null);
+  const [mapLoading, setMapLoading] = useState(true);
+
+  // Debug logging
+  console.log('ProjectMap props:', { apiKey: apiKey?.substring(0, 10) + '...', projectsCount: projects.length });
 
   // Filter projects based on search query
   const filteredProjects = projects.filter(project =>
@@ -90,10 +95,21 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
 
   // Initialize ArcGIS Map
   useEffect(() => {
-    if (!mapRef.current || !apiKey) return;
+    if (!mapRef.current) return;
+    
+    // If no API key, show a simple fallback
+    if (!apiKey || apiKey === 'demo-key') {
+      setMapError('ArcGIS API key not configured. Using demo view.');
+      setMapLoading(false);
+      return;
+    }
 
     const initializeMap = async () => {
       try {
+        setMapLoading(true);
+        setMapError(null);
+        console.log('Initializing ArcGIS map with API key:', apiKey?.substring(0, 10) + '...');
+        
         // Load ArcGIS API with type assertions
         const [Map, MapView, Graphic, Point, SimpleMarkerSymbol, PopupTemplate] = await Promise.all([
           import('@arcgis/core/Map').then(m => m.default),
@@ -103,6 +119,8 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
           import('@arcgis/core/symbols/SimpleMarkerSymbol').then(m => m.default),
           import('@arcgis/core/PopupTemplate').then(m => m.default)
         ]) as [any, any, any, any, any, any];
+
+        console.log('ArcGIS modules loaded successfully');
 
         // Configure API key
         const { default: esriConfig } = await import('@arcgis/core/config');
@@ -187,9 +205,13 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
         });
 
         setMap({ instance: mapInstance, view });
+        setMapLoading(false);
+        console.log('Map initialized successfully');
 
       } catch (error) {
         console.error('Failed to initialize ArcGIS map:', error);
+        setMapError(error instanceof Error ? error.message : 'Unknown error');
+        setMapLoading(false);
       }
     };
 
@@ -301,7 +323,25 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
         style={{ height: isFullscreen ? '100vh' : height }}
       >
         {/* Map */}
-        <div ref={mapRef} className="w-full h-full" />
+        <div ref={mapRef} className="w-full h-full">
+          {mapLoading && (
+            <div className="flex items-center justify-center h-full bg-gray-100">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                <p className="text-sm text-gray-600">Loading map...</p>
+              </div>
+            </div>
+          )}
+          {mapError && (
+            <div className="flex items-center justify-center h-full bg-red-50">
+              <div className="text-center p-6">
+                <MapPin className="w-12 h-12 text-red-400 mx-auto mb-2" />
+                <p className="text-sm text-red-600 font-semibold">Map Error</p>
+                <p className="text-xs text-red-500 mt-1">{mapError}</p>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Map Controls */}
         {showControls && (
