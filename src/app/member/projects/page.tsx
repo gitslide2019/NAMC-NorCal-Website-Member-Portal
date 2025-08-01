@@ -22,12 +22,16 @@ import {
   MoreVertical,
   AlertTriangle,
   CheckCircle,
-  Zap
+  Zap,
+  Map,
+  Grid3X3
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import { ConstructionProject } from '@/types/construction-project.types'
+import ProjectsMapView from '@/components/ui/ProjectsMapView'
+import { useArcGISIntegration } from '@/hooks/useArcGISIntegration'
 import toast from 'react-hot-toast'
 
 interface ProjectSummary {
@@ -209,11 +213,15 @@ function ProjectCard({ project, onView }: { project: ProjectSummary; onView: (id
 
 export default function ProjectsPage() {
   const router = useRouter()
+  const arcgis = useArcGISIntegration()
   const [projects, setProjects] = useState<ProjectSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
+  const [viewMode, setViewMode] = useState<'map' | 'grid'>('map')
+  const [selectedProject, setSelectedProject] = useState<ProjectSummary | null>(null)
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     fetchProjects()
@@ -385,6 +393,38 @@ export default function ProjectsPage() {
     router.push(`/member/projects/${projectId}`)
   }
 
+  const handleProjectSelect = (project: any) => {
+    setSelectedProject(project)
+  }
+
+  // Transform projects to enhanced format for map view
+  const enhancedProjects = projects.map(project => ({
+    ...project,
+    description: `${project.category} project in ${project.location.city}`,
+    collaborators: project.team.count > 0 ? [{
+      memberId: '1',
+      memberName: project.team.projectManager,
+      role: 'Project Manager'
+    }] : [],
+    location: {
+      ...project.location,
+      address: `${project.location.city}, ${project.location.state}`,
+      coordinates: {
+        lat: 37.7749 + (Math.random() - 0.5) * 0.2, // Mock coordinates for demo
+        lng: -122.4194 + (Math.random() - 0.5) * 0.2
+      }
+    },
+    budget: {
+      allocated: project.budget.estimated,
+      spent: project.budget.actual,
+      variance: project.budget.estimated - project.budget.actual
+    },
+    timeline: {
+      ...project.timeline,
+      duration: Math.ceil((project.timeline.endDate.getTime() - project.timeline.startDate.getTime()) / (1000 * 60 * 60 * 24))
+    }
+  }))
+
   const stats = getProjectStats()
 
   if (loading) {
@@ -473,102 +513,122 @@ export default function ProjectsPage() {
           </Card>
         </div>
 
-        {/* Filters and Search */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="md:col-span-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    placeholder="Search projects, clients, or locations..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="draft">Draft</option>
-                  <option value="estimating">Estimating</option>
-                  <option value="quoted">Quoted</option>
-                  <option value="contracted">Contracted</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="on_hold">On Hold</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </div>
-
-              <div>
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                >
-                  <option value="all">All Categories</option>
-                  <option value="residential">Residential</option>
-                  <option value="commercial">Commercial</option>
-                  <option value="industrial">Industrial</option>
-                  <option value="infrastructure">Infrastructure</option>
-                </select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Projects Grid */}
-        {filteredProjects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ProjectCard project={project} onView={handleViewProject} />
-              </motion.div>
-            ))}
+        {/* Map/Grid View Toggle */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <Button
+              variant={viewMode === 'map' ? 'primary' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('map')}
+              className="px-4 py-2"
+            >
+              <Map className="w-4 h-4 mr-2" />
+              Map View
+            </Button>
+            <Button
+              variant={viewMode === 'grid' ? 'primary' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('grid')}
+              className="px-4 py-2"
+            >
+              <Grid3X3 className="w-4 h-4 mr-2" />
+              Grid View
+            </Button>
           </div>
+          <div className="text-sm text-gray-600">
+            {filteredProjects.length} of {projects.length} projects shown
+          </div>
+        </div>
+
+        {/* Map View */}
+        {viewMode === 'map' && arcgis.isConfigured ? (
+          <ProjectsMapView
+            projects={enhancedProjects.filter(project => {
+              const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                   project.client.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                   project.location.city.toLowerCase().includes(searchTerm.toLowerCase())
+              
+              const matchesStatus = statusFilter === 'all' || project.status === statusFilter
+              const matchesCategory = categoryFilter === 'all' || project.category === categoryFilter
+              
+              return matchesSearch && matchesStatus && matchesCategory
+            })}
+            selectedProject={selectedProject}
+            onProjectSelect={(project) => {
+              setSelectedProject(project)
+              // Optionally navigate to project detail
+              if (project.id) {
+                handleViewProject(project.id)
+              }
+            }}
+            searchQuery={searchTerm}
+            onSearchChange={setSearchTerm}
+            selectedStatus={statusFilter}
+            onStatusChange={setStatusFilter}
+            selectedCategory={categoryFilter}
+            onCategoryChange={setCategoryFilter}
+            showFilters={showFilters}
+            onToggleFilters={() => setShowFilters(!showFilters)}
+            apiKey={arcgis.settings.apiKey}
+          />
+        ) : viewMode === 'map' && !arcgis.isConfigured ? (
+          <Card className="p-8 text-center">
+            <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Map View Unavailable</h3>
+            <p className="text-gray-600 mb-4">
+              ArcGIS integration is not configured. Please contact your administrator to enable map features.
+            </p>
+            <Button variant="outline" onClick={() => setViewMode('grid')}>
+              Switch to Grid View
+            </Button>
+          </Card>
         ) : (
-          <div className="text-center py-12">
-            {projects.length === 0 ? (
-              <div>
-                <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
-                <p className="text-gray-600 mb-4">Get started by creating your first construction project</p>
-                <Button onClick={() => router.push('/member/projects/create')}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create First Project
-                </Button>
-              </div>
-            ) : (
-              <div>
-                <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
-                <p className="text-gray-600 mb-4">Try adjusting your search or filters</p>
-                <div className="flex justify-center space-x-3">
-                  <Button variant="outline" onClick={() => setSearchTerm('')}>
-                    Clear Search
-                  </Button>
-                  <Button variant="outline" onClick={() => {
-                    setStatusFilter('all')
-                    setCategoryFilter('all')
-                  }}>
-                    Clear Filters
+          /* Grid View */
+          filteredProjects.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map((project) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ProjectCard project={project} onView={handleViewProject} />
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              {projects.length === 0 ? (
+                <div>
+                  <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
+                  <p className="text-gray-600 mb-4">Get started by creating your first construction project</p>
+                  <Button onClick={() => router.push('/member/projects/create')}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create First Project
                   </Button>
                 </div>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div>
+                  <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
+                  <p className="text-gray-600 mb-4">Try adjusting your search or filters</p>
+                  <div className="flex justify-center space-x-3">
+                    <Button variant="outline" onClick={() => setSearchTerm('')}>
+                      Clear Search
+                    </Button>
+                    <Button variant="outline" onClick={() => {
+                      setStatusFilter('all')
+                      setCategoryFilter('all')
+                    }}>
+                      Clear Filters
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
         )}
       </div>
     </div>
