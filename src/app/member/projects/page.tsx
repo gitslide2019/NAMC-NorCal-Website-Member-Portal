@@ -36,6 +36,7 @@ import dynamic from 'next/dynamic'
 import MapboxProjectsView from '@/components/ui/MapboxProjectsView'
 // Temporarily disable ArcGIS integration
 // import { useArcGISIntegration } from '@/hooks/useArcGISIntegration'
+import { useShovelsAPI } from '@/hooks/useShovelsAPI'
 import toast from 'react-hot-toast'
 
 interface ProjectSummary {
@@ -51,6 +52,10 @@ interface ProjectSummary {
   location: {
     city: string
     state: string
+    coordinates?: {
+      lat: number
+      lng: number
+    }
   }
   budget: {
     estimated: number
@@ -220,8 +225,11 @@ export default function ProjectsPage() {
   // Temporarily disable ArcGIS integration
   // const arcgis = useArcGISIntegration()
   const arcgis = { isConfigured: false, isLoaded: true, settings: { apiKey: '' } }
+  const { searchPermits, config: shovelsConfig } = useShovelsAPI()
   const [projects, setProjects] = useState<ProjectSummary[]>([])
+  const [permits, setPermits] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [permitsLoading, setPermitsLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
@@ -229,10 +237,24 @@ export default function ProjectsPage() {
   const [selectedProject, setSelectedProject] = useState<EnhancedProject | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [mapError, setMapError] = useState<string | null>(null)
+  const [showPermits, setShowPermits] = useState(false)
+  const [permitSearchCriteria, setPermitSearchCriteria] = useState({
+    city: '',
+    permitType: '',
+    status: '',
+    dateRange: ''
+  })
+  const [showPermitFilters, setShowPermitFilters] = useState(false)
 
   useEffect(() => {
     fetchProjects()
   }, [])
+
+  useEffect(() => {
+    if (showPermits && shovelsConfig.isConfigured) {
+      fetchPermits()
+    }
+  }, [showPermits, shovelsConfig.isConfigured, permitSearchCriteria])
 
   // Error boundary for map component
   useEffect(() => {
@@ -252,7 +274,7 @@ export default function ProjectsPage() {
     try {
       setLoading(true)
       
-      // Mock data - in real implementation, this would come from your API
+      // Mock data with real Bay Area coordinates
       const mockProjects: ProjectSummary[] = [
         {
           id: 'proj-1',
@@ -266,7 +288,11 @@ export default function ProjectsPage() {
           },
           location: {
             city: 'Oakland',
-            state: 'CA'
+            state: 'CA',
+            coordinates: {
+              lat: 37.8044,
+              lng: -122.2712
+            }
           },
           budget: {
             estimated: 250000,
@@ -297,7 +323,11 @@ export default function ProjectsPage() {
           },
           location: {
             city: 'San Francisco',
-            state: 'CA'
+            state: 'CA',
+            coordinates: {
+              lat: 37.7530,
+              lng: -122.4977
+            }
           },
           budget: {
             estimated: 485000,
@@ -328,7 +358,11 @@ export default function ProjectsPage() {
           },
           location: {
             city: 'Fremont',
-            state: 'CA'
+            state: 'CA',
+            coordinates: {
+              lat: 37.5485,
+              lng: -121.9886
+            }
           },
           budget: {
             estimated: 750000,
@@ -359,7 +393,11 @@ export default function ProjectsPage() {
           },
           location: {
             city: 'Berkeley',
-            state: 'CA'
+            state: 'CA',
+            coordinates: {
+              lat: 37.8715,
+              lng: -122.2730
+            }
           },
           budget: {
             estimated: 320000,
@@ -377,6 +415,146 @@ export default function ProjectsPage() {
           hubspotStatus: 'disabled',
           createdAt: new Date('2024-01-20'),
           updatedAt: new Date()
+        },
+        {
+          id: 'proj-5',
+          title: 'San Jose Medical Center Expansion',
+          category: 'commercial',
+          status: 'in_progress',
+          priority: 'high',
+          client: {
+            companyName: 'Valley Health Systems',
+            contactPerson: 'Dr. Patricia Chen'
+          },
+          location: {
+            city: 'San Jose',
+            state: 'CA',
+            coordinates: {
+              lat: 37.3382,
+              lng: -121.8863
+            }
+          },
+          budget: {
+            estimated: 1200000,
+            actual: 450000
+          },
+          timeline: {
+            startDate: new Date('2024-01-15'),
+            endDate: new Date('2024-09-30'),
+            progress: 35
+          },
+          team: {
+            count: 15,
+            projectManager: 'Robert Martinez'
+          },
+          hubspotStatus: 'synced',
+          createdAt: new Date('2023-12-01'),
+          updatedAt: new Date()
+        },
+        {
+          id: 'proj-6',
+          title: 'Palo Alto Green Office Complex',
+          category: 'commercial',
+          status: 'quoted',
+          priority: 'medium',
+          client: {
+            companyName: 'Silicon Valley Ventures',
+            contactPerson: 'Jason Wu'
+          },
+          location: {
+            city: 'Palo Alto',
+            state: 'CA',
+            coordinates: {
+              lat: 37.4419,
+              lng: -122.1430
+            }
+          },
+          budget: {
+            estimated: 850000,
+            actual: 0
+          },
+          timeline: {
+            startDate: new Date('2024-04-15'),
+            endDate: new Date('2024-10-30'),
+            progress: 0
+          },
+          team: {
+            count: 0,
+            projectManager: ''
+          },
+          hubspotStatus: 'pending',
+          createdAt: new Date('2024-01-25'),
+          updatedAt: new Date()
+        },
+        {
+          id: 'proj-7',
+          title: 'Richmond Marina Development',
+          category: 'infrastructure',
+          status: 'contracted',
+          priority: 'high',
+          client: {
+            companyName: 'Richmond Port Authority',
+            contactPerson: 'Captain James Morrison'
+          },
+          location: {
+            city: 'Richmond',
+            state: 'CA',
+            coordinates: {
+              lat: 37.9358,
+              lng: -122.3477
+            }
+          },
+          budget: {
+            estimated: 2500000,
+            actual: 125000
+          },
+          timeline: {
+            startDate: new Date('2024-02-01'),
+            endDate: new Date('2025-01-31'),
+            progress: 15
+          },
+          team: {
+            count: 20,
+            projectManager: 'Linda Thompson'
+          },
+          hubspotStatus: 'synced',
+          createdAt: new Date('2023-11-15'),
+          updatedAt: new Date()
+        },
+        {
+          id: 'proj-8',
+          title: 'Walnut Creek Residential Complex',
+          category: 'residential',
+          status: 'in_progress',
+          priority: 'medium',
+          client: {
+            companyName: 'East Bay Properties',
+            contactPerson: 'Michael Brown'
+          },
+          location: {
+            city: 'Walnut Creek',
+            state: 'CA',
+            coordinates: {
+              lat: 37.9101,
+              lng: -122.0652
+            }
+          },
+          budget: {
+            estimated: 675000,
+            actual: 380000
+          },
+          timeline: {
+            startDate: new Date('2023-12-01'),
+            endDate: new Date('2024-06-30'),
+            progress: 78
+          },
+          team: {
+            count: 10,
+            projectManager: 'Amanda Davis'
+          },
+          hubspotStatus: 'synced',
+          createdAt: new Date('2023-10-15'),
+          updatedAt: new Date()
         }
       ]
 
@@ -387,6 +565,50 @@ export default function ProjectsPage() {
       toast.error('Failed to load projects')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchPermits = async () => {
+    if (!shovelsConfig.isConfigured) return
+
+    try {
+      setPermitsLoading(true)
+      
+      const params: any = {
+        limit: 100,
+        state: 'CA' // Focus on California permits for Bay Area projects
+      }
+
+      if (permitSearchCriteria.city) params.city = permitSearchCriteria.city
+      if (permitSearchCriteria.permitType) params.permitType = permitSearchCriteria.permitType
+      if (permitSearchCriteria.status) params.status = permitSearchCriteria.status
+      
+      if (permitSearchCriteria.dateRange) {
+        const now = new Date()
+        let dateFrom = new Date()
+        
+        switch (permitSearchCriteria.dateRange) {
+          case '30days':
+            dateFrom.setDate(now.getDate() - 30)
+            break
+          case '6months':
+            dateFrom.setMonth(now.getMonth() - 6)
+            break
+          case '1year':
+            dateFrom.setFullYear(now.getFullYear() - 1)
+            break
+        }
+        
+        params.dateFrom = dateFrom.toISOString().split('T')[0]
+      }
+
+      const results = await searchPermits(params)
+      setPermits(results)
+    } catch (error) {
+      console.error('Failed to fetch permits:', error)
+      toast.error('Failed to load permits')
+    } finally {
+      setPermitsLoading(false)
     }
   }
 
@@ -574,31 +796,194 @@ export default function ProjectsPage() {
           </Card>
         </div>
 
-        {/* Map/Grid View Toggle */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center bg-gray-100 rounded-lg p-1">
-            <Button
-              variant={viewMode === 'map' ? 'primary' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('map')}
-              className="px-4 py-2"
-            >
-              <Map className="w-4 h-4 mr-2" />
-              Map View
-            </Button>
-            <Button
-              variant={viewMode === 'grid' ? 'primary' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-              className="px-4 py-2"
-            >
-              <Grid3X3 className="w-4 h-4 mr-2" />
-              Grid View
-            </Button>
+        {/* Search and Filters */}
+        <div className="mb-6 space-y-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  type="text"
+                  placeholder="Search projects, clients, or locations..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Status</option>
+                <option value="draft">Draft</option>
+                <option value="estimating">Estimating</option>
+                <option value="quoted">Quoted</option>
+                <option value="contracted">Contracted</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="on_hold">On Hold</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Categories</option>
+                <option value="residential">Residential</option>
+                <option value="commercial">Commercial</option>
+                <option value="industrial">Industrial</option>
+                <option value="infrastructure">Infrastructure</option>
+              </select>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchTerm('')
+                  setStatusFilter('all')
+                  setCategoryFilter('all')
+                }}
+                className="px-4 py-2"
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                Clear
+              </Button>
+            </div>
           </div>
-          <div className="text-sm text-gray-600">
-            {filteredProjects.length} of {projects.length} projects shown
+
+          {/* Map/Grid View Toggle and Permit Controls */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                <Button
+                  variant={viewMode === 'map' ? 'primary' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('map')}
+                  className="px-4 py-2"
+                >
+                  <Map className="w-4 h-4 mr-2" />
+                  Map View
+                </Button>
+                <Button
+                  variant={viewMode === 'grid' ? 'primary' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                  className="px-4 py-2"
+                >
+                  <Grid3X3 className="w-4 h-4 mr-2" />
+                  Grid View
+                </Button>
+              </div>
+              
+              {/* Permit Toggle */}
+              {viewMode === 'map' && shovelsConfig.isConfigured && (
+                <div className="flex items-center space-x-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showPermits}
+                      onChange={(e) => setShowPermits(e.target.checked)}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">Show Permits</span>
+                  </label>
+                  {showPermits && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowPermitFilters(!showPermitFilters)}
+                      className={`px-3 py-1 text-xs ${showPermitFilters ? 'bg-blue-50 border-blue-300' : ''}`}
+                    >
+                      <Filter className="w-3 h-3 mr-1" />
+                      Permit Filters
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="text-sm text-gray-600">
+              {filteredProjects.length} of {projects.length} projects shown
+              {showPermits && permits.length > 0 && <span> • {permits.length} permits</span>}
+            </div>
           </div>
+
+          {/* Permit Search Filters */}
+          {showPermits && showPermitFilters && (
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <h4 className="text-sm font-medium text-blue-900 mb-3">Permit Search Criteria</h4>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-blue-800 mb-1">City</label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. San Francisco"
+                    value={permitSearchCriteria.city}
+                    onChange={(e) => setPermitSearchCriteria(prev => ({ ...prev, city: e.target.value }))}
+                    className="text-sm h-8"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-blue-800 mb-1">Permit Type</label>
+                  <select
+                    value={permitSearchCriteria.permitType}
+                    onChange={(e) => setPermitSearchCriteria(prev => ({ ...prev, permitType: e.target.value }))}
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm h-8 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Types</option>
+                    <option value="building">Building</option>
+                    <option value="electrical">Electrical</option>
+                    <option value="plumbing">Plumbing</option>
+                    <option value="mechanical">Mechanical</option>
+                    <option value="demolition">Demolition</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-blue-800 mb-1">Status</label>
+                  <select
+                    value={permitSearchCriteria.status}
+                    onChange={(e) => setPermitSearchCriteria(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm h-8 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Status</option>
+                    <option value="issued">Issued</option>
+                    <option value="pending">Pending</option>
+                    <option value="under_review">Under Review</option>
+                    <option value="expired">Expired</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-blue-800 mb-1">Time Period</label>
+                  <select
+                    value={permitSearchCriteria.dateRange}
+                    onChange={(e) => setPermitSearchCriteria(prev => ({ ...prev, dateRange: e.target.value }))}
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm h-8 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Time</option>
+                    <option value="30days">Last 30 Days</option>
+                    <option value="6months">Last 6 Months</option>
+                    <option value="1year">Last Year</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPermitSearchCriteria({ city: '', permitType: '', status: '', dateRange: '' })}
+                  className="text-xs"
+                >
+                  Clear Filters
+                </Button>
+                <div className="text-xs text-blue-600">
+                  {permitsLoading ? 'Loading permits...' : `${permits.length} permits found`}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
 
@@ -610,15 +995,25 @@ export default function ProjectsPage() {
                 ...project,
                 location: {
                   ...project.location,
-                  coordinates: {
-                    lat: 37.7749 + (Math.random() - 0.5) * 0.2, // Mock coordinates for demo
+                  coordinates: project.location.coordinates || {
+                    lat: 37.7749 + (Math.random() - 0.5) * 0.2, // Fallback for projects without coordinates
                     lng: -122.4194 + (Math.random() - 0.5) * 0.2
                   }
                 }
               }))}
+              permits={permits}
+              searchTerm={searchTerm}
+              statusFilter={statusFilter}
+              categoryFilter={categoryFilter}
+              showPermits={showPermits}
+              permitSearchCriteria={permitSearchCriteria}
               onProjectSelect={(project) => {
                 console.log('Selected project:', project)
-                // You can add additional logic here for project selection
+                handleViewProject(project.id)
+              }}
+              onPermitSelect={(permit) => {
+                console.log('Selected permit:', permit)
+                // Could navigate to permit details or show modal
               }}
               className="mb-4"
             />

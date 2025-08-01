@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { Map, Marker, Popup, NavigationControl, FullscreenControl } from 'react-map-gl/mapbox'
+import mapboxgl from 'mapbox-gl'
 import { 
   MapPin, 
   Building, 
@@ -13,7 +14,8 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle,
-  Zap
+  Zap,
+  FileText
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Button from './Button'
@@ -54,31 +56,140 @@ interface ProjectLocation {
   }
 }
 
+interface ShovelsPermit {
+  id: string
+  permit_number: string
+  permit_type: string
+  status: 'issued' | 'pending' | 'expired' | 'rejected' | 'under_review'
+  issued_date: string
+  expiration_date?: string
+  valuation: number
+  description: string
+  address: {
+    street: string
+    city: string
+    state: string
+    zip: string
+    latitude?: number
+    longitude?: number
+  }
+  contractor?: {
+    name: string
+    license_number?: string
+    phone?: string
+  }
+  owner?: {
+    name: string
+    phone?: string
+  }
+}
+
 interface MapboxProjectsViewProps {
   projects: ProjectLocation[]
+  permits?: ShovelsPermit[]
   onProjectSelect?: (project: ProjectLocation) => void
+  onPermitSelect?: (permit: ShovelsPermit) => void
   className?: string
+  searchTerm?: string
+  statusFilter?: string
+  categoryFilter?: string
+  showPermits?: boolean
+  permitSearchCriteria?: {
+    city?: string
+    permitType?: string
+    status?: string
+    dateRange?: string
+  }
 }
 
 const MapboxProjectsView: React.FC<MapboxProjectsViewProps> = ({
   projects,
+  permits = [],
   onProjectSelect,
-  className = ''
+  onPermitSelect,
+  className = '',
+  searchTerm = '',
+  statusFilter = 'all',
+  categoryFilter = 'all',
+  showPermits = false,
+  permitSearchCriteria
 }) => {
   const mapRef = useRef<any>(null)
   const [selectedProject, setSelectedProject] = useState<ProjectLocation | null>(null)
+  const [selectedPermit, setSelectedPermit] = useState<ShovelsPermit | null>(null)
   const [mapError, setMapError] = useState<string | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
+  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v12')
 
-  // Default view centered on San Francisco Bay Area
+  // Default view centered on San Francisco Bay Area with better zoom
   const [viewState, setViewState] = useState({
-    latitude: 37.7749,
-    longitude: -122.4194,
-    zoom: 10
+    latitude: 37.6213,
+    longitude: -122.3790,
+    zoom: 9.5
   })
 
   // Get Mapbox API key from environment
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+
+  // Filter projects based on search and filters
+  const filteredProjects = projects.filter(project => {
+    const matchesSearch = searchTerm === '' || 
+      project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.client.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.location.city.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesStatus = statusFilter === 'all' || project.status === statusFilter
+    const matchesCategory = categoryFilter === 'all' || project.category === categoryFilter
+    
+    return matchesSearch && matchesStatus && matchesCategory
+  })
+
+  // Filter permits with coordinates
+  const permitsWithCoordinates = permits.filter(permit => 
+    permit.address.latitude && permit.address.longitude
+  )
+
+  // Filter permits based on search criteria
+  const filteredPermits = permitsWithCoordinates.filter(permit => {
+    if (!showPermits) return false
+    
+    const matchesSearch = searchTerm === '' || 
+      permit.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      permit.permit_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      permit.address.street?.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesCity = !permitSearchCriteria?.city || 
+      permit.address.city.toLowerCase() === permitSearchCriteria.city.toLowerCase()
+    
+    const matchesType = !permitSearchCriteria?.permitType || 
+      permit.permit_type === permitSearchCriteria.permitType
+    
+    const matchesStatus = !permitSearchCriteria?.status || 
+      permit.status === permitSearchCriteria.status
+    
+    return matchesSearch && matchesCity && matchesType && matchesStatus
+  })
+
+  // Auto-fit map bounds when filtered
+  useEffect(() => {
+    if (mapRef.current && mapLoaded) {
+      const allItems = [
+        ...filteredProjects.map(p => ({ lng: p.location.coordinates.lng, lat: p.location.coordinates.lat })),
+        ...filteredPermits.map(p => ({ lng: p.address.longitude!, lat: p.address.latitude! }))
+      ]
+      
+      if (allItems.length > 0) {
+        const bounds = allItems.reduce((bounds, item) => {
+          return bounds.extend([item.lng, item.lat])
+        }, new mapboxgl.LngLatBounds())
+        
+        mapRef.current.fitBounds(bounds, {
+          padding: 80,
+          maxZoom: 12
+        })
+      }
+    }
+  }, [filteredProjects, filteredPermits, mapLoaded])
 
   useEffect(() => {
     if (!mapboxToken) {
@@ -102,6 +213,17 @@ const MapboxProjectsView: React.FC<MapboxProjectsViewProps> = ({
     }
   }
 
+  const getPermitStatusColor = (status: string): string => {
+    switch (status) {
+      case 'issued': return '#10B981' // green
+      case 'pending': return '#F59E0B' // yellow
+      case 'under_review': return '#3B82F6' // blue
+      case 'expired': return '#EF4444' // red
+      case 'rejected': return '#6B7280' // gray
+      default: return '#6B7280' // gray
+    }
+  }
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'residential': return <Home className="w-4 h-4" />
@@ -114,6 +236,7 @@ const MapboxProjectsView: React.FC<MapboxProjectsViewProps> = ({
 
   const handleMarkerClick = (project: ProjectLocation) => {
     setSelectedProject(project)
+    setSelectedPermit(null)
     if (onProjectSelect) {
       onProjectSelect(project)
     }
@@ -123,6 +246,22 @@ const MapboxProjectsView: React.FC<MapboxProjectsViewProps> = ({
       ...prev,
       latitude: project.location.coordinates.lat,
       longitude: project.location.coordinates.lng,
+      zoom: Math.max(prev.zoom, 12)
+    }))
+  }
+
+  const handlePermitClick = (permit: ShovelsPermit) => {
+    setSelectedPermit(permit)
+    setSelectedProject(null)
+    if (onPermitSelect) {
+      onPermitSelect(permit)
+    }
+    
+    // Center map on selected permit
+    setViewState(prev => ({
+      ...prev,
+      latitude: permit.address.latitude!,
+      longitude: permit.address.longitude!,
       zoom: Math.max(prev.zoom, 12)
     }))
   }
@@ -186,7 +325,7 @@ const MapboxProjectsView: React.FC<MapboxProjectsViewProps> = ({
           onMove={(evt: any) => setViewState(evt.viewState)}
           mapboxAccessToken={mapboxToken}
           style={{ width: '100%', height: '100%' }}
-          mapStyle="mapbox://styles/mapbox/streets-v12"
+          mapStyle={mapStyle}
           onLoad={() => setMapLoaded(true)}
           onError={(error: any) => {
             console.error('Mapbox error:', error)
@@ -197,8 +336,34 @@ const MapboxProjectsView: React.FC<MapboxProjectsViewProps> = ({
           <NavigationControl position="top-right" />
           <FullscreenControl position="top-right" />
 
+          {/* Map Style Controls */}
+          <div className="absolute top-4 left-4 bg-white rounded-lg shadow-md p-2">
+            <div className="flex space-x-2">
+              <button
+                className={`px-3 py-1 text-xs rounded ${
+                  mapStyle === 'mapbox://styles/mapbox/streets-v12' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+                onClick={() => setMapStyle('mapbox://styles/mapbox/streets-v12')}
+              >
+                Streets
+              </button>
+              <button
+                className={`px-3 py-1 text-xs rounded ${
+                  mapStyle === 'mapbox://styles/mapbox/satellite-streets-v12' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+                onClick={() => setMapStyle('mapbox://styles/mapbox/satellite-streets-v12')}
+              >
+                Satellite
+              </button>
+            </div>
+          </div>
+
           {/* Project Markers */}
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <Marker
               key={project.id}
               latitude={project.location.coordinates.lat}
@@ -209,18 +374,54 @@ const MapboxProjectsView: React.FC<MapboxProjectsViewProps> = ({
               }}
             >
               <div 
-                className="relative cursor-pointer transform hover:scale-110 transition-transform"
+                className={`relative cursor-pointer transform hover:scale-110 transition-transform ${
+                  project.status === 'in_progress' ? 'animate-pulse' : ''
+                }`}
                 style={{ 
                   backgroundColor: getStatusColor(project.status),
-                  padding: '8px',
+                  padding: '10px',
                   borderRadius: '50%',
-                  border: '2px solid white',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  border: '3px solid white',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
                 }}
               >
                 <div className="text-white">
                   {getCategoryIcon(project.category)}
                 </div>
+                {project.priority === 'high' && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                )}
+              </div>
+            </Marker>
+          ))}
+
+          {/* Permit Markers */}
+          {showPermits && filteredPermits.map((permit) => (
+            <Marker
+              key={permit.id}
+              latitude={permit.address.latitude!}
+              longitude={permit.address.longitude!}
+              onClick={(e: any) => {
+                e.originalEvent.stopPropagation()
+                handlePermitClick(permit)
+              }}
+            >
+              <div 
+                className="relative cursor-pointer transform hover:scale-110 transition-transform"
+                style={{ 
+                  backgroundColor: getPermitStatusColor(permit.status),
+                  padding: '8px',
+                  borderRadius: '8px',
+                  border: '3px solid white',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
+                }}
+              >
+                <div className="text-white">
+                  <FileText className="w-4 h-4" />
+                </div>
+                {permit.status === 'expired' && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                )}
               </div>
             </Marker>
           ))}
@@ -351,8 +552,124 @@ const MapboxProjectsView: React.FC<MapboxProjectsViewProps> = ({
               </div>
             </Popup>
           )}
+
+          {/* Permit Details Popup */}
+          {selectedPermit && (
+            <Popup
+              latitude={selectedPermit.address.latitude!}
+              longitude={selectedPermit.address.longitude!}
+              onClose={() => setSelectedPermit(null)}
+              closeButton={true}
+              closeOnClick={false}
+              offset={10}
+              className="permit-popup"
+            >
+              <div className="p-4 min-w-80">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start space-x-3">
+                    <div 
+                      className="p-2 rounded-lg"
+                      style={{ backgroundColor: getPermitStatusColor(selectedPermit.status) + '20' }}
+                    >
+                      <div style={{ color: getPermitStatusColor(selectedPermit.status) }}>
+                        <FileText className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 text-sm">
+                        Permit #{selectedPermit.permit_number}
+                      </h3>
+                      <p className="text-xs text-gray-600">
+                        {selectedPermit.permit_type}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {selectedPermit.address.street}, {selectedPermit.address.city}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Badge */}
+                <div className="mb-3">
+                  <span 
+                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white"
+                    style={{ backgroundColor: getPermitStatusColor(selectedPermit.status) }}
+                  >
+                    {selectedPermit.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </span>
+                </div>
+
+                {/* Description */}
+                {selectedPermit.description && (
+                  <div className="mb-3">
+                    <div className="text-xs text-gray-600 mb-1">Description:</div>
+                    <div className="text-xs text-gray-900">{selectedPermit.description}</div>
+                  </div>
+                )}
+
+                {/* Key Details */}
+                <div className="grid grid-cols-2 gap-3 mb-3 text-xs">
+                  <div>
+                    <div className="flex items-center justify-center mb-1">
+                      <DollarSign className="w-3 h-3 text-green-600 mr-1" />
+                      <span className="font-semibold text-gray-900">
+                        {formatCurrency(selectedPermit.valuation)}
+                      </span>
+                    </div>
+                    <div className="text-gray-500 text-center">Valuation</div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center justify-center mb-1">
+                      <Calendar className="w-3 h-3 text-blue-600 mr-1" />
+                      <span className="font-semibold text-gray-900">
+                        {new Date(selectedPermit.issued_date).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="text-gray-500 text-center">Issued</div>
+                  </div>
+                </div>
+
+                {/* Contractor */}
+                {selectedPermit.contractor && (
+                  <div className="text-xs text-gray-600 mb-3">
+                    <span className="font-medium">Contractor:</span> {selectedPermit.contractor.name}
+                  </div>
+                )}
+
+                {/* Owner */}
+                {selectedPermit.owner && (
+                  <div className="text-xs text-gray-600 mb-3">
+                    <span className="font-medium">Owner:</span> {selectedPermit.owner.name}
+                  </div>
+                )}
+
+                {/* Expiration */}
+                {selectedPermit.expiration_date && (
+                  <div className="text-xs text-gray-500 mb-3">
+                    Expires: {new Date(selectedPermit.expiration_date).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
+            </Popup>
+          )}
         </Map>
       </div>
+
+      {/* Results Summary */}
+      {(searchTerm || statusFilter !== 'all' || categoryFilter !== 'all' || showPermits) && (
+        <div className="mt-4 bg-blue-50 rounded-lg border border-blue-200 p-3">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-blue-800">
+              Showing {filteredProjects.length} of {projects.length} projects
+              {showPermits && <span> and {filteredPermits.length} permits</span>}
+              {searchTerm && <span> matching "{searchTerm}"</span>}
+              {statusFilter !== 'all' && <span> with status: {statusFilter.replace('_', ' ')}</span>}
+              {categoryFilter !== 'all' && <span> in category: {categoryFilter}</span>}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Map Legend */}
       <div className="mt-4 bg-white rounded-lg border border-gray-200 p-4">
@@ -387,6 +704,50 @@ const MapboxProjectsView: React.FC<MapboxProjectsViewProps> = ({
             <span className="text-gray-600">On Hold</span>
           </div>
         </div>
+        
+        {/* Permit Status Legend */}
+        {showPermits && (
+          <div className="mt-3 pt-3 border-t border-gray-200">
+            <h5 className="text-xs font-medium text-gray-700 mb-2">Permit Status Legend</h5>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-3 h-3 rounded-sm" 
+                  style={{ backgroundColor: getPermitStatusColor('issued') }}
+                />
+                <span className="text-gray-600">Issued</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-3 h-3 rounded-sm" 
+                  style={{ backgroundColor: getPermitStatusColor('pending') }}
+                />
+                <span className="text-gray-600">Pending</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-3 h-3 rounded-sm" 
+                  style={{ backgroundColor: getPermitStatusColor('under_review') }}
+                />
+                <span className="text-gray-600">Under Review</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-3 h-3 rounded-sm" 
+                  style={{ backgroundColor: getPermitStatusColor('expired') }}
+                />
+                <span className="text-gray-600">Expired</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-3 h-3 rounded-sm" 
+                  style={{ backgroundColor: getPermitStatusColor('rejected') }}
+                />
+                <span className="text-gray-600">Rejected</span>
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="mt-3 pt-3 border-t border-gray-200">
           <h5 className="text-xs font-medium text-gray-700 mb-2">Project Categories</h5>
