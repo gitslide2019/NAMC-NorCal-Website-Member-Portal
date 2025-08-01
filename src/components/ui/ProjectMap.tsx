@@ -32,57 +32,8 @@ interface ProjectLocation {
   description?: string;
 }
 
-// ArcGIS type declarations for proper TypeScript support
-declare module '@arcgis/core/Map' {
-  export default class EsriMap {
-    constructor(properties?: any);
-  }
-}
-
-declare module '@arcgis/core/views/MapView' {
-  export default class EsriMapView {
-    constructor(properties?: any);
-    graphics: any;
-    on(type: string, handler: (event: any) => void): void;
-    hitTest(event: any): Promise<any>;
-    goTo(target: any): Promise<any>;
-  }
-}
-
-declare module '@arcgis/core/Graphic' {
-  export default class EsriGraphic {
-    constructor(properties?: any);
-    geometry?: any;
-    symbol?: any;
-    popupTemplate?: any;
-    attributes?: any;
-  }
-}
-
-declare module '@arcgis/core/geometry/Point' {
-  export default class EsriPoint {
-    constructor(properties?: any);
-  }
-}
-
-declare module '@arcgis/core/symbols/SimpleMarkerSymbol' {
-  export default class EsriSimpleMarkerSymbol {
-    constructor(properties?: any);
-  }
-}
-
-declare module '@arcgis/core/PopupTemplate' {
-  export default class EsriPopupTemplate {
-    constructor(properties?: any);
-  }
-}
-
-declare module '@arcgis/core/config' {
-  const esriConfig: {
-    apiKey: string;
-  };
-  export { esriConfig as default };
-}
+// ArcGIS types will be handled by the actual @arcgis/core package
+// Using type assertions to avoid TypeScript conflicts
 
 interface MapLayer {
   id: string;
@@ -143,27 +94,27 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
 
     const initializeMap = async () => {
       try {
-        // Load ArcGIS API
-        const [EsriMap, EsriMapView, EsriGraphic, EsriPoint, EsriSimpleMarkerSymbol, EsriPopupTemplate] = await Promise.all([
+        // Load ArcGIS API with type assertions
+        const [Map, MapView, Graphic, Point, SimpleMarkerSymbol, PopupTemplate] = await Promise.all([
           import('@arcgis/core/Map').then(m => m.default),
           import('@arcgis/core/views/MapView').then(m => m.default),
           import('@arcgis/core/Graphic').then(m => m.default),
           import('@arcgis/core/geometry/Point').then(m => m.default),
           import('@arcgis/core/symbols/SimpleMarkerSymbol').then(m => m.default),
           import('@arcgis/core/PopupTemplate').then(m => m.default)
-        ]);
+        ]) as [any, any, any, any, any, any];
 
         // Configure API key
         const { default: esriConfig } = await import('@arcgis/core/config');
-        esriConfig.apiKey = apiKey;
+        (esriConfig as any).apiKey = apiKey;
 
         // Create map
-        const mapInstance = new EsriMap({
+        const mapInstance = new Map({
           basemap: 'streets-navigation-vector'
         });
 
         // Create map view
-        const view = new EsriMapView({
+        const view = new MapView({
           container: mapRef.current,
           map: mapInstance,
           center: [center.longitude, center.latitude],
@@ -175,12 +126,12 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
 
         // Add project markers
         filteredProjects.forEach(project => {
-          const point = new EsriPoint({
+          const point = new Point({
             longitude: project.coordinates.longitude,
             latitude: project.coordinates.latitude
           });
 
-          const symbol = new EsriSimpleMarkerSymbol({
+          const symbol = new SimpleMarkerSymbol({
             color: getProjectColor(project.status),
             size: '12px',
             outline: {
@@ -189,7 +140,7 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
             }
           });
 
-          const popupTemplate = new EsriPopupTemplate({
+          const popupTemplate = new PopupTemplate({
             title: project.name,
             content: `
               <div class="p-4">
@@ -203,7 +154,7 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
             `
           });
 
-          const graphic = new EsriGraphic({
+          const graphic = new Graphic({
             geometry: point,
             symbol: symbol,
             popupTemplate: popupTemplate,
@@ -255,19 +206,19 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
     // Add updated project markers
     filteredProjects.forEach(async (project) => {
       try {
-        const [EsriPoint, EsriSimpleMarkerSymbol, EsriGraphic, EsriPopupTemplate] = await Promise.all([
+        const [Point, SimpleMarkerSymbol, Graphic, PopupTemplate] = await Promise.all([
           import('@arcgis/core/geometry/Point').then(m => m.default),
           import('@arcgis/core/symbols/SimpleMarkerSymbol').then(m => m.default),
           import('@arcgis/core/Graphic').then(m => m.default),
           import('@arcgis/core/PopupTemplate').then(m => m.default)
-        ]);
+        ]) as [any, any, any, any];
 
-        const point = new EsriPoint({
+        const point = new Point({
           longitude: project.coordinates.longitude,
           latitude: project.coordinates.latitude
         });
 
-        const symbol = new EsriSimpleMarkerSymbol({
+        const symbol = new SimpleMarkerSymbol({
           color: getProjectColor(project.status),
           size: '12px',
           outline: {
@@ -276,7 +227,7 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
           }
         });
 
-        const popupTemplate = new EsriPopupTemplate({
+        const popupTemplate = new PopupTemplate({
           title: project.name,
           content: `
             <div class="p-4">
@@ -290,7 +241,7 @@ const ProjectMap: React.FC<ProjectMapProps> = ({
           `
         });
 
-        const graphic = new EsriGraphic({
+        const graphic = new Graphic({
           geometry: point,
           symbol: symbol,
           popupTemplate: popupTemplate,
