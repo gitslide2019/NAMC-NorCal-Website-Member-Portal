@@ -38,17 +38,32 @@ export default function SignInPage() {
     setIsLoading(true)
     
     try {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Attempting sign in with:', { email: data.email, hasPassword: !!data.password })
+      }
+      
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
         redirect: false,
       })
 
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Sign in result:', result)
+      }
+
       if (result?.error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Sign in error:', result.error)
+        }
         toast.error('Invalid email or password')
-      } else {
+      } else if (result?.ok) {
         toast.success('Welcome back!')
         const session = await getSession()
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Session after sign in:', session)
+        }
         
         // Redirect based on user role
         if (session?.user?.role === 'admin') {
@@ -56,8 +71,16 @@ export default function SignInPage() {
         } else {
           router.push('/member/dashboard')
         }
+      } else {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Unexpected sign in result:', result)
+        }
+        toast.error('Authentication failed. Please try again.')
       }
     } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Sign in exception:', error)
+      }
       toast.error('Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)

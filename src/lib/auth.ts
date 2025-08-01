@@ -7,14 +7,14 @@ const users = [
   {
     id: '1',
     email: 'admin@namc-norcal.org',
-    password: '$2a$12$KG8wAhDCc269phR19VbUg.lAXnjsclN7FacDuhinJ4RvFYNI9FqD6', // 'admin123'
+    password: '$2a$10$aZVUk3Ukq9g4hJwU7Efim.qnFhwBA63hrynIZ22Iq49sIRWJ1Q8/S', // 'admin123'
     name: 'Admin User',
     role: 'admin',
   },
   {
     id: '2',
     email: 'member@namc-norcal.org',
-    password: '$2a$12$799sPEhlCFgG/VHczPCuaeWOOrAXDUBtRs3ibl2WkJedR7rHFh5ra', // 'member123'
+    password: '$2a$10$oYMtqRBfTABG7qFljWz3a.br1QnX1Zm/7mmTbK81Dk9lwJkmvUX0K', // 'member123'
     name: 'John Doe',
     role: 'member',
   },
@@ -29,6 +29,10 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('NextAuth authorize called with:', { email: credentials?.email, hasPassword: !!credentials?.password })
+        }
+        
         if (!credentials?.email || !credentials?.password) {
           return null
         }
@@ -39,10 +43,15 @@ export const authOptions: NextAuthOptions = {
         }
 
         const passwordMatch = await bcrypt.compare(credentials.password, user.password)
+        
         if (!passwordMatch) {
           return null
         }
 
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Authentication successful for:', user.email)
+        }
+        
         return {
           id: user.id,
           email: user.email,
@@ -54,6 +63,7 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
+    maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -73,6 +83,8 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/auth/signin',
   },
+  debug: process.env.NODE_ENV === 'development',
+  secret: process.env.NEXTAUTH_SECRET,
 }
 
 declare module 'next-auth' {
