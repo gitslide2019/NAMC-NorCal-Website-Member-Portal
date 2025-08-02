@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin role
     const session = await getServerSession(authOptions)
-    if (!session || session.user.memberType !== 'ADMIN') {
+    if (!session || session.user.role !== 'admin') {
       return NextResponse.json(
         { success: false, message: 'Admin access required' },
         { status: 403 }

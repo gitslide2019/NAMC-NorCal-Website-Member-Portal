@@ -1,0 +1,89 @@
+Field,Description,Type,Source
+ADDITION,TRUE if the permit adds new square feet,Boolean,Created by Shovels
+ADDRESS_ID,The Shovels geo_ID of the address,Text,Created by Shovels
+ADU,"TRUE if the permit is a secondary unit, cottage, in-law suite, or accessory dwelling unit",Boolean,Created by Shovels
+APN,Parcel number,Text,Enhanced by Shovels
+APPLICANT_CITY,Contact info for the applicant,Text,Provided by jurisdiction
+APPLICANT_EMAIL,Contact info for the applicant,Text,Provided by jurisdiction
+APPLICANT_NAME,Contact info for the applicant,Text,Provided by jurisdiction
+APPLICANT_PHONE,Contact info for the applicant,Text,Provided by jurisdiction
+APPLICANT_STATE,Contact info for the applicant,Text,Provided by jurisdiction
+APPLICANT_STREET,Contact info for the applicant,Text,Provided by jurisdiction
+APPLICANT_ZIPCODE,Contact info for the applicant,Text,Provided by jurisdiction
+APPROVAL_DURATION,The number of days between the file date and the issue date,Fixed,Created by Shovels
+BATHROOM,TRUE if the permit involved a bathroom,Boolean,Created by Shovels
+BATTERY,TRUE if the permit involved a battery,Boolean,Created by Shovels
+CBSA,The CBSA value (also known as MSA),Text,Enhanced by Shovels
+CBSA_FIPS,The CBSA FIPS code,Text,Enhanced by Shovels
+CITY,The city name,Text,Enhanced by Shovels
+CITY_ID,The geo_ID of the city,Text,Created by Shovels
+CONSTRUCTION_DURATION,The number of days between the issue date and the final date,Fixed,Created by Shovels
+CONTRACTOR_GROUP_ID,The higher level group ID of the contractor ,Text,Created by Shovels
+CONTRACTOR_ID,The Shovels ID of the individual contractor,Text,Created by Shovels
+COUNTY,The county name,Text,Enhanced by Shovels
+COUNTY_FIPS,The county FIPS code,Text,Enhanced by Shovels
+COUNTY_ID,The geo_ID of the county,Text,Created by Shovels
+DEMOLITION,TRUE if the permit involved any demolition,Boolean,Created by Shovels
+DESCRIPTION,The long-form description of the permit according to the jurisdiction,Text,Provided by jurisdiction
+ELECTRIC_METER,TRUE if the permit involved an electrical meter,Boolean,Created by Shovels
+ELECTRICAL,TRUE if any of the work on the permit was electrical,Boolean,Created by Shovels
+END_DATE,The latest date on the permit,Date,Created by Shovels
+EV_CHARGER,TRUE if the permit involved an EV charger,Boolean,Created by Shovels
+FEES,The permit fees collected by the jurisdiction,Fixed,Provided by jurisdiction
+FILE_DATE,The date the permit application was filed,Date,Enhanced by Shovels
+FINAL_DATE,The date the permit was completed,Date,Enhanced by Shovels
+FIRE_SPRINKLER,TRUE if the permit involved a fire sprinkler,Boolean,Created by Shovels
+GAS,TRUE if the permit involved gas,Boolean,Created by Shovels
+GENERATOR,TRUE if the permit involved a generator,Boolean,Created by Shovels
+GRADING,TRUE if the permit involved grading,Boolean,Created by Shovels
+HEAT_PUMP,"TRUE if the permit involved a mini-split, heat pump, or related technology",Boolean,Created by Shovels
+HVAC,"TRUE if the permit involved heating, ventilation, or air condititioning",Boolean,Created by Shovels
+ID,The Shovels ID of the permit,Text,Created by Shovels
+INSPECTION_PASS_RATE,The ratio of the passed inspections to the total inspections on the permit,Real,Created by Shovels
+INSPECTION_PASSED,TRUE if any inspections passed on the permit,Boolean,Created by Shovels
+ISSUE_DATE,The date the permit application was approved,Date,Enhanced by Shovels
+JOB_VALUE,The job value reported on the permit,Fixed,Provided by jurisdiction
+JURISDICTION,The name of the permit jurisdiction,Text,Enhanced by Shovels
+JURISDICTION_ID,The geo_ID of the permit jurisdiction,Text,Created by Shovels
+KITCHEN,TRUE if the permit involved a kitchen,Boolean,Created by Shovels
+LAT,The latitude of the permit address,Fixed,Created by Shovels
+LONG,The longitude of the permit address,Fixed,Created by Shovels
+NEW_CONSTRUCTION,TRUE if the permit included any new construction,Boolean,Created by Shovels
+OWNER_CITY,Contact info for the owner according to the permit,Text,Provided by jurisdiction
+OWNER_EMAIL,Contact info for the owner according to the permit,Text,Provided by jurisdiction
+OWNER_NAME,Contact info for the owner according to the permit,Text,Provided by jurisdiction
+OWNER_PHONE,Contact info for the owner according to the permit,Text,Provided by jurisdiction
+OWNER_STATE,Contact info for the owner according to the permit,Text,Provided by jurisdiction
+OWNER_STREET,Contact info for the owner according to the permit,Text,Provided by jurisdiction
+OWNER_ZIPCODE,Contact info for the owner according to the permit,Text,Provided by jurisdiction
+PERMIT_NUMBER,"The jurisdiction permit number. Note, this is pass-through by the jurisdiction, so it is theoretically possible that one jurisdiction has the same permit number as another jurisdiction even if they are referencing different permits. We recommend using the Shovels ID (Row 41) to differentiate between unique permits",Text,Provided by jurisdiction
+PLUMBING,TRUE if the permit involved any type of plumbing,Boolean,Created by Shovels
+POOL_AND_HOT_TUB,TRUE if the permit involved a pool or hot tob,Boolean,Created by Shovels
+PROPERTY_ASSESS_MARKET_VALUE,The market value of the property,Fixed,Enhanced by Shovels (third party source)
+PROPERTY_BUILDING_AREA,The total building area in square feet,Fixed,Enhanced by Shovels (third party source)
+PROPERTY_CENSUS_TRACT,The census tract number,Text,Enhanced by Shovels (third party source)
+PROPERTY_CONGRESSIONAL_DISTRICT,The number of the congressional district,Text,Enhanced by Shovels (third party source)
+PROPERTY_LEGAL_OWNER,The owner according to the tax assessor,Text,Enhanced by Shovels (third party source)
+PROPERTY_LOT_SIZE,The total lot size in square feet,Fixed,Enhanced by Shovels (third party source)
+PROPERTY_OWNER_TYPE,The type of entity the owner is according to the tax assessor,Text,Enhanced by Shovels (third party source)
+PROPERTY_STORY_COUNT,The number of stories on the property,Fixed,Enhanced by Shovels (third party source)
+PROPERTY_TYPE,The type of property according to the tax assessor,Text,Enhanced by Shovels (third party source)
+PROPERTY_TYPE_DETAIL,The subtype of property according to the tax assessor,Text,Enhanced by Shovels (third party source)
+PROPERTY_UNIT_COUNT,The number of units on the property,Fixed,Enhanced by Shovels (third party source)
+PROPERTY_YEAR_BUILT,The year the property was constructed,Fixed,Enhanced by Shovels (third party source)
+REMODEL,TRUE if the permit involved a remodel,Boolean,Created by Shovels
+ROOFING,TRUE if the permit involved roofing,Boolean,Created by Shovels
+SOLAR,TRUE if the permit involved solar,Boolean,Created by Shovels
+START_DATE,The earliest date on the permit,Date,Created by Shovels
+STATE,The two-character state abbreviation,Text,Enhanced by Shovels
+STATE_FIPS,The state FIPS code,Text,Enhanced by Shovels
+STATUS,"The permit status (final, in_review, in_active, or active)",Text,Enhanced by Shovels
+STREET,The street name,Text,Enhanced by Shovels
+STREET_NO,The street number,Text,Enhanced by Shovels
+SUBTYPE,The subtype of the permit according to the jurisdiction,Text,Provided by jurisdiction
+TOTAL_DURATION,The number of days between the start date and the end date,Fixed,Created by Shovels
+TYPE,The type of the permit according to the jurisdiction,Text,Provided by jurisdiction
+WATER_HEATER,TRUE if the permit involved a water heater,Boolean,Created by Shovels
+WINDOW_DOOR,TRUE if the permit involved windows or doors,Boolean,Created by Shovels
+ZIPCODE,The five-digit ZIP code,Text,Enhanced by Shovels
+ZIPCODE_EXT,The four-digit ZIP code extension,Text,Enhanced by Shovels

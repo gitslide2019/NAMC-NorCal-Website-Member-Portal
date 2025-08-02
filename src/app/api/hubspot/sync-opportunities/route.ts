@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin role
     const session = await getServerSession(authOptions)
-    if (!session || session.user.memberType !== 'ADMIN') {
+    if (!session || session.user.role !== 'admin') {
       return NextResponse.json(
         { success: false, message: 'Admin access required' },
         { status: 403 }
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
             namc_opportunity_tags: JSON.stringify(opportunity.tags || []),
             namc_opportunity_latitude: opportunity.latitude?.toString() || '',
             namc_opportunity_longitude: opportunity.longitude?.toString() || '',
-            namc_opportunity_score: opportunity.score?.toString() || '0',
+            namc_opportunity_score: opportunity.opportunityScore?.toString() || '0',
             namc_complexity_score: opportunity.complexityScore?.toString() || '0',
             namc_match_score: opportunity.matchScore?.toString() || '0',
             namc_claude_analysis: JSON.stringify(opportunity.claudeAnalysis || {})
