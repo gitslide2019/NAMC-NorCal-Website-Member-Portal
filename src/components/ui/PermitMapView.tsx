@@ -77,12 +77,12 @@ const PermitMapView: React.FC<PermitMapViewProps> = ({
       id: permit.id || permit.permit_number,
       projectId: permit.id || permit.permit_number,
       name: permit.permit_number || 'Unknown Permit',
-      address: permit.address ? 
-        `${permit.address.street}, ${permit.address.city}, ${permit.address.state}` : 
+      address: permit.STREET ? 
+        `${permit.STREET}, ${permit.CITY}, ${permit.STATE}` : 
         'Address not available',
       coordinates: {
-        latitude: permit.address?.latitude || 37.7749 + (Math.random() - 0.5) * 0.1,
-        longitude: permit.address?.longitude || -122.4194 + (Math.random() - 0.5) * 0.1
+        latitude: permit.LAT || 37.7749 + (Math.random() - 0.5) * 0.1,
+        longitude: permit.LONG || -122.4194 + (Math.random() - 0.5) * 0.1
       },
       status: mapPermitStatus(permit.status),
       projectType: mapPermitType(permit.permit_type),
@@ -182,18 +182,15 @@ const PermitMapView: React.FC<PermitMapViewProps> = ({
       // Enrich permits with coordinates if they don't have them
       const enrichedPermits = await Promise.all(
         results.map(async (permit) => {
-          if (!permit.address?.latitude && permit.address?.street && arcgisSettings.isConfigured) {
-            const fullAddress = `${permit.address.street}, ${permit.address.city}, ${permit.address.state}`;
+          if (!permit.LAT && permit.STREET && arcgisSettings.isConfigured) {
+            const fullAddress = `${permit.STREET}, ${permit.CITY}, ${permit.STATE}`;
             const coordinates = await geocodeAddress(fullAddress);
             
             if (coordinates) {
               return {
                 ...permit,
-                address: {
-                  ...permit.address,
-                  latitude: coordinates.latitude,
-                  longitude: coordinates.longitude
-                }
+                LAT: coordinates.latitude,
+                LONG: coordinates.longitude
               };
             }
           }
@@ -297,10 +294,10 @@ const PermitMapView: React.FC<PermitMapViewProps> = ({
       </div>
 
       <div className="space-y-3 mb-6">
-        {permit.address && (
+        {permit.STREET && (
           <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
             <MapPin className="w-4 h-4" />
-            <span>{permit.address.street}, {permit.address.city}</span>
+            <span>{permit.STREET}, {permit.CITY}</span>
           </div>
         )}
         
