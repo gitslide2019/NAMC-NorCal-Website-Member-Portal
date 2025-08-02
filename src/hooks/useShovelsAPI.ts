@@ -1,38 +1,70 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Shovels API types
+// Shovels API V2 types (based on data dictionary)
 interface ShovelsPermit {
-  id: string;
-  permit_number: string;
-  permit_type: string;
-  status: 'issued' | 'pending' | 'expired' | 'rejected' | 'under_review';
-  issued_date: string;
-  expiration_date?: string;
-  valuation: number;
-  description: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    latitude?: number;
-    longitude?: number;
-  };
-  contractor?: {
-    name: string;
-    license_number?: string;
-    phone?: string;
-  };
-  owner?: {
-    name: string;
-    phone?: string;
-  };
-  fees?: {
-    total: number;
-    paid: number;
-    outstanding: number;
-  };
-  inspections?: ShovelsInspection[];
+  ID: string;
+  PERMIT_NUMBER: string;
+  TYPE: string;
+  SUBTYPE?: string;
+  STATUS: 'final' | 'in_review' | 'in_active' | 'active';
+  ISSUE_DATE?: string;
+  FILE_DATE?: string;
+  FINAL_DATE?: string;
+  START_DATE?: string;
+  END_DATE?: string;
+  JOB_VALUE?: number;
+  FEES?: number;
+  DESCRIPTION: string;
+  
+  // Location fields
+  STREET?: string;
+  STREET_NO?: string;
+  CITY: string;
+  STATE: string;
+  ZIPCODE?: string;
+  ZIPCODE_EXT?: string;
+  LAT?: number;
+  LONG?: number;
+  
+  // Property details
+  PROPERTY_TYPE?: string;
+  PROPERTY_TYPE_DETAIL?: string;
+  PROPERTY_BUILDING_AREA?: number;
+  PROPERTY_LOT_SIZE?: number;
+  PROPERTY_YEAR_BUILT?: number;
+  PROPERTY_UNIT_COUNT?: number;
+  
+  // Contractor info
+  CONTRACTOR_ID?: string;
+  CONTRACTOR_GROUP_ID?: string;
+  
+  // Owner info
+  OWNER_NAME?: string;
+  OWNER_STREET?: string;
+  OWNER_CITY?: string;
+  OWNER_STATE?: string;
+  OWNER_ZIPCODE?: string;
+  OWNER_PHONE?: string;
+  OWNER_EMAIL?: string;
+  
+  // Work type flags
+  NEW_CONSTRUCTION?: boolean;
+  ADDITION?: boolean;
+  REMODEL?: boolean;
+  DEMOLITION?: boolean;
+  ELECTRICAL?: boolean;
+  PLUMBING?: boolean;
+  HVAC?: boolean;
+  ROOFING?: boolean;
+  SOLAR?: boolean;
+  EV_CHARGER?: boolean;
+  HEAT_PUMP?: boolean;
+  BATTERY?: boolean;
+  
+  // Durations
+  APPROVAL_DURATION?: number;
+  CONSTRUCTION_DURATION?: number;
+  TOTAL_DURATION?: number;
 }
 
 interface ShovelsInspection {
@@ -94,7 +126,7 @@ interface ShovelsAPIHook {
 
 const DEFAULT_CONFIG: ShovelsAPIConfig = {
   apiKey: '',
-  baseUrl: 'https://api.shovels.ai/v1',
+  baseUrl: 'https://api.shovels.ai/v2',
   isConfigured: false
 };
 
@@ -174,7 +206,7 @@ export const useShovelsAPI = (): ShovelsAPIHook => {
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        'X-API-Key': config.apiKey,
         'Content-Type': 'application/json',
       },
     });
@@ -198,19 +230,30 @@ export const useShovelsAPI = (): ShovelsAPIHook => {
     limit?: number;
   }): Promise<ShovelsPermit[]> => {
     try {
-      const response = await makeAPIRequest('/permits', {
-        address: params.address,
-        city: params.city,
-        state: params.state,
-        zip: params.zip,
-        permit_type: params.permitType,
-        status: params.status,
-        issued_date_from: params.dateFrom,
-        issued_date_to: params.dateTo,
+      // V2 API requires permit_from, permit_to, and geo_id
+      const defaultDateFrom = params.dateFrom || '2023-01-01'; // Default to recent years with data
+      const defaultDateTo = params.dateTo || '2024-12-31';
+      
+      // Determine geo_id from provided location parameters
+      let geo_id = 'CA'; // Default to California
+      if (params.zip) {
+        geo_id = params.zip;
+      } else if (params.city && params.state) {
+        // For now use state, but could be enhanced to lookup city geo_ids
+        geo_id = params.state;
+      } else if (params.state) {
+        geo_id = params.state;
+      }
+
+      const response = await makeAPIRequest('/permits/search', {
+        permit_from: defaultDateFrom,
+        permit_to: defaultDateTo,
+        geo_id: geo_id,
         limit: params.limit || 50
       });
 
-      return response.permits || [];
+      // V2 API returns items array instead of permits
+      return response.items || [];
     } catch (error) {
       console.error('Failed to search permits:', error);
       return [];
@@ -256,7 +299,8 @@ export const useShovelsAPI = (): ShovelsAPIHook => {
     }
 
     try {
-      await makeAPIRequest('/permits', { limit: 1 });
+      // Use the meta endpoint to test connection (doesn't require complex parameters)
+      await makeAPIRequest('/meta/release');
       return true;
     } catch (error) {
       console.error('Shovels API connection test failed:', error);

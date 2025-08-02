@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { authOptions } from '../../auth/[...nextauth]/route'
 import { PrismaClient } from '@prisma/client'
-
-// Force dynamic rendering to prevent static generation during build
-export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient()
 
@@ -14,27 +11,19 @@ const HUBSPOT_API_URL = 'https://api.hubapi.com'
 
 export async function GET(request: NextRequest) {
   try {
-    // Check if user is authenticated
+    // Check authentication
     const session = await getServerSession(authOptions)
-    
     if (!session) {
       return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
+        { success: false, message: 'Authentication required' },
         { status: 401 }
       )
     }
 
-    // Get search parameters
-    const { searchParams } = new URL(request.url)
-    const search = searchParams.get('search')
-    const memberType = searchParams.get('memberType')
-    const location = searchParams.get('location')
-    const company = searchParams.get('company')
-
+    // Try to get data from HubSpot first, fallback to database
     let members: any[] = []
     let source = 'database'
 
-    // Try to get data from HubSpot first
     if (HUBSPOT_API_KEY) {
       try {
         const response = await fetch(`${HUBSPOT_API_URL}/crm/v3/objects/contacts?properties=email,firstname,lastname,company,phone,website,city,state,namc_member_id,namc_member_type,namc_join_date,namc_last_active,namc_is_active,namc_location&limit=100`, {
@@ -62,8 +51,6 @@ export async function GET(request: NextRequest) {
               isActive: contact.properties.namc_is_active === 'true',
               createdAt: contact.properties.namc_join_date ? new Date(contact.properties.namc_join_date) : null,
               updatedAt: contact.properties.namc_last_active ? new Date(contact.properties.namc_last_active) : null,
-              joinDate: contact.properties.namc_join_date,
-              status: contact.properties.namc_is_active === 'true' ? 'active' : 'inactive',
               hubspotContactId: contact.id
             }))
 
@@ -93,72 +80,25 @@ export async function GET(request: NextRequest) {
           updatedAt: true
         }
       })
-      
-      members = dbMembers.map(member => ({
-        ...member,
-        joinDate: member.createdAt?.toISOString(),
-        status: member.isActive ? 'active' : 'inactive'
-      }))
+      members = dbMembers
       source = 'database'
     }
 
-    // Apply filters
-    let filteredMembers = members
-
-    // Apply search filter
-    if (search) {
-      const searchLower = search.toLowerCase()
-      filteredMembers = filteredMembers.filter((member: any) =>
-        member.name?.toLowerCase().includes(searchLower) ||
-        member.company?.toLowerCase().includes(searchLower) ||
-        member.email?.toLowerCase().includes(searchLower)
-      )
-    }
-
-    // Apply member type filter
-    if (memberType && memberType !== 'all') {
-      filteredMembers = filteredMembers.filter((member: any) =>
-        member.memberType === memberType
-      )
-    }
-
-    // Apply location filter
-    if (location) {
-      filteredMembers = filteredMembers.filter((member: any) =>
-        member.location?.toLowerCase().includes(location.toLowerCase())
-      )
-    }
-
-    // Apply company filter
-    if (company) {
-      filteredMembers = filteredMembers.filter((member: any) =>
-        member.company?.toLowerCase().includes(company.toLowerCase())
-      )
-    }
-
-    // Extract filter options
-    const memberTypes = [...new Set(members.map((m: any) => m.memberType))].filter(Boolean).sort()
-    const locations = [...new Set(members.map((m: any) => m.location).filter(Boolean))].sort()
-    const companies = [...new Set(members.map((m: any) => m.company).filter(Boolean))].sort()
-
     return NextResponse.json({
       success: true,
-      data: {
-        members: filteredMembers,
-        total: filteredMembers.length,
-        source,
-        filters: {
-          memberTypes,
-          locations,
-          companies
-        }
-      }
+      data: members,
+      total: members.length,
+      source
     })
 
   } catch (error) {
-    console.error('Error fetching members:', error)
+    console.error('API error:', error)
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { 
+        success: false, 
+        message: 'Failed to get members',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   } finally {

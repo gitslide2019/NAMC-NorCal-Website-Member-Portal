@@ -39,6 +39,10 @@ model Opportunity {
   location        String?
   estimatedValue  Float?
   
+  // Geographic coordinates for map display
+  latitude        Float?
+  longitude       Float?
+  
   // Requirements and tags as JSON strings
   requirements    String?  // JSON array as string
   tags            String?  // JSON array as string
