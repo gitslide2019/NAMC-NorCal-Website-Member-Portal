@@ -1,572 +1,315 @@
 import { test, expect, devices } from '@playwright/test'
-import { HomePage } from '../pages/HomePage'
-import { RegistrationPage } from '../pages/RegistrationPage'
-import { SignInPage } from '../pages/SignInPage'
-import { MemberDashboardPage } from '../pages/MemberDashboardPage'
-import { TestHelpers } from '../utils/test-helpers'
 
-test.describe('Mobile UX Experience Testing', () => {
-  test.beforeEach(async ({ page }) => {
-    // Set mobile viewport
-    await page.setViewportSize({ width: 375, height: 667 })
-  })
+test.describe('Mobile UX Tests', () => {
+  test.describe('iPhone 13 Pro', () => {
+    test.use({ ...devices['iPhone 13 Pro'] })
 
-  test('should handle mobile navigation patterns', async ({ page }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step('Test mobile menu hamburger pattern', async () => {
-      await homePage.goto()
+    test('should have responsive navigation on mobile', async ({ page }) => {
+      await page.goto('/member/dashboard')
       
-      // Look for mobile menu button
-      const mobileMenuSelectors = [
-        'button[aria-label*="menu"]',
-        '.hamburger-menu',
-        '[data-testid="mobile-menu"]',
-        'button:has-text("☰")',
-        '.mobile-menu-toggle'
-      ]
+      // Check mobile navigation menu
+      await expect(page.locator('[data-testid="mobile-menu-button"]')).toBeVisible()
+      await expect(page.locator('[data-testid="desktop-navigation"]')).not.toBeVisible()
       
-      let mobileMenuFound = false
-      for (const selector of mobileMenuSelectors) {
-        const menuButton = page.locator(selector)
-        if (await menuButton.count() > 0) {
-          mobileMenuFound = true
-          
-          // Test menu toggle
-          await menuButton.click()
-          await page.waitForTimeout(500)
-          
-          // Menu should open
-          const menuOpen = await page.locator('.mobile-menu, [aria-expanded="true"], .menu-open').count() > 0
-          console.log(`Mobile menu opened: ${menuOpen}`)
-          
-          // Close menu
-          await menuButton.click()
-          await page.waitForTimeout(500)
-          break
-        }
-      }
+      // Open mobile menu
+      await page.click('[data-testid="mobile-menu-button"]')
+      await expect(page.locator('[data-testid="mobile-menu-overlay"]')).toBeVisible()
       
-      console.log(`Mobile menu pattern found: ${mobileMenuFound}`)
+      // Check navigation items are accessible
+      await expect(page.locator('[data-testid="nav-tools"]')).toBeVisible()
+      await expect(page.locator('[data-testid="nav-projects"]')).toBeVisible()
+      await expect(page.locator('[data-testid="nav-cost-estimator"]')).toBeVisible()
+      
+      // Close menu by tapping outside
+      await page.click('[data-testid="mobile-menu-overlay"]', { position: { x: 50, y: 50 } })
+      await expect(page.locator('[data-testid="mobile-menu-overlay"]')).not.toBeVisible()
     })
 
-    await test.step('Test sticky navigation on mobile', async () => {
-      // Scroll down to test sticky nav
-      await page.evaluate(() => window.scrollTo(0, 500))
-      await page.waitForTimeout(500)
+    test('should optimize camera AI interface for mobile', async ({ page }) => {
+      await page.goto('/member/project-intelligence/camera')
       
-      const nav = page.locator('nav, .navigation, header').first()
-      const navVisible = await nav.isVisible()
+      // Check mobile camera controls
+      await expect(page.locator('[data-testid="mobile-camera-controls"]')).toBeVisible()
+      await expect(page.locator('[data-testid="capture-button"]')).toHaveCSS('min-height', '44px')
       
-      // Check if navigation remains accessible
-      expect(navVisible).toBeTruthy()
-      console.log(`Sticky navigation visible: ${navVisible}`)
-    })
-  })
-
-  test('should optimize touch interactions', async ({ page }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step('Test touch target sizes', async () => {
-      await homePage.goto()
+      // Test touch gestures for camera
+      const cameraView = page.locator('[data-testid="camera-viewport"]')
       
-      // Find all interactive elements
-      const touchTargets = await page.locator('button, a, input[type="checkbox"], input[type="radio"]').all()
-      const smallTargets: string[] = []
-      
-      for (const target of touchTargets) {
-        if (await target.isVisible()) {
-          const box = await target.boundingBox()
-          
-          if (box) {
-            // WCAG recommends minimum 44x44 pixels for touch targets
-            const hasAdequateSize = box.width >= 44 && box.height >= 44
-            
-            if (!hasAdequateSize) {
-              const targetText = await target.textContent()
-              smallTargets.push(`${targetText || 'unnamed'}: ${box.width}x${box.height}`)
-            }
-          }
-        }
-      }
-      
-      console.log(`Touch targets below 44px: ${smallTargets.length}`)
-      smallTargets.forEach(target => console.log(`  - ${target}`))
-      
-      // Allow some small targets but flag if too many
-      expect(smallTargets.length).toBeLessThan(10)
-    })
-
-    await test.step('Test touch gestures', async () => {
-      // Test tap interactions
-      await homePage.becomeMemberButton.tap()
-      await page.waitForTimeout(2000)
-      
-      // Should navigate successfully
-      const currentUrl = page.url()
-      expect(currentUrl).toContain('/auth/register')
-      
-      console.log('Touch tap navigation successful')
-    })
-
-    await test.step('Test scroll performance on mobile', async () => {
-      await homePage.goto()
-      
-      // Measure scroll performance
-      const scrollStart = Date.now()
-      
+      // Pinch to zoom (simulated)
+      await cameraView.touchscreen.tap(200, 200)
       await page.evaluate(() => {
-        return new Promise(resolve => {
-          let scrollCount = 0
-          const scrollHeight = document.body.scrollHeight
-          const viewportHeight = window.innerHeight
-          const scrollStep = viewportHeight / 2
-          
-          function smoothScroll() {
-            window.scrollBy(0, scrollStep)
-            scrollCount++
-            
-            if (window.scrollY >= scrollHeight - viewportHeight || scrollCount > 10) {
-              resolve(undefined)
-            } else {
-              requestAnimationFrame(smoothScroll)
-            }
-          }
-          
-          smoothScroll()
+        const event = new TouchEvent('touchstart', {
+          touches: [
+            { clientX: 150, clientY: 150, identifier: 0 },
+            { clientX: 250, clientY: 250, identifier: 1 }
+          ]
         })
+        document.dispatchEvent(event)
       })
       
-      const scrollTime = Date.now() - scrollStart
-      console.log(`Mobile scroll performance: ${scrollTime}ms`)
+      // Check AI analysis overlay is mobile-optimized
+      await page.click('[data-testid="capture-button"]')
+      await expect(page.locator('[data-testid="mobile-analysis-overlay"]')).toBeVisible()
       
-      // Mobile scrolling should be smooth
-      expect(scrollTime).toBeLessThan(3000)
+      // Check text is readable on mobile
+      const analysisText = page.locator('[data-testid="material-identification"]')
+      await expect(analysisText).toHaveCSS('font-size', /^(14px|16px|18px)$/)
+    })
+
+    test('should handle tool reservation on mobile', async ({ page }) => {
+      await page.goto('/member/tools')
+      
+      // Check tool cards are mobile-optimized
+      const toolCard = page.locator('[data-testid="tool-card"]').first()
+      await expect(toolCard).toBeVisible()
+      
+      // Check touch targets are large enough (44px minimum)
+      const reserveButton = toolCard.locator('[data-testid="reserve-button"]')
+      const buttonBox = await reserveButton.boundingBox()
+      expect(buttonBox?.height).toBeGreaterThanOrEqual(44)
+      expect(buttonBox?.width).toBeGreaterThanOrEqual(44)
+      
+      // Test swipe gestures on tool list
+      await page.touchscreen.tap(200, 300)
+      await page.touchscreen.tap(200, 200) // Swipe up
+      
+      // Open reservation modal
+      await page.click('[data-testid="reserve-button"]')
+      await expect(page.locator('[data-testid="reservation-modal"]')).toBeVisible()
+      
+      // Check modal is full-screen on mobile
+      const modal = page.locator('[data-testid="reservation-modal"]')
+      const modalBox = await modal.boundingBox()
+      const viewport = page.viewportSize()
+      
+      expect(modalBox?.width).toBeCloseTo(viewport?.width || 0, 10)
+      expect(modalBox?.height).toBeCloseTo(viewport?.height || 0, 50)
+    })
+
+    test('should optimize forms for mobile input', async ({ page }) => {
+      await page.goto('/member/cost-estimator')
+      
+      // Check form inputs are mobile-friendly
+      const projectNameInput = page.locator('[data-testid="project-name-input"]')
+      await expect(projectNameInput).toHaveAttribute('autocomplete', 'off')
+      await expect(projectNameInput).toHaveCSS('font-size', /^(16px|18px)$/) // Prevent zoom on iOS
+      
+      // Check number inputs have proper keyboard
+      const squareFootageInput = page.locator('[data-testid="square-footage-input"]')
+      await expect(squareFootageInput).toHaveAttribute('inputmode', 'numeric')
+      
+      // Test form submission on mobile
+      await projectNameInput.fill('Mobile Test Project')
+      await page.selectOption('[data-testid="project-type-select"]', 'residential')
+      await squareFootageInput.fill('1200')
+      
+      // Check submit button is accessible
+      const submitButton = page.locator('[data-testid="generate-estimate-button"]')
+      const submitBox = await submitButton.boundingBox()
+      expect(submitBox?.height).toBeGreaterThanOrEqual(44)
+      
+      await submitButton.click()
+      await expect(page.locator('[data-testid="estimate-loading"]')).toBeVisible()
+    })
+
+    test('should handle OCR business card scanning on mobile', async ({ page }) => {
+      await page.goto('/member/scanner')
+      
+      // Check camera access button
+      const cameraButton = page.locator('[data-testid="camera-scan-button"]')
+      await expect(cameraButton).toBeVisible()
+      
+      // Check file upload option for mobile
+      const uploadButton = page.locator('[data-testid="upload-card-button"]')
+      await expect(uploadButton).toBeVisible()
+      
+      // Test file upload
+      const fileInput = page.locator('[data-testid="card-file-input"]')
+      await fileInput.setInputFiles('tests/fixtures/business-card.jpg')
+      
+      // Check processing indicator
+      await expect(page.locator('[data-testid="processing-indicator"]')).toBeVisible()
+      
+      // Check results are mobile-optimized
+      await expect(page.locator('[data-testid="ocr-results-mobile"]')).toBeVisible()
+      
+      // Check edit form is touch-friendly
+      const editButton = page.locator('[data-testid="edit-contact-button"]')
+      await editButton.click()
+      
+      const editForm = page.locator('[data-testid="contact-edit-form"]')
+      await expect(editForm).toBeVisible()
+      
+      // Check form fields are properly sized
+      const nameInput = editForm.locator('[data-testid="first-name-input"]')
+      await expect(nameInput).toHaveCSS('min-height', '44px')
     })
   })
 
-  test('should handle virtual keyboard properly', async ({ page }) => {
-    const registrationPage = new RegistrationPage(page)
-    
-    await test.step('Test virtual keyboard interaction', async () => {
-      await registrationPage.goto()
+  test.describe('iPad Pro', () => {
+    test.use({ ...devices['iPad Pro'] })
+
+    test('should adapt layout for tablet view', async ({ page }) => {
+      await page.goto('/member/dashboard')
       
-      // Focus on input field to trigger virtual keyboard
-      await registrationPage.firstNameInput.focus()
-      await registrationPage.firstNameInput.fill('Test User')
+      // Check tablet-specific layout
+      await expect(page.locator('[data-testid="tablet-sidebar"]')).toBeVisible()
+      await expect(page.locator('[data-testid="mobile-menu-button"]')).not.toBeVisible()
       
-      // Check that input remains visible and accessible
-      await expect(registrationPage.firstNameInput).toBeVisible()
+      // Check grid layout adapts to tablet
+      const projectGrid = page.locator('[data-testid="projects-grid"]')
+      await expect(projectGrid).toHaveCSS('grid-template-columns', /repeat\(2,/)
+    })
+
+    test('should optimize camera interface for tablet', async ({ page }) => {
+      await page.goto('/member/project-intelligence/camera')
       
-      // Test scrolling input into view
-      const inputBox = await registrationPage.firstNameInput.boundingBox()
-      expect(inputBox).toBeTruthy()
+      // Check tablet camera layout
+      await expect(page.locator('[data-testid="tablet-camera-layout"]')).toBeVisible()
       
-      if (inputBox) {
-        // Input should be in viewport
-        const isInViewport = inputBox.y >= 0 && inputBox.y <= 667
-        console.log(`Input in viewport with virtual keyboard: ${isInViewport}`)
+      // Check side panel for analysis results
+      await expect(page.locator('[data-testid="analysis-side-panel"]')).toBeVisible()
+      
+      // Test landscape orientation
+      await page.setViewportSize({ width: 1366, height: 1024 })
+      await expect(page.locator('[data-testid="landscape-camera-view"]')).toBeVisible()
+    })
+  })
+
+  test.describe('Android Phone', () => {
+    test.use({ ...devices['Pixel 5'] })
+
+    test('should handle Android-specific interactions', async ({ page }) => {
+      await page.goto('/member/tools')
+      
+      // Test Android back button behavior
+      await page.click('[data-testid="tool-card"]')
+      await expect(page.locator('[data-testid="tool-details"]')).toBeVisible()
+      
+      // Simulate Android back button
+      await page.goBack()
+      await expect(page.locator('[data-testid="tool-details"]')).not.toBeVisible()
+      
+      // Test pull-to-refresh
+      await page.touchscreen.tap(200, 100)
+      await page.touchscreen.tap(200, 300) // Pull down gesture
+      await expect(page.locator('[data-testid="refresh-indicator"]')).toBeVisible()
+    })
+
+    test('should optimize for Android keyboard', async ({ page }) => {
+      await page.goto('/member/cost-estimator')
+      
+      // Check Android-specific input attributes
+      const emailInput = page.locator('[data-testid="contact-email-input"]')
+      if (await emailInput.count() > 0) {
+        await expect(emailInput).toHaveAttribute('inputmode', 'email')
+      }
+      
+      // Check number inputs
+      const budgetInput = page.locator('[data-testid="budget-input"]')
+      if (await budgetInput.count() > 0) {
+        await expect(budgetInput).toHaveAttribute('inputmode', 'decimal')
       }
     })
+  })
 
-    await test.step('Test form submission on mobile', async () => {
-      // Fill form completely
-      await registrationPage.firstNameInput.fill('Mobile')
-      await registrationPage.lastNameInput.fill('User')
-      await registrationPage.emailInput.fill('mobile@test.com')
-      await registrationPage.phoneInput.fill('5551234567')
-      await registrationPage.companyInput.fill('Mobile Test Co')
-      await registrationPage.passwordInput.fill('password123')
-      await registrationPage.confirmPasswordInput.fill('password123')
+  test.describe('Cross-Device Functionality', () => {
+    test('should maintain session across device switches', async ({ page, context }) => {
+      // Start on mobile
+      await page.setViewportSize({ width: 375, height: 667 })
+      await page.goto('/auth/signin')
       
-      // Submit with mobile keyboard
-      await registrationPage.nextButton.tap()
-      await page.waitForTimeout(2000)
+      // Login
+      await page.fill('[data-testid="email"]', 'mobile@test.com')
+      await page.fill('[data-testid="password"]', 'TestPassword123!')
+      await page.click('[data-testid="signin-button"]')
       
-      // Should advance to next step
-      const currentStep = await page.locator('.step-indicator, [data-step="2"], .progress-step').count()
-      console.log(`Advanced to next step on mobile: ${currentStep > 0}`)
+      await expect(page).toHaveURL('/member/dashboard')
+      
+      // Switch to tablet view
+      await page.setViewportSize({ width: 1024, height: 768 })
+      await page.reload()
+      
+      // Should still be logged in
+      await expect(page).toHaveURL('/member/dashboard')
+      await expect(page.locator('[data-testid="user-profile"]')).toBeVisible()
+    })
+
+    test('should sync data across viewport changes', async ({ page }) => {
+      await page.goto('/member/cost-estimator')
+      
+      // Fill form on mobile
+      await page.setViewportSize({ width: 375, height: 667 })
+      await page.fill('[data-testid="project-name-input"]', 'Cross-device Project')
+      await page.selectOption('[data-testid="project-type-select"]', 'commercial')
+      
+      // Switch to desktop
+      await page.setViewportSize({ width: 1920, height: 1080 })
+      
+      // Data should be preserved
+      await expect(page.locator('[data-testid="project-name-input"]')).toHaveValue('Cross-device Project')
+      await expect(page.locator('[data-testid="project-type-select"]')).toHaveValue('commercial')
+    })
+
+    test('should handle orientation changes', async ({ page }) => {
+      // Start in portrait
+      await page.setViewportSize({ width: 375, height: 667 })
+      await page.goto('/member/project-intelligence/camera')
+      
+      await expect(page.locator('[data-testid="portrait-camera-view"]')).toBeVisible()
+      
+      // Switch to landscape
+      await page.setViewportSize({ width: 667, height: 375 })
+      
+      await expect(page.locator('[data-testid="landscape-camera-view"]')).toBeVisible()
+      
+      // Check controls are still accessible
+      await expect(page.locator('[data-testid="capture-button"]')).toBeVisible()
+      await expect(page.locator('[data-testid="settings-button"]')).toBeVisible()
     })
   })
 
-  test('should optimize mobile performance', async ({ page }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step('Test mobile load performance', async () => {
+  test.describe('Performance on Mobile', () => {
+    test('should load quickly on mobile networks', async ({ page }) => {
+      // Simulate slow 3G
+      await page.route('**/*', route => {
+        setTimeout(() => route.continue(), 100) // Add 100ms delay
+      })
+      
       const startTime = Date.now()
-      await homePage.goto()
-      await homePage.waitForHeroToLoad()
-      
+      await page.goto('/member/dashboard')
+      await page.waitForLoadState('networkidle')
       const loadTime = Date.now() - startTime
-      console.log(`Mobile load time: ${loadTime}ms`)
       
-      // Mobile should load within 5 seconds
+      // Should load within 5 seconds on slow connection
       expect(loadTime).toBeLessThan(5000)
+      
+      // Check critical content is visible
+      await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible()
+      await expect(page.locator('[data-testid="quick-actions"]')).toBeVisible()
     })
 
-    await test.step('Test mobile resource optimization', async () => {
-      const resourceMetrics = await page.evaluate(() => {
-        const resources = performance.getEntriesByType('resource')
-        
-        return {
-          totalResources: resources.length,
-          totalSize: resources.reduce((sum, r) => sum + (r.transferSize || 0), 0),
-          imageCount: resources.filter(r => r.name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)).length,
-          cssCount: resources.filter(r => r.name.match(/\.css$/i)).length,
-          jsCount: resources.filter(r => r.name.match(/\.js$/i)).length
-        }
-      })
-      
-      console.log('Mobile resource metrics:', resourceMetrics)
-      
-      // Mobile should have optimized resource usage
-      expect(resourceMetrics.totalSize).toBeLessThan(3 * 1024 * 1024) // < 3MB
-      expect(resourceMetrics.totalResources).toBeLessThan(50) // < 50 resources
-    })
-
-    await test.step('Test mobile memory usage', async () => {
-      const memoryMetrics = await page.evaluate(() => {
-        // @ts-ignore
-        return (performance as any).memory ? {
-          // @ts-ignore
-          used: (performance as any).memory.usedJSHeapSize,
-          // @ts-ignore
-          total: (performance as any).memory.totalJSHeapSize
-        } : null
-      })
-      
-      if (memoryMetrics) {
-        console.log('Mobile memory usage:', memoryMetrics)
-        
-        // Mobile should use less than 50MB
-        expect(memoryMetrics.used).toBeLessThan(50 * 1024 * 1024)
-      }
-    })
-  })
-
-  test('should handle mobile-specific layouts', async ({ page }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step('Test mobile content hierarchy', async () => {
-      await homePage.goto()
-      
-      // Check mobile content stacking
-      const sections = await page.locator('section, .section, main > div').all()
-      
-      for (let i = 0; i < Math.min(sections.length, 5); i++) {
-        const section = sections[i]
-        if (await section.isVisible()) {
-          const box = await section.boundingBox()
-          
-          if (box) {
-            // Content should fit mobile width
-            expect(box.width).toBeLessThanOrEqual(375)
-            console.log(`Section ${i}: width=${box.width}px`)
-          }
-        }
-      }
-    })
-
-    await test.step('Test mobile typography', async () => {
-      const textElements = await page.locator('h1, h2, h3, p, span').all()
-      
-      for (let i = 0; i < Math.min(textElements.length, 10); i++) {
-        const element = textElements[i]
-        if (await element.isVisible()) {
-          const styles = await element.evaluate(el => {
-            const computed = window.getComputedStyle(el)
-            return {
-              fontSize: parseFloat(computed.fontSize),
-              lineHeight: computed.lineHeight,
-              marginBottom: parseFloat(computed.marginBottom)
-            }
-          })
-          
-          // Mobile text should be readable (min 16px for body)
-          if (element.locator('p, span, div').count() > 0) {
-            expect(styles.fontSize).toBeGreaterThanOrEqual(14) // Allow 14px minimum
-          }
-          
-          console.log(`Text element ${i}: fontSize=${styles.fontSize}px`)
-        }
-      }
-    })
-  })
-
-  test('should handle mobile accessibility', async ({ page }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step('Test mobile accessibility features', async () => {
-      await homePage.goto()
-      
-      // Check zoom compatibility
-      await page.evaluate(() => {
-        document.body.style.zoom = '200%'
-      })
-      
-      await page.waitForTimeout(500)
-      
-      // Content should still be accessible at 200% zoom
-      await expect(homePage.heroTitle).toBeVisible()
-      await expect(homePage.becomeMemberButton).toBeVisible()
-      
-      // Reset zoom
-      await page.evaluate(() => {
-        document.body.style.zoom = '100%'
-      })
-      
-      console.log('Mobile zoom accessibility test passed')
-    })
-
-    await test.step('Test mobile screen reader compatibility', async () => {
-      // Check for mobile-friendly ARIA labels
-      const interactiveElements = await page.locator('button, a, input').all()
-      let elementsWithLabels = 0
-      
-      for (const element of interactiveElements) {
-        if (await element.isVisible()) {
-          const ariaLabel = await element.getAttribute('aria-label')
-          const title = await element.getAttribute('title')
-          const textContent = await element.textContent()
-          
-          if (ariaLabel || title || (textContent && textContent.trim().length > 0)) {
-            elementsWithLabels++
-          }
-        }
-      }
-      
-      console.log(`Interactive elements with labels: ${elementsWithLabels}`)
-      expect(elementsWithLabels).toBeGreaterThan(0)
-    })
-  })
-
-  test('should handle mobile orientation changes', async ({ page }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step('Test portrait orientation', async () => {
-      await page.setViewportSize({ width: 375, height: 667 })
-      await homePage.goto()
-      
-      await expect(homePage.heroTitle).toBeVisible()
-      await expect(homePage.becomeMemberButton).toBeVisible()
-      
-      console.log('Portrait orientation layout working')
-    })
-
-    await test.step('Test landscape orientation', async () => {
-      await page.setViewportSize({ width: 667, height: 375 })
-      await page.waitForTimeout(500)
-      
-      // Content should adapt to landscape
-      await expect(homePage.heroTitle).toBeVisible()
-      await expect(homePage.becomeMemberButton).toBeVisible()
-      
-      console.log('Landscape orientation layout working')
-    })
-
-    await test.step('Test orientation change handling', async () => {
-      // Simulate orientation change
-      await page.setViewportSize({ width: 375, height: 667 })
-      await page.waitForTimeout(500)
-      await page.setViewportSize({ width: 667, height: 375 })
-      await page.waitForTimeout(500)
-      
-      // Layout should remain functional
-      const pageTitle = await page.title()
-      expect(pageTitle).toBeTruthy()
-      
-      console.log('Orientation change handling successful')
-    })
-  })
-
-  test('should handle mobile form UX patterns', async ({ page }) => {
-    const registrationPage = new RegistrationPage(page)
-    
-    await test.step('Test mobile form layout', async () => {
-      await registrationPage.goto()
-      
-      // Form should stack vertically on mobile
-      const formInputs = await page.locator('input').all()
-      
-      for (let i = 0; i < Math.min(formInputs.length, 5); i++) {
-        const input = formInputs[i]
-        if (await input.isVisible()) {
-          const box = await input.boundingBox()
-          
-          if (box) {
-            // Input should span most of mobile width
-            expect(box.width).toBeGreaterThan(250) // At least 250px wide
-            console.log(`Form input ${i}: width=${box.width}px`)
-          }
-        }
-      }
-    })
-
-    await test.step('Test mobile input types', async () => {
-      // Check appropriate input types for mobile
-      const emailInput = registrationPage.emailInput
-      const phoneInput = registrationPage.phoneInput
-      
-      const emailInputType = await emailInput.getAttribute('type')
-      const phoneInputType = await phoneInput.getAttribute('type')
-      
-      // Should use appropriate input types for mobile keyboards
-      expect(emailInputType).toBe('email')
-      expect(phoneInputType === 'tel' || phoneInputType === 'phone').toBeTruthy()
-      
-      console.log(`Input types: email=${emailInputType}, phone=${phoneInputType}`)
-    })
-
-    await test.step('Test mobile validation feedback', async () => {
-      // Test immediate validation feedback
-      await registrationPage.emailInput.fill('invalid')
-      await registrationPage.emailInput.blur()
-      
-      await page.waitForTimeout(500)
-      
-      // Should show validation message
-      const validationMessage = await page.locator('.text-red-500, [role="alert"], .error-message').count()
-      expect(validationMessage).toBeGreaterThan(0)
-      
-      console.log('Mobile validation feedback working')
-    })
-  })
-})
-
-test.describe('Device-Specific Testing', () => {
-  // Test on actual device configurations
-  const testDevices = [
-    { name: 'iPhone SE', config: devices['iPhone SE'] },
-    { name: 'iPhone 12', config: devices['iPhone 12'] },
-    { name: 'iPhone 12 Pro Max', config: devices['iPhone 12 Pro Max'] },
-    { name: 'iPad Air', config: devices['iPad Air'] },
-    { name: 'Samsung Galaxy S8', config: devices['Galaxy S8'] },
-    { name: 'Samsung Galaxy Tab S4', config: devices['Galaxy Tab S4'] }
-  ]
-
-  for (const { name, config } of testDevices) {
-    test(`should work optimally on ${name}`, async ({ browser }) => {
-      const context = await browser.newContext({
-        ...config,
-      })
-      const page = await context.newPage()
-      
-      const homePage = new HomePage(page)
-      
-      await test.step(`Test ${name} device compatibility`, async () => {
-        await homePage.goto()
-        await homePage.waitForHeroToLoad()
-        
-        // Core functionality should work
-        await expect(homePage.heroTitle).toBeVisible()
-        await expect(homePage.becomeMemberButton).toBeVisible()
-        
-        // Measure device-specific performance
-        const metrics = await TestHelpers.getPerformanceMetrics(page)
-        
-        console.log(`${name} performance:`, {
-          loadTime: metrics.loadComplete,
-          firstPaint: metrics.firstPaint,
-          resources: metrics.resourceCount
-        })
-        
-        // Device should load within reasonable time
-        expect(metrics.loadComplete).toBeLessThan(8000) // 8 seconds max
-      })
-
-      await test.step(`Test ${name} interaction patterns`, async () => {
-        // Test device-appropriate interactions
-        if (name.includes('iPhone') || name.includes('Galaxy')) {
-          // Mobile interactions
-          await homePage.becomeMemberButton.tap()
-        } else {
-          // Tablet interactions
-          await homePage.becomeMemberButton.click()
-        }
-        
-        await page.waitForTimeout(2000)
-        
-        // Should navigate successfully
-        const currentUrl = page.url()
-        expect(currentUrl).toContain('/auth/register')
-        
-        console.log(`${name} interaction successful`)
-      })
-
-      await test.step(`Capture ${name} screenshot`, async () => {
-        await homePage.goto()
-        await page.screenshot({
-          path: `test-results/device-screenshots/${name.replace(/\s+/g, '-').toLowerCase()}.png`,
-          fullPage: true
-        })
-      })
-      
-      await context.close()
-    })
-  }
-})
-
-test.describe('Progressive Web App Features', () => {
-  test('should handle offline capabilities', async ({ page }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step('Test offline page loading', async () => {
-      await homePage.goto()
+    test('should handle offline scenarios', async ({ page }) => {
+      await page.goto('/member/dashboard')
       
       // Go offline
-      await page.route('**/*', route => route.abort('internetdisconnected'))
+      await page.context().setOffline(true)
       
-      // Try to navigate
+      // Check offline indicator
+      await expect(page.locator('[data-testid="offline-indicator"]')).toBeVisible()
+      
+      // Check cached content is still available
+      await expect(page.locator('[data-testid="dashboard-content"]')).toBeVisible()
+      
+      // Try to navigate - should show offline message
+      await page.click('[data-testid="nav-tools"]')
+      await expect(page.locator('[data-testid="offline-message"]')).toBeVisible()
+      
+      // Go back online
+      await page.context().setOffline(false)
       await page.reload()
-      await page.waitForTimeout(2000)
       
-      // Should show offline message or cached content
-      const pageContent = await page.textContent('body')
-      const hasOfflineHandling = pageContent?.includes('offline') || 
-                                 pageContent?.includes('network') ||
-                                 pageContent?.includes('connection')
-      
-      console.log(`Offline handling detected: ${hasOfflineHandling}`)
-    })
-  })
-
-  test('should handle app-like features', async ({ page }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step('Test PWA manifest', async () => {
-      await homePage.goto()
-      
-      // Check for PWA manifest
-      const manifest = await page.locator('link[rel="manifest"]').getAttribute('href')
-      
-      if (manifest) {
-        console.log(`PWA manifest found: ${manifest}`)
-        
-        // Fetch and validate manifest
-        const manifestResponse = await page.context().request.get(manifest)
-        const manifestData = await manifestResponse.json()
-        
-        expect(manifestData.name || manifestData.short_name).toBeTruthy()
-        console.log('PWA manifest valid')
-      } else {
-        console.log('No PWA manifest found')
-      }
-    })
-
-    await test.step('Test service worker registration', async () => {
-      const hasServiceWorker = await page.evaluate(() => {
-        return 'serviceWorker' in navigator
-      })
-      
-      console.log(`Service worker support: ${hasServiceWorker}`)
-      
-      if (hasServiceWorker) {
-        const registrations = await page.evaluate(() => {
-          return navigator.serviceWorker.getRegistrations()
-        })
-        
-        console.log(`Service worker registrations: ${registrations.length}`)
-      }
+      await expect(page.locator('[data-testid="offline-indicator"]')).not.toBeVisible()
     })
   })
 })

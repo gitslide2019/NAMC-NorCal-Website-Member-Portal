@@ -8,7 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Simplified User model
+// User model with HubSpot integration
 model User {
   id            String   @id @default(cuid())
   email         String   @unique
@@ -22,11 +22,155 @@ model User {
   lastActive    DateTime @default(now())
   isActive      Boolean  @default(true)
   
+  // Onboarding fields
+  onboardingCurrentStep       Int?
+  onboardingCompletedSteps    String?  // Comma-separated step IDs
+  onboardingSkippedSteps      String?  // Comma-separated step IDs
+  onboardingTechComfort       String?  // beginner, intermediate, advanced
+  onboardingProgressPercent   Float?   @default(0)
+  onboardingStrugglingAreas   String?  // Comma-separated areas
+  onboardingBadges            String?  // Comma-separated badge IDs
+  onboardingIsCompleted       Boolean  @default(false)
+  onboardingCompletedAt       DateTime?
+  
+  // HubSpot sync fields
+  hubspotContactId    String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  // QuickBooks integration fields
+  quickbooksConnected     Boolean  @default(false)
+  quickbooksRealmId       String?
+  quickbooksCompanyName   String?
+  quickbooksConnectedAt   DateTime?
+  quickbooksDisconnectedAt DateTime?
+  quickbooksLastSync      DateTime?
+  quickbooksSyncStatus    String   @default("NONE") // NONE, PENDING, SYNCED, ERROR
+  quickbooksSyncError     String?
+  
+  // Relations
+  toolReservations    ToolReservation[]
+  onboardingProgress  OnboardingProgress[]
+  businessGrowthPlans BusinessGrowthPlan[]
+  costEstimates       CostEstimate[]
+  businessCards       BusinessCard[]
+  cameraEstimates     CameraEstimate[]
+  orders              Order[]
+  shoppingCarts       ShoppingCart[]
+  tasks               Task[]
+  taskComments        TaskComment[]
+  
+  // Media Center relations
+  mediaContent        MediaContent[] @relation("MediaContentAuthor")
+  mediaComments       MediaComment[] @relation("MediaCommentAuthor")
+  mediaAnalytics      MediaAnalytics[] @relation("MediaAnalyticsUser")
+  videoPlaylists      VideoPlaylist[] @relation("VideoPlaylistCreator")
+  
+  // Cross-feature integration relations
+  journeyEvents       MemberJourneyEvent[] @relation("MemberJourneyEvents")
+  featureDataShares   FeatureDataShare[] @relation("FeatureDataShares")
+  recommendationCache MemberRecommendationCache? @relation("RecommendationCache")
+  
+  // Project Budget and Social Impact relations
+  projectBudgets      ProjectBudget[] @relation("ProjectBudgetMember")
+  fundingCampaigns    FundingCampaign[] @relation("FundingCampaignCreator")
+  campaignContributions CampaignContribution[] @relation("CampaignContributor")
+  socialImpactMetrics SocialImpactMetrics[] @relation("SocialImpactMember")
+  
+  // Website Generation relations
+  websiteRequests     WebsiteRequest[] @relation("MemberWebsiteRequests")
+  assignedWebsiteRequests WebsiteRequest[] @relation("AdminWebsiteAssignments")
+  memberWebsite       MemberWebsite? @relation("MemberWebsite")
+  
+  // AI Bid Generation relations
+  aiGeneratedBids     AIGeneratedBid[] @relation("MemberBids")
+  bidReviews          BidReview[] @relation("MemberBidReviews")
+  bidPerformanceMetrics BidPerformanceMetrics? @relation("MemberBidPerformance")
+  
+  // AI Compliance Review and Smart Document Management relations
+  complianceReviews   ComplianceReview[]
+  smartFormInstances  SmartFormInstance[]
+  formCollaborations  FormCollaboration[]
+  formComments        FormComment[]
+  generatedDocuments  GeneratedDocument[]
+  documentApprovals   DocumentApproval[]
+  documentVersions    DocumentVersion[]
+  complianceDeadlines ComplianceDeadline[]
+  
+  // Community Platform relations
+  communityDiscussions CommunityDiscussion[] @relation("DiscussionAuthor")
+  discussionLikes     DiscussionLike[]
+  sentMessages        MemberMessage[] @relation("MessageSender")
+  receivedMessages    MemberMessage[] @relation("MessageRecipient")
+  groupMessages       GroupMessage[] @relation("GroupMessageSender")
+  groupMemberships    GroupMembership[]
+  connectionRequests  ConnectionRequest[] @relation("ConnectionRequester")
+  receivedConnections ConnectionRequest[] @relation("ConnectionReceiver")
+  memberConnections   MemberConnection[] @relation("MemberConnectionFrom")
+  connectedMembers    MemberConnection[] @relation("MemberConnectionTo")
+  memberProfile       MemberProfile?
+  
+  // Committee Management relations
+  chairedCommittees   Committee[] @relation("CommitteeChair")
+  committeeMemberships CommitteeMembership[] @relation("CommitteeMember")
+  meetingAttendance   MeetingAttendance[] @relation("MeetingAttendee")
+  ledProjects         CommitteeProject[] @relation("ProjectLead")
+  assignedTasks       CommitteeTask[] @relation("TaskAssignee")
+  
+  // Community Voting relations
+  createdVotes        CommunityVote[] @relation("VoteCreator")
+  voteBallots         VoteBallot[] @relation("VoteBallots")
+  voteComments        VoteComment[] @relation("VoteComments")
+  voteAudits          VoteAuditLog[] @relation("VoteAudits")
+  
+  // Business Opportunity Relations
+  postedOpportunities     BusinessOpportunity[] @relation("PostedOpportunities")
+  opportunityApplications OpportunityApplication[] @relation("OpportunityApplications")
+  sentProposals          PartnershipProposal[] @relation("SentProposals")
+  receivedProposals      PartnershipProposal[] @relation("ReceivedProposals")
+  toolSharing            MemberToolSharing[] @relation("ToolSharing")
+  networkingInteractions NetworkingInteraction[] @relation("NetworkingInteractions")
+  networkingConnections  NetworkingInteraction[] @relation("NetworkingConnections")
+  leadCollaborations     CollaborationWorkspace[] @relation("LeadCollaborations")
+  
+  // Inter-Chapter Collaboration Relations
+  memberExchanges        MemberExchange[] @relation("MemberExchanges")
+  interChapterProjects   InterChapterProject[] @relation("InterChapterProjectMembers")
+  ledInterChapterProjects InterChapterProject[] @relation("InterChapterProjectLead")
+  chapterConnections     ChapterConnection[] @relation("ChapterConnectionMembers")
+  
+  // Categorized Learning Management System Relations
+  courseEnrollments      CourseEnrollment[] @relation("MemberCourseEnrollments")
+  proficiencyBadges      ProficiencyBadge[] @relation("MemberProficiencyBadges")
+  badgeShopCampaigns     BadgeShopCampaign[] @relation("MemberBadgeShopCampaigns")
+  memberProjectFunds     MemberProjectFund[] @relation("MemberProjectFunds")
+  courseProgress         CourseProgress[] @relation("MemberCourseProgress")
+  badgeVerifications     BadgeVerification[] @relation("MemberBadgeVerifications")
+  mentorshipConnections  MentorshipConnection[] @relation("MentorshipConnections")
+  mentorshipMentees      MentorshipConnection[] @relation("MentorshipMentees")
+  
+  // Project Payment & Escrow System Relations
+  clientEscrows          ProjectEscrow[] @relation("ClientEscrows")
+  contractorEscrows      ProjectEscrow[] @relation("ContractorEscrows")
+  taskPayments           TaskPayment[] @relation("TaskPaymentContractor")
+  paymentMilestones      PaymentMilestone[] @relation("MilestoneContractor")
+  escrowPayments         EscrowPayment[] @relation("EscrowPaymentRecipient")
+  paymentDisputes        PaymentDispute[] @relation("PaymentDisputeSubmitter")
+  disputeResponses       PaymentDispute[] @relation("PaymentDisputeRespondent")
+  cashFlowProjections    CashFlowProjection[] @relation("CashFlowProjectionMember")
+  
+  // HubSpot-Integrated Contractor Scheduling Relations
+  contractorSchedule     ContractorSchedule? @relation("ContractorSchedule")
+  appointments           Appointment[] @relation("ContractorAppointments")
+  clientAppointments     Appointment[] @relation("ClientAppointments")
+  scheduleServices       ScheduleService[] @relation("ScheduleServiceContractor")
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
 
-// Simplified Opportunity model for NAMC project opportunities
+// Opportunity model with HubSpot integration
 model Opportunity {
   id              String   @id @default(cuid())
   title           String
@@ -53,11 +197,17 @@ model Opportunity {
   complexityScore  Float?
   matchScore       Float?
   
+  // HubSpot sync fields
+  hubspotDealId       String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
 
-// Chat conversation model for Construction Assistant
+// Chat conversation model for Construction Assistant with HubSpot integration
 model ChatConversation {
   id        String   @id @default(cuid())
   memberId  String
@@ -66,11 +216,17 @@ model ChatConversation {
   
   messages  ChatMessage[]
   
+  // HubSpot sync fields
+  hubspotEngagementId String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// Chat message model
+// Chat message model with HubSpot integration
 model ChatMessage {
   id             String   @id @default(cuid())
   conversationId String
@@ -80,11 +236,17 @@ model ChatMessage {
   
   conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   
+  // HubSpot sync fields
+  hubspotEngagementId String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
 
-// Cost estimate model for AI cost estimation feature
+// Cost estimate model for AI cost estimation feature with HubSpot integration
 model CostEstimate {
   id                String   @id @default(cuid())
   memberId          String
@@ -110,6 +272,3408 @@ model CostEstimate {
   aiInsights        String?  // JSON as string
   recommendations   String?  // JSON as string
   
+  // Relations
+  user              User     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  rsMeansCache      RSMeansCache[]
+  cameraEstimates   CameraEstimate[]
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+// Tool Lending Library Models
+model Tool {
+  id                  String   @id @default(cuid())
+  name                String
+  category            String
+  description         String?
+  serialNumber        String?  @unique
+  manufacturer        String?
+  model               String?
+  dailyRate           Float
+  condition           String   @default("GOOD") // EXCELLENT, GOOD, FAIR, NEEDS_REPAIR
+  location            String?
+  isAvailable         Boolean  @default(true)
+  requiresTraining    Boolean  @default(false)
+  imageUrl            String?
+  specifications      String?  // JSON as string
+  
+  // Relations
+  reservations        ToolReservation[]
+  maintenanceRecords  ToolMaintenance[]
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model ToolReservation {
+  id                  String   @id @default(cuid())
+  toolId              String
+  memberId            String
+  startDate           DateTime
+  endDate             DateTime
+  status              String   @default("PENDING") // PENDING, CONFIRMED, CHECKED_OUT, RETURNED, CANCELLED
+  totalCost           Float
+  checkoutCondition   String?
+  returnCondition     String?
+  notes               String?
+  lateFees            Float    @default(0)
+  
+  // Relations
+  tool                Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  user                User     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model ToolMaintenance {
+  id                  String   @id @default(cuid())
+  toolId              String
+  maintenanceType     String   // ROUTINE, REPAIR, INSPECTION, CALIBRATION
+  description         String
+  cost                Float?
+  performedBy         String?
+  scheduledDate       DateTime?
+  completedDate       DateTime?
+  status              String   @default("SCHEDULED") // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+  notes               String?
+  
+  // Relations
+  tool                Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// Member Onboarding Models
+model OnboardingProgress {
+  id                  String   @id @default(cuid())
+  memberId            String
+  currentStep         Int      @default(0)
+  totalSteps          Int      @default(6)
+  completionPercent   Float    @default(0)
+  isCompleted         Boolean  @default(false)
+  techComfortLevel    String?  // beginner, intermediate, advanced
+  techComfortScore    Float?   // 0-10 scale
+  techComfortAreas    String?  // JSON object as string
+  aiEncouragementLevel String? // low, medium, high
+  strugglingAreas     String?  // JSON array as string
+  skipReasons         String?  // JSON array as string
+  personalizedBadges  String?  // JSON array as string
+  
+  // Relations
+  user                User     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  steps               OnboardingStep[]
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model OnboardingStep {
+  id                  String   @id @default(cuid())
+  progressId          String
+  stepNumber          Int
+  stepName            String
+  stepType            String   // PROFILE, ASSESSMENT, VERIFICATION, PREFERENCES, GOALS
+  status              String   @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, COMPLETED, SKIPPED
+  data                String?  // JSON as string for step-specific data
+  aiGuidance          String?  // AI-generated guidance for this step
+  timeSpent           Int?     // Time in seconds
+  attemptsCount       Int      @default(0)
+  completedAt         DateTime?
+  
+  // Relations
+  progress            OnboardingProgress @relation(fields: [progressId], references: [id], onDelete: Cascade)
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// Business Growth Plan Models
+model BusinessGrowthPlan {
+  id                  String   @id @default(cuid())
+  memberId            String
+  planName            String
+  currentPhase        String
+  progressScore       Float    @default(0)
+  aiAnalysis          String?  // JSON as string
+  roadmapData         String?  // JSON as string
+  milestones          String?  // JSON as string
+  assessmentData      String?  // JSON as string
+  marketData          String?  // JSON as string
+  isActive            Boolean  @default(true)
+  
+  // Relations
+  user                User     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  template            GrowthPlanTemplate? @relation(fields: [templateId], references: [id])
+  templateId          String?
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model GrowthPlanTemplate {
+  id                  String   @id @default(cuid())
+  name                String
+  description         String?
+  category            String   // STARTUP, GROWTH, EXPANSION, SPECIALIZATION
+  templateData        String   // JSON as string
+  aiPrompts           String?  // JSON as string
+  isActive            Boolean  @default(true)
+  
+  // Relations
+  plans               BusinessGrowthPlan[]
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// RS Means Cache Model
+model RSMeansCache {
+  id                  String   @id @default(cuid())
+  costEstimateId      String?
+  cacheKey            String   @unique
+  itemCode            String
+  description         String
+  unit                String
+  materialCost        Float
+  laborCost           Float
+  equipmentCost       Float
+  totalCost           Float
+  laborHours          Float
+  locationFactor      Float
+  priceDate           String
+  source              String
+  confidence          Float?
+  location            String
+  effectiveDate       DateTime
+  expirationDate      DateTime?
+  
+  // Relations
+  costEstimate        CostEstimate? @relation(fields: [costEstimateId], references: [id], onDelete: Cascade)
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// OCR Business Card Models
+model BusinessCard {
+  id                  String   @id @default(cuid())
+  scannedBy           String
+  firstName           String?
+  lastName            String?
+  company             String?
+  title               String?
+  email               String?
+  phone               String?
+  website             String?
+  address             String?
+  notes               String?
+  imageUrl            String?
+  ocrConfidence       Float?
+  isProcessed         Boolean  @default(false)
+  contactCreated      Boolean  @default(false)
+  
+  // Relations
+  user                User     @relation(fields: [scannedBy], references: [id], onDelete: Cascade)
+  ocrLogs             OCRProcessingLog[]
+  
+  // HubSpot sync fields
+  hubspotContactId    String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model OCRProcessingLog {
+  id                  String   @id @default(cuid())
+  businessCardId      String
+  processingStep      String   // UPLOAD, OCR_PROCESSING, VALIDATION, CONTACT_CREATION
+  status              String   // SUCCESS, ERROR, PENDING
+  rawOcrData          String?  // JSON as string
+  processedData       String?  // JSON as string
+  errorMessage        String?
+  processingTime      Int?     // Time in milliseconds
+  
+  // Relations
+  businessCard        BusinessCard @relation(fields: [businessCardId], references: [id], onDelete: Cascade)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// Gemini Live AI Camera Models
+model CameraEstimate {
+  id                  String   @id @default(cuid())
+  memberId            String
+  sessionId           String
+  costEstimateId      String?
+  sceneAnalysis       String   // JSON as string
+  materialAnalysis    String   // JSON as string
+  estimatedCosts      String   // JSON as string
+  confidence          Float
+  mediaUrl            String?
+  workflowActions     String?  // JSON as string
+  qualityAssessment   String?  // JSON as string
+  
+  // Relations
+  user                User     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  costEstimate        CostEstimate? @relation(fields: [costEstimateId], references: [id])
+  session             CameraSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model CameraSession {
+  id                  String   @id @default(cuid())
+  memberId            String
+  sessionName         String?
+  status              String   @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
+  totalFrames         Int      @default(0)
+  totalEstimates      Int      @default(0)
+  sessionSummary      String?  // JSON as string
+  workflowReport      String?  // JSON as string
+  
+  // Relations
+  estimates           CameraEstimate[]
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// E-commerce Models
+model Product {
+  id                  String   @id @default(cuid())
+  name                String
+  description         String?
+  category            String
+  sku                 String   @unique
+  publicPrice         Float
+  memberPrice         Float?
+  isDigital           Boolean  @default(false)
+  isActive            Boolean  @default(true)
+  inventory           Int      @default(0)
+  imageUrl            String?
+  specifications      String?  // JSON as string
+  
+  // Shopify integration fields
+  shopifyProductId    String?
+  shopifyVariantId    String?
+  shopifyInventoryItemId String?
+  shopifyLastSync     DateTime?
+  shopifySyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  shopifySyncError    String?
+  
+  // Printify integration fields
+  printifyProductId   String?
+  printifyVariantId   String?
+  printifyBlueprintId String?
+  printifyProviderId  String?
+  printifyLastSync    DateTime?
+  printifySyncStatus  String   @default("PENDING") // PENDING, SYNCED, ERROR
+  printifySyncError   String?
+  
+  // Relations
+  orderItems          OrderItem[]
+  cartItems           ShoppingCartItem[]
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Order {
+  id                  String   @id @default(cuid())
+  orderNumber         String   @unique
+  memberId            String?
+  customerEmail       String
+  customerName        String?
+  status              String   @default("PENDING") // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+  paymentStatus       String   @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
+  totalAmount         Float
+  shippingAddress     String?  // JSON as string
+  billingAddress      String?  // JSON as string
+  notes               String?
+  
+  // Shopify integration fields
+  shopifyOrderId      String?
+  shopifyOrderNumber  String?
+  shopifyLastSync     DateTime?
+  shopifySyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  shopifySyncError    String?
+  
+  // Printify integration fields
+  printifyOrderId     String?
+  printifyExternalId  String?
+  printifyLastSync    DateTime?
+  printifySyncStatus  String   @default("PENDING") // PENDING, SYNCED, ERROR
+  printifySyncError   String?
+  
+  // Relations
+  user                User?    @relation(fields: [memberId], references: [id])
+  items               OrderItem[]
+  
+  // HubSpot sync fields
+  hubspotObjectId     String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model OrderItem {
+  id                  String   @id @default(cuid())
+  orderId             String
+  productId           String
+  quantity            Int
+  unitPrice           Float
+  totalPrice          Float
+  
+  // Relations
+  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product             Product  @relation(fields: [productId], references: [id])
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model ShoppingCart {
+  id                  String   @id @default(cuid())
+  memberId            String   @unique
+  
+  // Relations
+  user                User     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  items               ShoppingCartItem[]
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model ShoppingCartItem {
+  id                  String   @id @default(cuid())
+  cartId              String
+  productId           String
+  quantity            Int
+  
+  // Relations
+  cart                ShoppingCart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product             Product  @relation(fields: [productId], references: [id])
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// Task Management Models
+model Task {
+  id                  String   @id @default(cuid())
+  title               String
+  description         String?
+  assigneeId          String
+  createdBy           String
+  projectId           String?
+  priority            String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  status              String   @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, COMPLETED, CANCELLED
+  dueDate             DateTime?
+  completedAt         DateTime?
+  estimatedHours      Float?
+  actualHours         Float?
+  tags                String?  // JSON array as string
+  
+  // Relations
+  assignee            User     @relation(fields: [assigneeId], references: [id])
+  comments            TaskComment[]
+  
+  // HubSpot sync fields
+  hubspotTaskId       String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model TaskComment {
+  id                  String   @id @default(cuid())
+  taskId              String
+  authorId            String
+  content             String
+  isInternal          Boolean  @default(false)
+  
+  // Relations
+  task                Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author              User     @relation(fields: [authorId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotEngagementId String?  @unique
+  hubspotSyncStatus   String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+// Cross-Feature Integration Models
+model MemberJourneyEvent {
+  id        String   @id @default(cuid())
+  memberId  String
+  feature   String
+  action    String
+  timestamp DateTime @default(now())
+  metadata  String?  // JSON string
+  
+  // Relations
+  member User @relation("MemberJourneyEvents", fields: [memberId], references: [id])
+  
+  @@map("member_journey_events")
+}
+
+model FeatureDataShare {
+  id          String   @id @default(cuid())
+  fromFeature String
+  toFeature   String
+  memberId    String
+  dataType    String
+  data        String   // JSON string
+  timestamp   DateTime @default(now())
+  
+  // Relations
+  member User @relation("FeatureDataShares", fields: [memberId], references: [id])
+  
+  @@map("feature_data_shares")
+}
+
+model MemberRecommendationCache {
+  id              String   @id @default(cuid())
+  memberId        String   @unique
+  recommendations String   // JSON string
+  updatedAt       DateTime @default(now())
+  
+  // Relations
+  member User @relation("RecommendationCache", fields: [memberId], references: [id])
+  
+  @@map("member_recommendation_cache")
+}
+
+// Media Center Models
+model MediaContent {
+  id                    String   @id @default(cuid())
+  title                 String
+  slug                  String   @unique
+  description           String?
+  content               String?  // Rich text content for articles/blogs
+  contentType           String   // 'podcast' | 'video' | 'blog' | 'social'
+  status                String   @default("draft") // 'draft' | 'review' | 'published' | 'archived'
+  publishedAt           DateTime?
+  authorId              String?
+  featuredImage         String?  // URL to featured image
+  mediaUrl              String?  // URL to media file (video/audio)
+  duration              Int?     // Duration in seconds for video/audio
+  fileSize              Int?     // File size in bytes
+  mimeType              String?  // MIME type of media file
+  transcription         String?  // Auto-generated transcription
+  seoTitle              String?
+  seoDescription        String?
+  seoKeywords           String?
+  viewCount             Int      @default(0)
+  likeCount             Int      @default(0)
+  shareCount            Int      @default(0)
+  isPublic              Boolean  @default(true)
+  isFeatured            Boolean  @default(false)
+  allowComments         Boolean  @default(true)
+  
+  // HubSpot sync fields
+  hubspotSyncId         String?  @unique
+  hubspotSyncStatus     String   @default("pending")
+  hubspotLastSync       DateTime?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  author                User?    @relation("MediaContentAuthor", fields: [authorId], references: [id])
+  categories            MediaContentCategory[]
+  tags                  MediaContentTag[]
+  comments              MediaComment[]
+  analytics             MediaAnalytics[]
+  podcasts              Podcast[]
+  podcastEpisodes       PodcastEpisode[]
+  playlists             PlaylistItem[]
+  socialPosts           SocialMediaPost[]
+}
+
+model MediaCategory {
+  id                    String   @id @default(cuid())
+  name                  String   @unique
+  slug                  String   @unique
+  description           String?
+  parentId              String?
+  parent                MediaCategory? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children              MediaCategory[] @relation("CategoryHierarchy")
+  color                 String?  // Hex color for UI
+  icon                  String?  // Icon name
+  isActive              Boolean  @default(true)
+  sortOrder             Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  mediaContent          MediaContentCategory[]
+}
+
+model MediaTag {
+  id                    String   @id @default(cuid())
+  name                  String   @unique
+  slug                  String   @unique
+  description           String?
+  color                 String?  // Hex color for UI
+  usageCount            Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  mediaContent          MediaContentTag[]
+}
+
+// Junction tables for many-to-many relationships
+model MediaContentCategory {
+  id                    String   @id @default(cuid())
+  contentId             String
+  categoryId            String
+  
+  content               MediaContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  category              MediaCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  @@unique([contentId, categoryId])
+}
+
+model MediaContentTag {
+  id                    String   @id @default(cuid())
+  contentId             String
+  tagId                 String
+  
+  content               MediaContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  tag                   MediaTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@unique([contentId, tagId])
+}
+
+model MediaComment {
+  id                    String   @id @default(cuid())
+  contentId             String
+  content               MediaContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  authorId              String?
+  author                User?    @relation("MediaCommentAuthor", fields: [authorId], references: [id])
+  parentId              String?
+  parent                MediaComment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies               MediaComment[] @relation("CommentReplies")
+  comment               String
+  status                String   @default("pending") // 'pending' | 'approved' | 'rejected' | 'spam'
+  isEdited              Boolean  @default(false)
+  editedAt              DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+// Website Generation Models
+model WebsiteRequest {
+  id                String   @id @default(cuid())
+  
+  // Member information
+  memberId          String
+  member            User     @relation("MemberWebsiteRequests", fields: [memberId], references: [id])
+  
+  // Request details
+  businessName      String
+  businessType      String   // RESIDENTIAL, COMMERCIAL, INDUSTRIAL, MIXED
+  businessFocus     String?  // Specialization description
+  domainPreference  String?  // Preferred domain name
+  useNamcSubdomain  Boolean  @default(true)
+  professionalEmail String?  // Desired professional email
+  
+  // Business information
+  businessDescription String?
+  servicesOffered     String?
+  yearsInBusiness     Int?
+  licenseNumbers      String?
+  certifications      String?
+  serviceAreas        String?
+  
+  // Website preferences
+  includePortfolio    Boolean @default(true)
+  includeSocialImpact Boolean @default(true)
+  includeTestimonials Boolean @default(true)
+  includeBlog         Boolean @default(false)
+  customRequests      String?
+  
+  // Request status and workflow
+  status              String  @default("PENDING") // PENDING, UNDER_REVIEW, APPROVED, IN_PROGRESS, COMPLETED, REJECTED
+  priority            String  @default("NORMAL") // LOW, NORMAL, HIGH, URGENT
+  assignedAdminId     String?
+  assignedAdmin       User?   @relation("AdminWebsiteAssignments", fields: [assignedAdminId], references: [id])
+  
+  // Timeline
+  requestedAt         DateTime @default(now())
+  reviewedAt          DateTime?
+  approvedAt          DateTime?
+  estimatedCompletion DateTime?
+  completedAt         DateTime?
+  
+  // HubSpot integration
+  hubspotTicketId     String? @unique
+  hubspotSyncStatus   String  @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync     DateTime?
+  hubspotSyncError    String?
+  
+  // Generated website
+  website             MemberWebsite?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@map("website_requests")
+}
+
+model MemberWebsite {
+  id                    String   @id @default(cuid())
+  
+  // Member and request association
+  memberId              String   @unique
+  member                User     @relation("MemberWebsite", fields: [memberId], references: [id])
+  websiteRequestId      String   @unique
+  websiteRequest        WebsiteRequest @relation(fields: [websiteRequestId], references: [id])
+  
+  // Website details
+  websiteUrl            String   @unique
+  domainName            String   @unique
+  professionalEmail     String?
+  
+  // HubSpot CMS integration
+  hubspotPageId         String?  @unique
+  hubspotTemplateId     String?
+  cmsStatus             String   @default("ACTIVE") // ACTIVE, INACTIVE, MAINTENANCE
+  
+  // Website configuration
+  templateVersion       String   @default("v1.0")
+  customizations        String?  // JSON - Store custom styling and content
+  seoSettings           String?  // JSON - SEO configuration
+  analyticsEnabled      Boolean  @default(true)
+  
+  // Performance metrics
+  monthlyVisitors       Int      @default(0)
+  leadsGenerated        Int      @default(0)
+  lastAnalyticsUpdate   DateTime?
+  
+  // Maintenance and support
+  lastBackup            DateTime?
+  lastSecurityUpdate    DateTime?
+  maintenanceScheduled  DateTime?
+  supportTickets        Int      @default(0)
+  
+  // Status and lifecycle
+  status                String   @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED, ARCHIVED
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  lastContentUpdate     DateTime?
+  
+  // HubSpot integration
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  @@map("member_websites")
+}
+
+model MediaAnalytics {
+  id                    String   @id @default(cuid())
+  contentId             String
+  content               MediaContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  userId                String?
+  user                  User?    @relation("MediaAnalyticsUser", fields: [userId], references: [id])
+  eventType             String   // 'view' | 'like' | 'share' | 'download' | 'play' | 'pause' | 'complete'
+  eventData             String?  // JSON - Additional event data (position, duration, etc.)
+  sessionId             String?  // Session tracking
+  ipAddress             String?
+  userAgent             String?
+  referrer              String?
+  timestamp             DateTime @default(now())
+}
+
+// Podcast-specific models
+model Podcast {
+  id                    String   @id @default(cuid())
+  contentId             String   @unique
+  content               MediaContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  podcastTitle          String
+  podcastDescription    String?
+  podcastCategory       String?
+  podcastLanguage       String   @default("en")
+  podcastAuthor         String?
+  podcastEmail          String?
+  podcastWebsite        String?
+  podcastImage          String?  // Podcast artwork URL
+  rssUrl                String?  // Generated RSS feed URL
+  iTunesUrl             String?
+  spotifyUrl            String?
+  googlePodcastsUrl     String?
+  isActive              Boolean  @default(true)
+  totalEpisodes         Int      @default(0)
+  totalDuration         Int      @default(0) // Total duration in seconds
+  averageRating         Float?
+  subscriberCount       Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  episodes              PodcastEpisode[]
+}
+
+model PodcastEpisode {
+  id                    String   @id @default(cuid())
+  podcastId             String
+  podcast               Podcast  @relation(fields: [podcastId], references: [id], onDelete: Cascade)
+  contentId             String   @unique
+  content               MediaContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  episodeNumber         Int?
+  seasonNumber          Int?
+  episodeType           String   @default("full") // 'full' | 'trailer' | 'bonus'
+  audioUrl              String   // Direct URL to audio file
+  audioFileSize         Int?     // File size in bytes
+  audioDuration         Int?     // Duration in seconds
+  audioFormat           String?  // 'mp3' | 'wav' | 'aac'
+  transcriptUrl         String?  // URL to transcript file
+  showNotes             String?  // Rich text show notes
+  chapters              String?  // JSON - Chapter markers
+  isExplicit            Boolean  @default(false)
+  publishDate           DateTime
+  downloadCount         Int      @default(0)
+  playCount             Int      @default(0)
+  averageRating         Float?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+// Video-specific models
+model VideoPlaylist {
+  id                    String   @id @default(cuid())
+  name                  String
+  description           String?
+  thumbnailUrl          String?
+  isPublic              Boolean  @default(true)
+  creatorId             String?
+  creator               User?    @relation("VideoPlaylistCreator", fields: [creatorId], references: [id])
+  totalDuration         Int      @default(0) // Total duration in seconds
+  videoCount            Int      @default(0)
+  viewCount             Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  items                 PlaylistItem[]
+}
+
+model PlaylistItem {
+  id                    String   @id @default(cuid())
+  playlistId            String
+  playlist              VideoPlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  contentId             String
+  content               MediaContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  sortOrder             Int      @default(0)
+  addedAt               DateTime @default(now())
+
+  @@unique([playlistId, contentId])
+}
+
+// Social Media Integration Models
+model SocialMediaPost {
+  id                    String   @id @default(cuid())
+  contentId             String?
+  content               MediaContent? @relation(fields: [contentId], references: [id])
+  platform              String   // 'twitter' | 'facebook' | 'instagram' | 'linkedin' | 'youtube'
+  postId                String   // Platform-specific post ID
+  postUrl               String?  // Direct URL to post
+  postText              String?
+  postMedia             String?  // JSON - Media attachments
+  authorHandle          String?  // @username or handle
+  authorName            String?
+  authorAvatar          String?
+  publishedAt           DateTime
+  engagementData        String?  // JSON - Likes, shares, comments, etc.
+  hashtags              String?  // Comma-separated hashtags
+  mentions              String?  // Comma-separated mentions
+  isNamcOfficial        Boolean  @default(false)
+  syncStatus            String   @default("pending") // 'pending' | 'synced' | 'failed'
+  lastSyncAt            DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([platform, postId])
+}
+
+model SocialMediaAccount {
+  id                    String   @id @default(cuid())
+  platform              String   // 'twitter' | 'facebook' | 'instagram' | 'linkedin' | 'youtube'
+  handle                String   // @username or handle
+  displayName           String
+  description           String?
+  avatarUrl             String?
+  followerCount         Int      @default(0)
+  followingCount        Int      @default(0)
+  postCount             Int      @default(0)
+  isOfficial            Boolean  @default(false)
+  isActive              Boolean  @default(true)
+  accessToken           String?  // Encrypted access token
+  refreshToken          String?  // Encrypted refresh token
+  tokenExpiresAt        DateTime?
+  lastSyncAt            DateTime?
+  syncFrequency         Int      @default(3600) // Sync frequency in seconds
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([platform, handle])
+}
+
+// Project Budget Management and Social Impact Tracking Models
+model ProjectBudget {
+  id                    String   @id @default(cuid())
+  projectId             String   @unique // Links to HubSpot Deal ID
+  memberId              String
+  projectName           String
+  totalBudget           Float
+  allocatedFunds        Float    @default(0)
+  spentAmount           Float    @default(0)
+  remainingFunds        Float    @default(0)
+  memberFunding         Float    @default(0)
+  sponsorFunding        Float    @default(0)
+  crowdFunding          Float    @default(0)
+  contractValue         Float    @default(0)
+  profitMargin          Float    @default(0)
+  budgetStatus          String   @default("ACTIVE") // ACTIVE, OVER_BUDGET, COMPLETED, CANCELLED
+  alertThreshold        Float    @default(0.8) // Alert when 80% of budget is spent
+  approvalRequired      Boolean  @default(false)
+  approvedBy            String?
+  approvedAt            DateTime?
+  
+  // Relations
+  member                User     @relation("ProjectBudgetMember", fields: [memberId], references: [id])
+  expenses              BudgetExpense[]
+  fundingCampaigns      FundingCampaign[]
+  socialImpactMetrics   SocialImpactMetrics?
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  // QuickBooks sync fields
+  quickbooksProjectId   String?
+  quickbooksSyncStatus  String   @default("PENDING") // PENDING, SYNCED, ERROR
+  quickbooksLastSync    DateTime?
+  quickbooksSyncError   String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model BudgetExpense {
+  id                    String   @id @default(cuid())
+  budgetId              String
+  expenseCategory       String   // MATERIALS, LABOR, EQUIPMENT, PERMITS, OVERHEAD, OTHER
+  description           String
+  amount                Float
+  expenseDate           DateTime
+  vendor                String?
+  receiptUrl            String?
+  approvalStatus        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  approvedBy            String?
+  approvedAt            DateTime?
+  notes                 String?
+  
+  // Relations
+  budget                ProjectBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  
+  // QuickBooks sync fields
+  quickbooksExpenseId   String?
+  quickbooksSyncStatus  String   @default("PENDING") // PENDING, SYNCED, ERROR
+  quickbooksLastSync    DateTime?
+  quickbooksSyncError   String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model FundingCampaign {
+  id                    String   @id @default(cuid())
+  budgetId              String?
+  createdBy             String
+  campaignTitle         String
+  description           String
+  targetAmount          Float
+  raisedAmount          Float    @default(0)
+  campaignType          String   // CROWDFUNDING, SPONSORSHIP, GRANT, DONATION
+  campaignStatus        String   @default("DRAFT") // DRAFT, ACTIVE, PAUSED, COMPLETED, CANCELLED
+  startDate             DateTime
+  endDate               DateTime
+  socialImpactGoals     String?  // JSON object with goals
+  jobsToCreate          Int      @default(0)
+  trainingHours         Int      @default(0)
+  localHireTarget       Float    @default(0) // Percentage
+  minorityHireTarget    Float    @default(0) // Percentage
+  womenHireTarget       Float    @default(0) // Percentage
+  housingUnitsTarget    Int      @default(0)
+  affordableUnitsTarget Int      @default(0)
+  communityBenefitScore Float    @default(0)
+  
+  // Relations
+  budget                ProjectBudget? @relation(fields: [budgetId], references: [id])
+  creator               User     @relation("FundingCampaignCreator", fields: [createdBy], references: [id])
+  contributions         CampaignContribution[]
+  sponsors              CampaignSponsor[]
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model CampaignContribution {
+  id                    String   @id @default(cuid())
+  campaignId            String
+  contributorId         String?
+  contributorEmail      String
+  contributorName       String
+  amount                Float
+  contributionType      String   @default("DONATION") // DONATION, SPONSORSHIP, GRANT
+  paymentStatus         String   @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  paymentMethod         String?  // STRIPE, PAYPAL, CHECK, WIRE
+  stripePaymentId       String?
+  isAnonymous           Boolean  @default(false)
+  message               String?
+  recognitionLevel      String   @default("STANDARD") // BRONZE, SILVER, GOLD, PLATINUM, ANONYMOUS
+  
+  // Relations
+  campaign              FundingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contributor           User?    @relation("CampaignContributor", fields: [contributorId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotContactId      String?
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model CampaignSponsor {
+  id                    String   @id @default(cuid())
+  campaignId            String
+  sponsorName           String
+  sponsorType           String   // CORPORATE, FOUNDATION, GOVERNMENT, INDIVIDUAL
+  sponsorshipLevel      String   // TITLE, PRESENTING, MAJOR, SUPPORTING, COMMUNITY
+  amount                Float
+  benefits              String?  // JSON array of sponsor benefits
+  logoUrl               String?
+  websiteUrl            String?
+  contactEmail          String?
+  contactName           String?
+  contractSigned        Boolean  @default(false)
+  contractUrl           String?
+  recognitionApproved   Boolean  @default(false)
+  
+  // Relations
+  campaign              FundingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  // HubSpot sync fields
+  hubspotCompanyId      String?
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model SocialImpactMetrics {
+  id                    String   @id @default(cuid())
+  budgetId              String   @unique
+  memberId              String
+  projectId             String
+  
+  // Job Creation Metrics
+  jobsCreated           Int      @default(0)
+  jobsPlanned           Int      @default(0)
+  trainingHoursProvided Int      @default(0)
+  localHirePercentage   Float    @default(0)
+  minorityHirePercentage Float   @default(0)
+  womenHirePercentage   Float    @default(0)
+  
+  // Housing Impact Metrics
+  housingUnitsCreated   Int      @default(0)
+  affordableUnitsCreated Int     @default(0)
+  affordabilityImprovement Float @default(0) // Percentage improvement in affordability
+  
+  // Community Benefit Metrics
+  communityBenefitScore Float    @default(0) // Weighted score 0-100
+  localSpendingAmount   Float    @default(0)
+  localSpendingPercentage Float  @default(0)
+  
+  // Environmental Impact Metrics
+  greenBuildingCertification String? // LEED, ENERGY_STAR, GREEN_GLOBES, etc.
+  carbonFootprintReduction Float   @default(0) // CO2 equivalent reduction
+  energyEfficiencyImprovement Float @default(0) // Percentage improvement
+  waterConservationAmount Float    @default(0) // Gallons saved
+  wasteReductionAmount    Float    @default(0) // Tons diverted from landfill
+  
+  // Economic Impact Metrics
+  economicMultiplierEffect Float  @default(0) // Economic multiplier factor
+  taxRevenueGenerated     Float   @default(0)
+  propertyValueIncrease   Float   @default(0)
+  
+  // Social Return on Investment (SROI)
+  socialValueCreated      Float   @default(0) // Total social value in dollars
+  investmentAmount        Float   @default(0) // Total investment
+  sroiRatio              Float   @default(0) // Social value / Investment
+  
+  // Milestone Tracking
+  milestonesCompleted     Int     @default(0)
+  milestonesTotal         Int     @default(0)
+  impactMilestones        String? // JSON array of milestone data
+  
+  // Relations
+  budget                ProjectBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  member                User     @relation("SocialImpactMember", fields: [memberId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+// AI Bid Generation and Review Models
+model AIGeneratedBid {
+  id                    String   @id @default(cuid())
+  memberId              String
+  projectName           String
+  projectType           String   // RESIDENTIAL, COMMERCIAL, INDUSTRIAL, INFRASTRUCTURE
+  projectLocation       String
+  projectDescription    String?
+  
+  // Project Specifications
+  squareFootage         Float?
+  stories               Int?
+  estimatedDuration     Int?     // Duration in days
+  projectScope          String?  // JSON array of scope items
+  specialRequirements   String?  // JSON array of special requirements
+  
+  // Bid Financial Data
+  totalBidAmount        Float
+  materialCosts         Float    @default(0)
+  laborCosts            Float    @default(0)
+  equipmentCosts        Float    @default(0)
+  permitCosts           Float    @default(0)
+  overheadPercentage    Float    @default(0)
+  profitMargin          Float    @default(0)
+  contingencyPercentage Float    @default(0)
+  
+  // AI Analysis Data
+  confidenceScore       Float    @default(0) // 0-100 confidence in bid accuracy
+  winProbability        Float    @default(0) // 0-100 probability of winning
+  riskScore             Float    @default(0) // 0-100 risk assessment
+  competitivenessScore  Float    @default(0) // 0-100 market competitiveness
+  
+  // Data Sources Used
+  rsMeansDataUsed       Boolean  @default(false)
+  arcgisDataUsed        Boolean  @default(false)
+  shovelsDataUsed       Boolean  @default(false)
+  historicalDataUsed    Boolean  @default(false)
+  marketDataUsed        Boolean  @default(false)
+  
+  // AI Analysis Results
+  aiAnalysis            String?  // JSON object with detailed AI analysis
+  riskFactors           String?  // JSON array of identified risks
+  opportunities         String?  // JSON array of identified opportunities
+  recommendations       String?  // JSON array of AI recommendations
+  competitorAnalysis    String?  // JSON object with competitor insights
+  marketConditions      String?  // JSON object with market analysis
+  
+  // Bid Status and Tracking
+  bidStatus             String   @default("DRAFT") // DRAFT, REVIEW, SUBMITTED, WON, LOST, CANCELLED
+  submittedDate         DateTime?
+  responseDate          DateTime?
+  actualOutcome         String?  // WON, LOST, NO_RESPONSE, CANCELLED
+  actualProjectValue    Float?   // Actual project value if won
+  
+  // Performance Tracking
+  bidAccuracy           Float?   // Accuracy compared to actual costs (if project completed)
+  profitabilityActual   Float?   // Actual profit margin achieved
+  timelineAccuracy      Float?   // Timeline accuracy percentage
+  
+  // Document Generation
+  bidDocumentUrl        String?  // URL to generated bid document
+  bidDocumentVersion    Int      @default(1)
+  customizations        String?  // JSON object with member customizations
+  
+  // Relations
+  member                User     @relation("MemberBids", fields: [memberId], references: [id], onDelete: Cascade)
+  reviews               BidReview[]
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model BidReview {
+  id                    String   @id @default(cuid())
+  bidId                 String
+  memberId              String
+  reviewType            String   // AI_GENERATED, PEER_REVIEW, EXPERT_REVIEW, SELF_REVIEW
+  
+  // Review Scores (0-100)
+  overallScore          Float    @default(0)
+  competitivenessScore  Float    @default(0)
+  accuracyScore         Float    @default(0)
+  completenessScore     Float    @default(0)
+  profitabilityScore    Float    @default(0)
+  riskAssessmentScore   Float    @default(0)
+  
+  // Market Analysis
+  pricingPosition       String?  // BELOW_MARKET, COMPETITIVE, ABOVE_MARKET, PREMIUM
+  marketBenchmark       Float?   // Market average for similar projects
+  pricingRecommendation String?  // INCREASE, DECREASE, MAINTAIN, RESTRUCTURE
+  
+  // Strengths and Weaknesses
+  strengths             String?  // JSON array of identified strengths
+  weaknesses            String?  // JSON array of identified weaknesses
+  missingElements       String?  // JSON array of missing bid elements
+  
+  // Recommendations
+  recommendations       String?  // JSON array of improvement recommendations
+  strategicAdvice       String?  // JSON array of strategic bidding advice
+  riskMitigation        String?  // JSON array of risk mitigation strategies
+  
+  // Risk Assessment
+  riskFactors           String?  // JSON array of identified risks
+  riskLevel             String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  contingencyRecommendation Float? // Recommended contingency percentage
+  
+  // Competitive Intelligence
+  competitorInsights    String?  // JSON object with competitor analysis
+  marketTrends          String?  // JSON object with relevant market trends
+  pricingStrategy       String?  // JSON object with pricing strategy recommendations
+  
+  // AI Coaching Data
+  coachingPoints        String?  // JSON array of coaching recommendations
+  learningResources     String?  // JSON array of recommended learning materials
+  skillGaps             String?  // JSON array of identified skill gaps
+  
+  // Review Status
+  reviewStatus          String   @default("COMPLETED") // IN_PROGRESS, COMPLETED, ARCHIVED
+  reviewerNotes         String?  // Additional notes from reviewer
+  memberFeedback        String?  // Member feedback on the review
+  
+  // Relations
+  bid                   AIGeneratedBid @relation(fields: [bidId], references: [id], onDelete: Cascade)
+  member                User     @relation("MemberBidReviews", fields: [memberId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model BidPerformanceMetrics {
+  id                    String   @id @default(cuid())
+  memberId              String   @unique
+  
+  // Overall Performance Metrics
+  totalBidsGenerated    Int      @default(0)
+  totalBidsSubmitted    Int      @default(0)
+  totalBidsWon          Int      @default(0)
+  totalBidsLost         Int      @default(0)
+  
+  // Win Rate Metrics
+  overallWinRate        Float    @default(0) // Percentage of bids won
+  winRateByProjectType  String?  // JSON object with win rates by project type
+  winRateByProjectSize  String?  // JSON object with win rates by project size
+  winRateByLocation     String?  // JSON object with win rates by location
+  
+  // Accuracy Metrics
+  averageBidAccuracy    Float    @default(0) // Average accuracy of cost estimates
+  accuracyByProjectType String?  // JSON object with accuracy by project type
+  accuracyTrend         String?  // JSON array with accuracy over time
+  
+  // Financial Performance
+  totalProjectValue     Float    @default(0) // Total value of won projects
+  averageProjectValue   Float    @default(0) // Average value of won projects
+  totalProfitGenerated  Float    @default(0) // Total profit from won projects
+  averageProfitMargin   Float    @default(0) // Average profit margin achieved
+  
+  // Timing Metrics
+  averageBidTime        Float    @default(0) // Average time to generate bid (hours)
+  averageResponseTime   Float    @default(0) // Average time to receive response (days)
+  timelineAccuracy      Float    @default(0) // Average timeline accuracy percentage
+  
+  // Market Intelligence
+  competitivePosition   String?  // LEADER, COMPETITIVE, FOLLOWER, NICHE
+  marketShareEstimate   Float    @default(0) // Estimated market share percentage
+  pricingTrend          String?  // INCREASING, STABLE, DECREASING
+  
+  // Learning and Improvement
+  improvementAreas      String?  // JSON array of identified improvement areas
+  strengthAreas         String?  // JSON array of identified strength areas
+  recommendedTraining   String?  // JSON array of recommended training/courses
+  
+  // Trend Analysis
+  performanceTrend      String?  // JSON object with performance trends over time
+  seasonalPatterns      String?  // JSON object with seasonal performance patterns
+  marketCycleTrends     String?  // JSON object with market cycle correlations
+  
+  // Benchmarking
+  industryBenchmark     Float?   // Industry average win rate
+  peerComparison        String?  // JSON object with peer performance comparison
+  marketPosition        String?  // JSON object with market positioning data
+  
+  // Relations
+  member                User     @relation("MemberBidPerformance", fields: [memberId], references: [id], onDelete: Cascade)
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model BidTemplate {
+  id                    String   @id @default(cuid())
+  name                  String
+  description           String?
+  projectType           String   // RESIDENTIAL, COMMERCIAL, INDUSTRIAL, INFRASTRUCTURE
+  category              String?  // NEW_CONSTRUCTION, RENOVATION, REPAIR, MAINTENANCE
+  
+  // Template Structure
+  templateData          String   // JSON object with template structure
+  sectionOrder          String?  // JSON array with section ordering
+  requiredFields        String?  // JSON array of required fields
+  optionalFields        String?  // JSON array of optional fields
+  
+  // Customization Options
+  customizableElements  String?  // JSON array of customizable elements
+  brandingOptions       String?  // JSON object with branding customization
+  formatOptions         String?  // JSON object with format options
+  
+  // AI Integration
+  aiPrompts             String?  // JSON object with AI prompts for each section
+  dataSourceMappings    String?  // JSON object mapping data sources to template fields
+  calculationFormulas   String?  // JSON object with calculation formulas
+  
+  // Usage and Performance
+  usageCount            Int      @default(0)
+  successRate           Float    @default(0) // Success rate of bids using this template
+  averageWinRate        Float    @default(0) // Average win rate for this template
+  
+  // Template Status
+  isActive              Boolean  @default(true)
+  isPublic              Boolean  @default(false) // Available to all members
+  createdBy             String?  // Member who created the template
+  
+  // Version Control
+  version               String   @default("1.0")
+  parentTemplateId      String?  // For template versioning
+  changeLog             String?  // JSON array of changes
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+// AI Compliance Review and Smart Document Management Models
+model ComplianceReview {
+  id                      String   @id @default(cuid())
+  documentId              String
+  documentType            String
+  documentName            String
+  documentUrl             String?
+  documentContent         String?
+  memberId                String
+  projectId               String?
+  complianceScore         Float    @default(0)
+  riskLevel               String   @default("UNKNOWN") // LOW, MEDIUM, HIGH, CRITICAL
+  complianceStatus        String   @default("PENDING") // PENDING, IN_REVIEW, COMPLIANT, NON_COMPLIANT, REQUIRES_ACTION
+  issuesFound             Int      @default(0)
+  totalIssues             Int      @default(0)
+  aiRecommendations       String?
+  regulatoryRequirements  String?
+  locationBasedRules      String?
+  reviewDate              DateTime @default(now())
+  resolutionDate          DateTime?
+  hubspotId               String?  @unique
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  member                  User     @relation(fields: [memberId], references: [id])
+  issues                  ComplianceIssue[]
+
+  @@map("compliance_reviews")
+}
+
+model ComplianceIssue {
+  id                    String   @id @default(cuid())
+  complianceReviewId    String
+  issueType             String   // MISSING_CLAUSE, REGULATORY_VIOLATION, INCOMPLETE_SECTION, etc.
+  severity              String   // LOW, MEDIUM, HIGH, CRITICAL
+  description           String
+  recommendation        String?
+  regulationReference   String?
+  pageNumber            Int?
+  sectionReference      String?
+  isResolved            Boolean  @default(false)
+  resolutionNotes       String?
+  resolvedAt            DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  complianceReview      ComplianceReview @relation(fields: [complianceReviewId], references: [id], onDelete: Cascade)
+
+  @@map("compliance_issues")
+}
+
+model SmartFormTemplate {
+  id                    String   @id @default(cuid())
+  name                  String
+  description           String?
+  category              String   // CONTRACT, PERMIT, INSURANCE, SAFETY, COMPLIANCE
+  industryType          String?  // RESIDENTIAL, COMMERCIAL, INDUSTRIAL
+  templateData          String   // JSON schema for form fields
+  autoFillRules         String?  // JSON rules for auto-filling fields
+  validationRules       String?  // JSON validation rules
+  complianceChecks      String?  // JSON compliance requirements
+  isActive              Boolean  @default(true)
+  version               String   @default("1.0")
+  createdBy             String?
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING")
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  // Relations
+  instances             SmartFormInstance[]
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("smart_form_templates")
+}
+
+model SmartFormInstance {
+  id                    String   @id @default(cuid())
+  templateId            String
+  template              SmartFormTemplate @relation(fields: [templateId], references: [id])
+  memberId              String
+  member                User     @relation(fields: [memberId], references: [id])
+  projectId             String?
+  formName              String
+  formData              String   // JSON form data
+  autoFilledFields      String?  // JSON array of auto-filled field names
+  completionPercentage  Float    @default(0)
+  currentStep           Int      @default(1)
+  totalSteps            Int      @default(1)
+  formStatus            String   @default("DRAFT") // DRAFT, IN_PROGRESS, COMPLETED, SUBMITTED, APPROVED, REJECTED
+  submittedDate         DateTime?
+  approvedDate          DateTime?
+  assignedTo            String?
+  reviewNotes           String?
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING")
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  // Relations
+  collaborations        FormCollaboration[]
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("smart_form_instances")
+}
+
+model FormCollaboration {
+  id                    String   @id @default(cuid())
+  formInstanceId        String
+  formInstance          SmartFormInstance @relation(fields: [formInstanceId], references: [id], onDelete: Cascade)
+  collaboratorId        String
+  collaborator          User     @relation(fields: [collaboratorId], references: [id])
+  role                  String   // EDITOR, REVIEWER, APPROVER, VIEWER
+  permissions           String?  // JSON permissions object
+  assignedSections      String?  // JSON array of assigned form sections
+  status                String   @default("PENDING") // PENDING, ACTIVE, COMPLETED, DECLINED
+  lastActivity          DateTime?
+  
+  // Relations
+  comments              FormComment[]
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("form_collaborations")
+}
+
+model FormComment {
+  id                    String   @id @default(cuid())
+  collaborationId       String
+  collaboration         FormCollaboration @relation(fields: [collaborationId], references: [id], onDelete: Cascade)
+  authorId              String
+  author                User     @relation(fields: [authorId], references: [id])
+  content               String
+  fieldReference        String?  // Reference to specific form field
+  commentType           String   @default("GENERAL") // GENERAL, SUGGESTION, APPROVAL, REJECTION
+  isResolved            Boolean  @default(false)
+  resolvedBy            String?
+  resolvedAt            DateTime?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("form_comments")
+}
+
+model DocumentTemplate {
+  id                    String   @id @default(cuid())
+  name                  String
+  description           String?
+  category              String   // CONTRACT, PROPOSAL, INVOICE, REPORT, COMPLIANCE
+  templateType          String   // PDF, DOCX, HTML
+  templateContent       String   // Template content with placeholders
+  complianceRules       String?  // JSON compliance requirements
+  autoFillMappings      String?  // JSON field mappings
+  approvalWorkflow      String?  // JSON workflow definition
+  digitalSignatureRequired Boolean @default(false)
+  isActive              Boolean  @default(true)
+  version               String   @default("1.0")
+  createdBy             String?
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING")
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  // Relations
+  documents             GeneratedDocument[]
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("document_templates")
+}
+
+model GeneratedDocument {
+  id                    String   @id @default(cuid())
+  templateId            String
+  template              DocumentTemplate @relation(fields: [templateId], references: [id])
+  memberId              String
+  member                User     @relation(fields: [memberId], references: [id])
+  projectId             String?
+  documentName          String
+  documentUrl           String?
+  documentContent       String?
+  documentData          String   // JSON data used to generate document
+  documentStatus        String   @default("DRAFT") // DRAFT, GENERATED, SENT, SIGNED, COMPLETED, ARCHIVED
+  approvalStatus        String   @default("PENDING") // PENDING, APPROVED, REJECTED, REQUIRES_CHANGES
+  complianceStatus      String   @default("PENDING") // PENDING, COMPLIANT, NON_COMPLIANT
+  version               Int      @default(1)
+  
+  // Digital Signature fields
+  requiresSignature     Boolean  @default(false)
+  signatureStatus       String   @default("PENDING") // PENDING, SIGNED, DECLINED
+  signedDate            DateTime?
+  signatureUrl          String?
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING")
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  // Relations
+  approvals             DocumentApproval[]
+  versions              DocumentVersion[]
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("generated_documents")
+}
+
+model DocumentApproval {
+  id                    String   @id @default(cuid())
+  documentId            String
+  document              GeneratedDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  approverId            String
+  approver              User     @relation(fields: [approverId], references: [id])
+  approvalStep          Int      @default(1)
+  approvalStatus        String   @default("PENDING") // PENDING, APPROVED, REJECTED, DELEGATED
+  comments              String?
+  approvedDate          DateTime?
+  delegatedTo           String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("document_approvals")
+}
+
+model DocumentVersion {
+  id                    String   @id @default(cuid())
+  documentId            String
+  document              GeneratedDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  versionNumber         Int
+  documentContent       String
+  documentUrl           String?
+  changeDescription     String?
+  createdBy             String
+  creator               User     @relation(fields: [createdBy], references: [id])
+  
+  createdAt             DateTime @default(now())
+
+  @@map("document_versions")
+}
+
+model ComplianceDeadline {
+  id                    String   @id @default(cuid())
+  memberId              String
+  member                User     @relation(fields: [memberId], references: [id])
+  projectId             String?
+  deadlineType          String   // PERMIT_RENEWAL, INSURANCE_RENEWAL, LICENSE_RENEWAL, INSPECTION, FILING
+  title                 String
+  description           String?
+  dueDate               DateTime
+  reminderDates         String   // JSON array of reminder dates
+  status                String   @default("PENDING") // PENDING, COMPLETED, OVERDUE, CANCELLED
+  priority              String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  regulatoryBody        String?  // Which agency/body requires this
+  penaltyInfo           String?  // Information about penalties for missing deadline
+  completedDate         DateTime?
+  completedBy           String?
+  
+  // HubSpot sync fields
+  hubspotTaskId         String?  @unique
+  hubspotSyncStatus     String   @default("PENDING")
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("compliance_deadlines")
+}
+
+model RegulatoryUpdate {
+  id                    String   @id @default(cuid())
+  title                 String
+  description           String
+  regulatoryBody        String   // EPA, OSHA, LOCAL_BUILDING_DEPT, etc.
+  updateType            String   // NEW_REGULATION, AMENDMENT, CLARIFICATION, DEADLINE_CHANGE
+  effectiveDate         DateTime
+  impactLevel           String   // LOW, MEDIUM, HIGH, CRITICAL
+  affectedCategories    String   // JSON array of affected project/business categories
+  actionRequired        String?  // What members need to do
+  documentUrl           String?
+  isActive              Boolean  @default(true)
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("regulatory_updates")
+}
+// Community Discussion and Messaging Models
+model CommunityDiscussion {
+  id                    String   @id @default(cuid())
+  title                 String
+  content               String
+  category              String   // GENERAL, PROJECTS, TOOLS, BUSINESS, TECHNICAL, NETWORKING
+  discussionType        String   @default("DISCUSSION") // DISCUSSION, QUESTION, ANNOUNCEMENT, POLL
+  authorId              String
+  parentId              String?  // For threaded replies
+  tags                  String?  // JSON array as string
+  viewCount             Int      @default(0)
+  replyCount            Int      @default(0)
+  likeCount             Int      @default(0)
+  status                String   @default("ACTIVE") // ACTIVE, CLOSED, ARCHIVED, MODERATED
+  isPublic              Boolean  @default(true)
+  isPinned              Boolean  @default(false)
+  isFeatured            Boolean  @default(false)
+  allowReplies          Boolean  @default(true)
+  moderationFlags       Int      @default(0)
+  lastActivityAt        DateTime @default(now())
+  
+  // Relations
+  author                User     @relation("DiscussionAuthor", fields: [authorId], references: [id])
+  parent                CommunityDiscussion? @relation("DiscussionReplies", fields: [parentId], references: [id])
+  replies               CommunityDiscussion[] @relation("DiscussionReplies")
+  likes                 DiscussionLike[]
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("community_discussions")
+}
+
+model DiscussionLike {
+  id                    String   @id @default(cuid())
+  discussionId          String
+  memberId              String
+  
+  // Relations
+  discussion            CommunityDiscussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  member                User     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  createdAt             DateTime @default(now())
+  
+  @@unique([discussionId, memberId])
+  @@map("discussion_likes")
+}
+
+model MemberMessage {
+  id                    String   @id @default(cuid())
+  senderId              String
+  recipientId           String
+  subject               String?
+  content               String
+  messageType           String   @default("DIRECT") // DIRECT, SYSTEM, NOTIFICATION
+  isRead                Boolean  @default(false)
+  readAt                DateTime?
+  priority              String   @default("NORMAL") // LOW, NORMAL, HIGH, URGENT
+  threadId              String?  // For message threading
+  attachments           String?  // JSON array of attachment URLs
+  isArchived            Boolean  @default(false)
+  isDeleted             Boolean  @default(false)
+  
+  // Relations
+  sender                User     @relation("MessageSender", fields: [senderId], references: [id])
+  recipient             User     @relation("MessageRecipient", fields: [recipientId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotEngagementId   String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("member_messages")
+}
+
+model MessageGroup {
+  id                    String   @id @default(cuid())
+  name                  String
+  description           String?
+  groupType             String   @default("GENERAL") // GENERAL, PROJECT, COMMITTEE, BUSINESS
+  isPrivate             Boolean  @default(false)
+  createdBy             String
+  maxMembers            Int?
+  memberCount           Int      @default(0)
+  lastMessageAt         DateTime?
+  isActive              Boolean  @default(true)
+  
+  // Relations
+  memberships           GroupMembership[]
+  messages              GroupMessage[]
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("message_groups")
+}
+
+model GroupMembership {
+  id                    String   @id @default(cuid())
+  groupId               String
+  memberId              String
+  role                  String   @default("MEMBER") // MEMBER, MODERATOR, ADMIN
+  joinedAt              DateTime @default(now())
+  lastReadAt            DateTime?
+  isActive              Boolean  @default(true)
+  canPost               Boolean  @default(true)
+  canInvite             Boolean  @default(false)
+  
+  // Relations
+  group                 MessageGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  member                User     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@unique([groupId, memberId])
+  @@map("group_memberships")
+}
+
+model GroupMessage {
+  id                    String   @id @default(cuid())
+  groupId               String
+  senderId              String
+  content               String
+  messageType           String   @default("TEXT") // TEXT, IMAGE, FILE, SYSTEM
+  attachments           String?  // JSON array of attachment URLs
+  isEdited              Boolean  @default(false)
+  editedAt              DateTime?
+  isDeleted             Boolean  @default(false)
+  deletedAt             DateTime?
+  replyToId             String?  // For message replies
+  
+  // Relations
+  group                 MessageGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  sender                User     @relation("GroupMessageSender", fields: [senderId], references: [id])
+  replyTo               GroupMessage? @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies               GroupMessage[] @relation("MessageReplies")
+  
+  // HubSpot sync fields
+  hubspotEngagementId   String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("group_messages")
+}
+
+model ConnectionRequest {
+  id                    String   @id @default(cuid())
+  requesterId           String
+  receiverId            String
+  message               String?
+  status                String   @default("PENDING") // PENDING, ACCEPTED, DECLINED, CANCELLED
+  requestType           String   @default("PROFESSIONAL") // PROFESSIONAL, BUSINESS, MENTORSHIP, COLLABORATION
+  respondedAt           DateTime?
+  
+  // Relations
+  requester             User     @relation("ConnectionRequester", fields: [requesterId], references: [id])
+  receiver              User     @relation("ConnectionReceiver", fields: [receiverId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotEngagementId   String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@unique([requesterId, receiverId])
+  @@map("connection_requests")
+}
+
+model MemberConnection {
+  id                    String   @id @default(cuid())
+  fromMemberId          String
+  toMemberId            String
+  connectionType        String   @default("PROFESSIONAL") // PROFESSIONAL, BUSINESS, MENTORSHIP, COLLABORATION
+  connectionStrength    String   @default("WEAK") // WEAK, MODERATE, STRONG
+  lastInteraction       DateTime @default(now())
+  interactionCount      Int      @default(0)
+  businessValue         Float?   // Estimated business value of connection
+  collaborationCount    Int      @default(0)
+  isActive              Boolean  @default(true)
+  notes                 String?
+  
+  // Relations
+  fromMember            User     @relation("MemberConnectionFrom", fields: [fromMemberId], references: [id])
+  toMember              User     @relation("MemberConnectionTo", fields: [toMemberId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@unique([fromMemberId, toMemberId])
+  @@map("member_connections")
+}
+
+model MemberProfile {
+  id                    String   @id @default(cuid())
+  memberId              String   @unique
+  bio                   String?
+  specialties           String?  // JSON array as string
+  certifications        String?  // JSON array as string
+  yearsExperience       Int?
+  projectTypes          String?  // JSON array as string
+  serviceAreas          String?  // JSON array as string
+  businessSize          String?  // SOLE_PROPRIETOR, SMALL, MEDIUM, LARGE
+  portfolioImages       String?  // JSON array of image URLs
+  testimonials          String?  // JSON array as string
+  socialLinks           String?  // JSON object as string
+  isPublic              Boolean  @default(true)
+  showContact           Boolean  @default(true)
+  showProjects          Boolean  @default(true)
+  showCertifications    Boolean  @default(true)
+  profileViews          Int      @default(0)
+  connectionCount       Int      @default(0)
+  endorsementCount      Int      @default(0)
+  
+  // Relations
+  member                User     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  // HubSpot sync fields
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("member_profiles")
+}
+
+// Committee Management Models
+model Committee {
+  id                    String   @id @default(cuid())
+  name                  String
+  description           String?
+  category              String   // PROJECTS, BUSINESS, TECHNICAL, SOCIAL, GOVERNANCE
+  chairId               String
+  memberCount           Int      @default(0)
+  status                String   @default("ACTIVE") // ACTIVE, INACTIVE, ARCHIVED
+  isPublic              Boolean  @default(true)
+  meetingFrequency      String?  // WEEKLY, MONTHLY, QUARTERLY, AS_NEEDED
+  nextMeeting           DateTime?
+  maxMembers            Int?
+  requiresApproval      Boolean  @default(false)
+  
+  // Relations
+  chair                 User     @relation("CommitteeChair", fields: [chairId], references: [id])
+  memberships           CommitteeMembership[]
+  meetings              CommitteeMeeting[]
+  projects              CommitteeProject[]
+  votes                 CommunityVote[]
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("committees")
+}
+
+model CommitteeMembership {
+  id                    String   @id @default(cuid())
+  committeeId           String
+  memberId              String
+  role                  String   @default("MEMBER") // MEMBER, MODERATOR, SECRETARY, TREASURER
+  joinedAt              DateTime @default(now())
+  status                String   @default("ACTIVE") // ACTIVE, INACTIVE, PENDING
+  canPost               Boolean  @default(true)
+  canInvite             Boolean  @default(false)
+  canModerate           Boolean  @default(false)
+  contributionScore     Int      @default(0)
+  lastActivity          DateTime @default(now())
+  
+  // Relations
+  committee             Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+  member                User     @relation("CommitteeMember", fields: [memberId], references: [id], onDelete: Cascade)
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@unique([committeeId, memberId])
+  @@map("committee_memberships")
+}
+
+model CommitteeMeeting {
+  id                    String   @id @default(cuid())
+  committeeId           String
+  title                 String
+  description           String?
+  scheduledDate         DateTime
+  duration              Int      @default(60) // Duration in minutes
+  location              String?  // Physical or virtual location
+  meetingType           String   @default("REGULAR") // REGULAR, SPECIAL, EMERGENCY
+  status                String   @default("SCHEDULED") // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+  agenda                String?  // JSON array as string
+  minutes               String?  // Meeting minutes
+  attendeeCount         Int      @default(0)
+  recordingUrl          String?
+  documentsUrl          String?  // JSON array of document URLs
+  
+  // Relations
+  committee             Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+  attendees             MeetingAttendance[]
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("committee_meetings")
+}
+
+model MeetingAttendance {
+  id                    String   @id @default(cuid())
+  meetingId             String
+  memberId              String
+  status                String   @default("INVITED") // INVITED, CONFIRMED, ATTENDED, ABSENT, DECLINED
+  joinedAt              DateTime?
+  leftAt                DateTime?
+  notes                 String?
+  
+  // Relations
+  meeting               CommitteeMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  member                User     @relation("MeetingAttendee", fields: [memberId], references: [id], onDelete: Cascade)
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@unique([meetingId, memberId])
+  @@map("meeting_attendance")
+}
+
+model CommitteeProject {
+  id                    String   @id @default(cuid())
+  committeeId           String
+  name                  String
+  description           String?
+  status                String   @default("PLANNING") // PLANNING, ACTIVE, ON_HOLD, COMPLETED, CANCELLED
+  priority              String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  startDate             DateTime?
+  endDate               DateTime?
+  budget                Float?
+  actualCost            Float?
+  progress              Float    @default(0) // 0-100 percentage
+  leadMemberId          String?
+  milestones            String?  // JSON array as string
+  resources             String?  // JSON array as string
+  
+  // Relations
+  committee             Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+  leadMember            User?    @relation("ProjectLead", fields: [leadMemberId], references: [id])
+  tasks                 CommitteeTask[]
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("committee_projects")
+}
+
+model CommitteeTask {
+  id                    String   @id @default(cuid())
+  projectId             String
+  title                 String
+  description           String?
+  assigneeId            String?
+  status                String   @default("TODO") // TODO, IN_PROGRESS, REVIEW, COMPLETED
+  priority              String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  dueDate               DateTime?
+  completedAt           DateTime?
+  estimatedHours        Float?
+  actualHours           Float?
+  dependencies          String?  // JSON array of task IDs
+  
+  // Relations
+  project               CommitteeProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee              User?    @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotTaskId         String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("committee_tasks")
+}
+
+// Community Voting and Governance Models
+model CommunityVote {
+  id                    String   @id @default(cuid())
+  title                 String
+  description           String
+  voteType              String   @default("SIMPLE") // SIMPLE, MULTIPLE_CHOICE, RANKED, APPROVAL
+  createdBy             String
+  committeeId           String?  // Optional: vote can be committee-specific
+  startDate             DateTime @default(now())
+  endDate               DateTime
+  status                String   @default("ACTIVE") // ACTIVE, CLOSED, CANCELLED, DRAFT
+  isAnonymous           Boolean  @default(false)
+  requiresQuorum        Boolean  @default(false)
+  quorumPercentage      Float?   // Required percentage of eligible voters
+  eligibleVoters        String?  // JSON array of member IDs, null means all members
+  allowAbstain          Boolean  @default(true)
+  allowComments         Boolean  @default(true)
+  totalVotes            Int      @default(0)
+  results               String?  // JSON object with vote results
+  winningOption         String?
+  
+  // Relations
+  creator               User     @relation("VoteCreator", fields: [createdBy], references: [id])
+  committee             Committee? @relation(fields: [committeeId], references: [id])
+  ballots               VoteBallot[]
+  options               VoteOption[]
+  comments              VoteComment[]
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("community_votes")
+}
+
+model VoteOption {
+  id                    String   @id @default(cuid())
+  voteId                String
+  optionText            String
+  description           String?
+  displayOrder          Int      @default(0)
+  voteCount             Int      @default(0)
+  percentage            Float    @default(0)
+  
+  // Relations
+  vote                  CommunityVote @relation(fields: [voteId], references: [id], onDelete: Cascade)
+  ballots               VoteBallot[]
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("vote_options")
+}
+
+model VoteBallot {
+  id                    String   @id @default(cuid())
+  voteId                String
+  voterId               String
+  optionId              String?  // Null for abstain votes
+  rankedChoices         String?  // JSON array for ranked voting
+  isAbstain             Boolean  @default(false)
+  comment               String?
+  ipAddress             String?  // For audit purposes
+  userAgent             String?  // For audit purposes
+  
+  // Relations
+  vote                  CommunityVote @relation(fields: [voteId], references: [id], onDelete: Cascade)
+  voter                 User     @relation("VoteBallots", fields: [voterId], references: [id])
+  option                VoteOption? @relation(fields: [optionId], references: [id])
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@unique([voteId, voterId])
+  @@map("vote_ballots")
+}
+
+model VoteComment {
+  id                    String   @id @default(cuid())
+  voteId                String
+  authorId              String
+  content               String
+  isPublic              Boolean  @default(true)
+  
+  // Relations
+  vote                  CommunityVote @relation(fields: [voteId], references: [id], onDelete: Cascade)
+  author                User     @relation("VoteComments", fields: [authorId], references: [id])
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("vote_comments")
+}
+
+model VoteAuditLog {
+  id                    String   @id @default(cuid())
+  voteId                String
+  action                String   // CREATED, STARTED, VOTED, CLOSED, CANCELLED, RESULTS_PUBLISHED
+  performedBy           String?
+  details               String?  // JSON object with action details
+  ipAddress             String?
+  userAgent             String?
+  
+  // Relations
+  performer             User?    @relation("VoteAudits", fields: [performedBy], references: [id])
+  
+  createdAt             DateTime @default(now())
+
+  @@map("vote_audit_logs")
+}
+
+// Business Opportunity and Networking Platform Models
+
+model BusinessOpportunity {
+  id                    String   @id @default(cuid())
+  hubspot_deal_id       String   @unique
+  title                 String
+  description           String
+  category              String   // construction, consulting, partnership, etc.
+  type                  String   // project, partnership, joint_venture, tool_sharing
+  skills_required       String   // JSON array of required skills
+  location              String
+  budget_range          String?
+  timeline              String?
+  collaboration_type    String   // lead_contractor, equal_partner, subcontractor, resource_sharing
+  requirements          String?  // JSON object with detailed requirements
+  contact_preferences   String?  // JSON object with contact preferences
+  posted_by             String
+  status                String   @default("active") // active, filled, withdrawn, expired
+  
+  // Relations
+  poster                User     @relation("PostedOpportunities", fields: [posted_by], references: [id])
+  applications          OpportunityApplication[]
+  
+  // HubSpot sync fields
+  hubspotSyncStatus     String   @default("PENDING")
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  @@map("business_opportunities")
+}
+
+model OpportunityApplication {
+  id                    String   @id @default(cuid())
+  opportunity_id        String
+  applicant_id          String
+  message               String
+  relevant_experience   String?  // JSON array of relevant experience
+  proposed_approach     String?
+  availability          String?
+  collaboration_preferences String? // JSON object
+  portfolio_items       String?  // JSON array of portfolio items/links
+  status                String   @default("pending") // pending, accepted, rejected, withdrawn
+  response_message      String?
+  responded_at          DateTime?
+  
+  // Relations
+  opportunity           BusinessOpportunity @relation(fields: [opportunity_id], references: [id], onDelete: Cascade)
+  applicant             User     @relation("OpportunityApplications", fields: [applicant_id], references: [id])
+  
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  @@unique([opportunity_id, applicant_id])
+  @@map("opportunity_applications")
+}
+
+model PartnershipProposal {
+  id                    String   @id @default(cuid())
+  proposer_id           String
+  partner_id            String
+  project_type          String
+  collaboration_type    String   // joint_venture, subcontractor, equal_partner, resource_sharing
+  message               String
+  status                String   @default("pending") // pending, accepted, rejected, withdrawn
+  response_message      String?
+  responded_at          DateTime?
+  
+  // Relations
+  proposer              User     @relation("SentProposals", fields: [proposer_id], references: [id])
+  partner               User     @relation("ReceivedProposals", fields: [partner_id], references: [id])
+  
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  @@unique([proposer_id, partner_id, project_type])
+  @@map("partnership_proposals")
+}
+
+model MemberToolSharing {
+  id                    String   @id @default(cuid())
+  member_id             String
+  type                  String   // offer, request
+  tool_name             String
+  tool_category         String
+  description           String
+  availability_dates    String   // JSON array of available date ranges
+  location              String
+  rental_rate           Float?   @default(0)
+  deposit_required      Boolean  @default(false)
+  delivery_available    Boolean  @default(false)
+  pickup_instructions   String?
+  condition_notes       String?
+  status                String   @default("active") // active, fulfilled, expired, withdrawn
+  
+  // Relations
+  member                User     @relation("ToolSharing", fields: [member_id], references: [id])
+  
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  @@map("member_tool_sharing")
+}
+
+model NetworkingInteraction {
+  id                    String   @id @default(cuid())
+  member_id             String
+  connection_id         String
+  interaction_type      String   // message, collaboration, tool_sharing, partnership, meeting
+  business_impact       String?  // lead_generated, project_won, partnership_formed, tool_shared, referral_made
+  impact_value          Float    @default(0) // monetary value if applicable
+  notes                 String?
+  
+  // Relations
+  member                User     @relation("NetworkingInteractions", fields: [member_id], references: [id])
+  connection            User     @relation("NetworkingConnections", fields: [connection_id], references: [id])
+  
+  created_at            DateTime @default(now())
+
+  @@map("networking_interactions")
+}
+
+model CollaborationWorkspace {
+  id                    String   @id @default(cuid())
+  hubspot_deal_id       String   @unique
+  opportunity_id        String?  // Original opportunity that led to this collaboration
+  workspace_name        String
+  workspace_type        String   // project, partnership, joint_venture, resource_sharing
+  status                String   @default("active") // active, completed, cancelled
+  
+  // Collaboration members
+  members               String   // JSON array of member IDs
+  lead_member_id        String?  // Primary contact/lead
+  
+  // Project details
+  project_description   String?
+  project_timeline      String?
+  project_budget        Float?
+  project_location      String?
+  
+  // Relations
+  lead_member           User?    @relation("LeadCollaborations", fields: [lead_member_id], references: [id])
+  
+  // HubSpot sync fields
+  hubspotSyncStatus     String   @default("PENDING")
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  @@map("collaboration_workspaces")
+}
+
+// Add new relations to User model
+// Note: These would be added to the existing User model, but since we can't modify it directly,
+// we'll document the required additions:
+
+/*
+Add these relations to the existing User model:
+
+  // Business Opportunity Relations
+  postedOpportunities     BusinessOpportunity[] @relation("PostedOpportunities")
+  opportunityApplications OpportunityApplication[] @relation("OpportunityApplications")
+  sentProposals          PartnershipProposal[] @relation("SentProposals")
+  receivedProposals      PartnershipProposal[] @relation("ReceivedProposals")
+  toolSharing            MemberToolSharing[] @relation("ToolSharing")
+  networkingInteractions NetworkingInteraction[] @relation("NetworkingInteractions")
+  networkingConnections  NetworkingInteraction[] @relation("NetworkingConnections")
+  leadCollaborations     CollaborationWorkspace[] @relation("LeadCollaborations")
+  voteComments           VoteComment[] @relation("VoteComments")
+  voteBallots            VoteBallot[] @relation("VoteBallots")
+  voteAudits             VoteAuditLog[] @relation("VoteAudits")
+*/
+// Community Engagement and Analytics Models - Only Missing Models
+
+// Moderation Models
+model ModerationAlert {
+  id            String   @id @default(cuid())
+  type          String   // INAPPROPRIATE_CONTENT, SPAM, HARASSMENT, OFF_TOPIC
+  severity      String   // LOW, MEDIUM, HIGH
+  content       String
+  reason        String?
+  status        String   @default("PENDING") // PENDING, REVIEWED, RESOLVED
+  resolution    String?  // APPROVE, REMOVE, WARN
+  reportedById  String
+  targetMemberId String
+  discussionId  String?
+  messageId     String?
+  resolvedById  String?
+  resolvedAt    DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("moderation_alerts")
+}
+
+model ModerationLog {
+  id            String   @id @default(cuid())
+  alertId       String
+  action        String   // APPROVE, REMOVE, WARN, ESCALATE
+  moderatorId   String
+  targetMemberId String
+  reason        String
+  metadata      String?  // JSON as string
+  
+  createdAt     DateTime @default(now())
+  
+  @@map("moderation_logs")
+}
+
+// Community Events Models
+model CommunityEvent {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  type          String   @default("NETWORKING") // NETWORKING, COMMITTEE_MEETING, WORKSHOP, SOCIAL
+  scheduledAt   DateTime
+  location      String?
+  isVirtual     Boolean  @default(false)
+  meetingUrl    String?
+  maxAttendees  Int?
+  registrationRequired Boolean @default(false)
+  registrationDeadline DateTime?
+  tags          String?  // JSON array as string
+  status        String   @default("UPCOMING") // UPCOMING, ONGOING, COMPLETED, CANCELLED
+  organizerId   String
+  committeeId   String?
+  
+  // Relations
+  attendees     EventAttendance[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("community_events")
+}
+
+model EventAttendance {
+  id            String   @id @default(cuid())
+  eventId       String
+  memberId      String
+  status        String   @default("REGISTERED") // REGISTERED, ATTENDED, NO_SHOW, CANCELLED
+  registeredAt  DateTime @default(now())
+  
+  // Relations
+  event         CommunityEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  @@unique([eventId, memberId])
+  @@map("event_attendances")
+}
+
+// Note: These models work with the existing User model as the member entity
+// Additional relations would be added to the User model in a real implementation
+// Inter-Chapter Collaboration Models
+model ChapterConnection {
+  id                    String   @id @default(cuid())
+  fromChapter           String   // 'northern_california', 'southern_california', 'oregon'
+  toChapter             String   // 'northern_california', 'southern_california', 'oregon'
+  connectionType        String   // 'FULL_COLLABORATION', 'PROJECT_SHARING', 'RESOURCE_SHARING', 'MEMBER_EXCHANGE'
+  status                String   @default("PENDING") // PENDING, ACTIVE, SUSPENDED, TERMINATED
+  establishedDate       DateTime?
+  lastActivity          DateTime?
+  collaborationCount    Int      @default(0)
+  sharedProjects        Int      @default(0)
+  memberExchangeCount   Int      @default(0)
+  resourceShares        Int      @default(0)
+  allowMemberExchange   Boolean  @default(true)
+  allowResourceSharing  Boolean  @default(true)
+  allowProjectSharing   Boolean  @default(true)
+  
+  // Configuration and terms
+  terms                 String?  // JSON as string
+  contactPersonId       String?
+  
+  // Relations
+  contactPerson         User?    @relation("ChapterConnectionMembers", fields: [contactPersonId], references: [id])
+  memberExchanges       MemberExchange[]
+  interChapterProjects  InterChapterProject[]
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@unique([fromChapter, toChapter])
+}
+
+model ChapterDirectory {
+  id                    String   @id @default(cuid())
+  chapterName           String   @unique // 'northern_california', 'southern_california', 'oregon'
+  displayName           String   // 'Northern California', 'Southern California', 'Oregon'
+  description           String?
+  contactEmail          String?
+  contactPhone          String?
+  website               String?
+  address               String?  // JSON as string
+  timezone              String?
+  memberCount           Int      @default(0)
+  activeProjects        Int      @default(0)
+  availableResources    String?  // JSON as string
+  specializations       String?  // JSON as string
+  isActive              Boolean  @default(true)
+  
+  // API Integration
+  apiEndpoint           String?
+  apiKey                String?
+  lastSync              DateTime?
+  syncStatus            String   @default("NONE") // NONE, SYNCING, SYNCED, ERROR
+  syncError             String?
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model MemberExchange {
+  id                    String   @id @default(cuid())
+  memberId              String
+  originChapter         String   // 'northern_california', 'southern_california', 'oregon'
+  targetChapter         String   // 'northern_california', 'southern_california', 'oregon'
+  exchangeType          String   // 'TEMPORARY_COLLABORATION', 'PROJECT_SPECIFIC', 'SKILL_SHARING', 'MENTORSHIP'
+  purpose               String
+  duration              Int?     // Duration in days
+  status                String   @default("REQUESTED") // REQUESTED, APPROVED, ACTIVE, COMPLETED, CANCELLED
+  requestDate           DateTime @default(now())
+  approvalDate          DateTime?
+  startDate             DateTime?
+  endDate               DateTime?
+  projectsCompleted     Int      @default(0)
+  resourcesShared       Int      @default(0)
+  connectionsFormed     Int      @default(0)
+  businessGenerated     Float    @default(0)
+  successRating         Float?   // 1-5 scale
+  feedback              String?
+  
+  // Relations
+  member                User     @relation("MemberExchanges", fields: [memberId], references: [id])
+  chapterConnection     ChapterConnection @relation(fields: [chapterConnectionId], references: [id])
+  chapterConnectionId   String
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model InterChapterProject {
+  id                    String   @id @default(cuid())
+  title                 String
+  description           String
+  projectType           String   // 'JOINT_VENTURE', 'RESOURCE_SHARING', 'SKILL_EXCHANGE', 'COLLABORATIVE_BID'
+  leadChapter           String   // 'northern_california', 'southern_california', 'oregon'
+  participatingChapters String   // JSON array as string
+  leadMemberId          String?
+  memberIds             String   // JSON array as string
+  estimatedValue        Float?
+  actualValue           Float?
+  projectLocation       String?
+  memberAllocation      String?  // JSON as string - how members are allocated
+  resourceSharing       String?  // JSON as string - shared resources
+  revenueSharing        String?  // JSON as string - revenue sharing agreement
+  status                String   @default("PLANNING") // PLANNING, ACTIVE, COMPLETED, CANCELLED
+  startDate             DateTime?
+  endDate               DateTime?
+  completionPercentage  Float    @default(0)
+  memberSatisfaction    Float?   // Average satisfaction score
+  
+  // Relations
+  leadMember            User?    @relation("InterChapterProjectLead", fields: [leadMemberId], references: [id])
+  members               User[]   @relation("InterChapterProjectMembers")
+  chapterConnection     ChapterConnection @relation(fields: [chapterConnectionId], references: [id])
+  chapterConnectionId   String
+  
+  // HubSpot sync fields
+  hubspotDealId         String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model CrossChapterOpportunity {
+  id                    String   @id @default(cuid())
+  originalOpportunityId String?  // Reference to original opportunity
+  originChapter         String   // 'northern_california', 'southern_california', 'oregon'
+  targetChapters        String   // JSON array as string
+  sharingType           String   // 'PROJECT_OPPORTUNITY', 'RESOURCE_SHARING', 'SKILL_EXCHANGE', 'JOINT_VENTURE'
+  title                 String
+  description           String
+  estimatedValue        Float?
+  status                String   @default("SHARED") // SHARED, INTERESTED, COLLABORATION_FORMED, EXPIRED
+  sharedDate            DateTime @default(now())
+  expirationDate        DateTime?
+  interestedChapters    String?  // JSON array as string
+  collaborationResponses Int     @default(0)
+  selectedChapters      String?  // JSON array as string
+  collaborationFormed   Boolean  @default(false)
+  projectValue          Float?
+  
+  // HubSpot sync fields
+  hubspotObjectId       String?  @unique
+  hubspotSyncStatus     String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync       DateTime?
+  hubspotSyncError      String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+// Categorized Learning Management System Models
+
+// Sponsor Partnership Model
+model SponsorPartnership {
+  id                        String   @id @default(cuid())
+  name                      String   // 'PG&E', 'Construction Resource Center'
+  partnershipType           String   // 'COURSE_SPONSOR', 'CERTIFICATION_PARTNER', 'EQUIPMENT_SPONSOR'
+  partnershipStatus         String   @default("ACTIVE") // ACTIVE, INACTIVE, PENDING, EXPIRED
+  courseCategories          String?  // JSON array as string - categories they sponsor
+  specializations           String?  // JSON array as string - specific specializations
+  revenueSharePercentage    Float    @default(0) // Percentage of revenue shared with sponsor
+  minimumCommitment         Float?   // Minimum financial commitment
+  coursesSponsored          Int      @default(0)
+  membersTrained            Int      @default(0)
+  totalPartnershipValue     Float    @default(0)
+  badgesAwarded             Int      @default(0)
+  partnershipStartDate      DateTime
+  partnershipEndDate        DateTime?
+  nextRenewalDate           DateTime?
+  contactEmail              String?
+  contactPhone              String?
+  logoUrl                   String?
+  websiteUrl                String?
+  
+  // Relations
+  sponsoredCourses          SponsoredCourse[] @relation("SponsorCourses")
+  
+  // HubSpot sync fields
+  hubspotCompanyId          String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Sponsored Course Model
+model SponsoredCourse {
+  id                        String   @id @default(cuid())
+  title                     String
+  description               String?
+  category                  String   // 'RESIDENTIAL', 'COMMERCIAL', 'INDUSTRIAL', 'BUSINESS_DEVELOPMENT'
+  subcategory               String?  // More specific categorization
+  sponsorId                 String
+  partnershipType           String   // 'FULL_SPONSOR', 'CO_SPONSOR', 'CONTENT_PARTNER'
+  contentUrl                String?  // External URL for course content
+  duration                  Int?     // Duration in minutes
+  difficultyLevel           String   @default("BEGINNER") // BEGINNER, INTERMEDIATE, ADVANCED, EXPERT
+  badgeId                   String?  // Badge awarded upon completion
+  badgeRequired             Boolean  @default(false) // Whether badge is required for completion
+  enrollmentCount           Int      @default(0)
+  completionCount           Int      @default(0)
+  completionRate            Float    @default(0)
+  averageRating             Float    @default(0)
+  revenueSharePercentage    Float    @default(0)
+  totalRevenue              Float    @default(0)
+  isActive                  Boolean  @default(true)
+  launchDate                DateTime?
+  prerequisites             String?  // JSON array as string - required badges/courses
+  learningObjectives        String?  // JSON array as string
+  assessmentCriteria        String?  // JSON as string
+  certificateTemplate       String?  // Template for certificate generation
+  
+  // Relations
+  sponsor                   SponsorPartnership @relation("SponsorCourses", fields: [sponsorId], references: [id])
+  enrollments               CourseEnrollment[] @relation("CourseEnrollments")
+  progress                  CourseProgress[] @relation("CourseProgress")
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Course Enrollment Model
+model CourseEnrollment {
+  id                        String   @id @default(cuid())
+  memberId                  String
+  courseId                  String
+  enrollmentDate            DateTime @default(now())
+  status                    String   @default("ENROLLED") // ENROLLED, IN_PROGRESS, COMPLETED, DROPPED, EXPIRED
+  completionDate            DateTime?
+  certificateIssued         Boolean  @default(false)
+  certificateUrl            String?
+  finalScore                Float?
+  timeSpent                 Int      @default(0) // Time in minutes
+  accessExpirationDate      DateTime?
+  
+  // Relations
+  member                    User     @relation("MemberCourseEnrollments", fields: [memberId], references: [id])
+  course                    SponsoredCourse @relation("CourseEnrollments", fields: [courseId], references: [id])
+  progress                  CourseProgress[] @relation("EnrollmentProgress")
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Course Progress Model
+model CourseProgress {
+  id                        String   @id @default(cuid())
+  memberId                  String
+  courseId                  String
+  enrollmentId              String
+  currentModule             String?
+  completionPercentage      Float    @default(0)
+  modulesCompleted          String?  // JSON array as string
+  assessmentScores          String?  // JSON object as string
+  timeSpent                 Int      @default(0) // Time in minutes
+  lastAccessDate            DateTime @default(now())
+  strugglingAreas           String?  // JSON array as string
+  strengths                 String?  // JSON array as string
+  
+  // Relations
+  member                    User     @relation("MemberCourseProgress", fields: [memberId], references: [id])
+  course                    SponsoredCourse @relation("CourseProgress", fields: [courseId], references: [id])
+  enrollment                CourseEnrollment @relation("EnrollmentProgress", fields: [enrollmentId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Proficiency Badge Model
+model ProficiencyBadge {
+  id                        String   @id @default(cuid())
+  memberId                  String
+  courseId                  String?
+  badgeId                   String   // Unique identifier for badge type
+  badgeName                 String
+  category                  String   // 'RESIDENTIAL', 'COMMERCIAL', 'INDUSTRIAL', 'BUSINESS_DEVELOPMENT'
+  skillArea                 String   // Specific skill area
+  level                     String   @default("BASIC") // BASIC, INTERMEDIATE, ADVANCED, EXPERT
+  earnedDate                DateTime @default(now())
+  verificationStatus        String   @default("PENDING") // PENDING, VERIFIED, EXPIRED
+  expirationDate            DateTime?
+  requiresContinuingEd      Boolean  @default(false)
+  nextRenewalDate           DateTime?
+  projectOpportunitiesUnlocked String? // JSON array as string
+  shopCampaignsTriggered    String?  // JSON array as string
+  digitalCertificateUrl     String?
+  blockchainHash            String?  // For blockchain verification
+  
+  // Relations
+  member                    User     @relation("MemberProficiencyBadges", fields: [memberId], references: [id])
+  verifications             BadgeVerification[] @relation("BadgeVerifications")
+  shopCampaigns             BadgeShopCampaign[] @relation("BadgeShopCampaigns")
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Badge Verification Model
+model BadgeVerification {
+  id                        String   @id @default(cuid())
+  badgeId                   String
+  memberId                  String
+  verificationType          String   // 'INITIAL', 'RENEWAL', 'AUDIT'
+  verificationMethod        String   // 'ASSESSMENT', 'PROJECT_REVIEW', 'PEER_REVIEW', 'SPONSOR_VERIFICATION'
+  verificationStatus        String   @default("PENDING") // PENDING, VERIFIED, REJECTED, EXPIRED
+  verifiedBy                String?  // ID of verifier
+  verificationDate          DateTime?
+  expirationDate            DateTime?
+  verificationNotes         String?
+  evidenceUrls              String?  // JSON array as string
+  
+  // Relations
+  badge                     ProficiencyBadge @relation("BadgeVerifications", fields: [badgeId], references: [id])
+  member                    User     @relation("MemberBadgeVerifications", fields: [memberId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Badge Shop Campaign Model
+model BadgeShopCampaign {
+  id                        String   @id @default(cuid())
+  memberId                  String
+  badgeId                   String
+  campaignType              String   // 'BADGE_EARNED', 'SKILL_ADVANCEMENT', 'PROJECT_COMPLETION'
+  title                     String
+  description               String?
+  productIds                String?  // JSON array as string
+  productCategories         String?  // JSON array as string
+  discountPercentage        Float    @default(0)
+  campaignDuration          Int      @default(30) // Duration in days
+  startDate                 DateTime @default(now())
+  endDate                   DateTime
+  memberProjectFundPercentage Float  @default(50) // Percentage going to member project fund
+  namcSupportPercentage     Float    @default(30) // Percentage going to NAMC support
+  sponsorPartnershipPercentage Float @default(20) // Percentage going to sponsor partnership
+  viewCount                 Int      @default(0)
+  clickCount                Int      @default(0)
+  purchaseCount             Int      @default(0)
+  totalRevenue              Float    @default(0)
+  memberProjectFundGenerated Float   @default(0)
+  namcSupportGenerated      Float    @default(0)
+  sponsorPartnershipGenerated Float  @default(0)
+  status                    String   @default("ACTIVE") // ACTIVE, PAUSED, EXPIRED, COMPLETED
+  
+  // Relations
+  member                    User     @relation("MemberBadgeShopCampaigns", fields: [memberId], references: [id])
+  badge                     ProficiencyBadge @relation("BadgeShopCampaigns", fields: [badgeId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Member Project Fund Model
+model MemberProjectFund {
+  id                        String   @id @default(cuid())
+  memberId                  String
+  currentBalance            Float    @default(0)
+  totalEarned               Float    @default(0)
+  totalSpent                Float    @default(0)
+  totalWithdrawn            Float    @default(0)
+  lastTransactionDate       DateTime?
+  
+  // Relations
+  member                    User     @relation("MemberProjectFunds", fields: [memberId], references: [id])
+  transactions              ProjectFundTransaction[] @relation("FundTransactions")
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Project Fund Transaction Model
+model ProjectFundTransaction {
+  id                        String   @id @default(cuid())
+  fundId                    String
+  transactionType           String   // 'EARNED', 'SPENT', 'WITHDRAWN', 'REFUND'
+  amount                    Float
+  source                    String   // 'BADGE_SHOP_CAMPAIGN', 'PROJECT_COMPLETION', 'MANUAL_ADJUSTMENT'
+  sourceId                  String?  // ID of the source (campaign, project, etc.)
+  description               String?
+  transactionDate           DateTime @default(now())
+  status                    String   @default("COMPLETED") // PENDING, COMPLETED, FAILED, CANCELLED
+  
+  // Relations
+  fund                      MemberProjectFund @relation("FundTransactions", fields: [fundId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Mentorship Connection Model
+model MentorshipConnection {
+  id                        String   @id @default(cuid())
+  mentorId                  String
+  menteeId                  String
+  connectionType            String   // 'BADGE_BASED', 'SKILL_BASED', 'PROJECT_BASED', 'GENERAL'
+  status                    String   @default("PENDING") // PENDING, ACTIVE, COMPLETED, CANCELLED
+  skillArea                 String?  // Skill area for mentorship
+  badgeId                   String?  // Badge that triggered the connection
+  startDate                 DateTime?
+  endDate                   DateTime?
+  meetingFrequency          String?  // 'WEEKLY', 'BIWEEKLY', 'MONTHLY'
+  totalMeetings             Int      @default(0)
+  completedMeetings         Int      @default(0)
+  menteeProgress            String?  // JSON object as string
+  mentorFeedback            String?  // JSON object as string
+  menteeFeedback            String?  // JSON object as string
+  successRating             Float?   // 1-5 rating
+  
+  // Relations
+  mentor                    User     @relation("MentorshipConnections", fields: [mentorId], references: [id])
+  mentee                    User     @relation("MentorshipMentees", fields: [menteeId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+// Project Payment & Escrow System Models
+
+// Project Escrow Model - Manages secure fund holding for construction projects
+model ProjectEscrow {
+  id                        String   @id @default(cuid())
+  projectId                 String   @unique // Links to project/deal
+  projectName               String
+  totalProjectValue         Float
+  escrowBalance             Float    @default(0)
+  totalPaid                 Float    @default(0)
+  totalDeposited            Float    @default(0)
+  clientId                  String
+  contractorId              String
+  paymentSchedule           String   // JSON object as string
+  retentionPercentage       Float    @default(10) // Percentage held until completion
+  retentionAmount           Float    @default(0)
+  escrowStatus              String   @default("CREATED") // CREATED, FUNDED, ACTIVE, COMPLETED, DISPUTED, CANCELLED
+  createdDate               DateTime @default(now())
+  expectedCompletionDate    DateTime?
+  actualCompletionDate      DateTime?
+  lastPaymentDate           DateTime?
+  lastPaymentAmount         Float?
+  
+  // External payment processor integration
+  stripeAccountId           String?  // Stripe Connect account for escrow
+  bankingAccountId          String?  // Banking API account reference
+  externalEscrowId          String?  // Third-party escrow service ID
+  
+  // Relations
+  client                    User     @relation("ClientEscrows", fields: [clientId], references: [id])
+  contractor                User     @relation("ContractorEscrows", fields: [contractorId], references: [id])
+  taskPayments              TaskPayment[] @relation("EscrowTaskPayments")
+  paymentMilestones         PaymentMilestone[] @relation("EscrowMilestones")
+  escrowPayments            EscrowPayment[] @relation("EscrowPayments")
+  paymentDisputes           PaymentDispute[] @relation("EscrowDisputes")
+  cashFlowProjections       CashFlowProjection[] @relation("EscrowCashFlow")
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Task Payment Model - Manages payments for individual task completion
+model TaskPayment {
+  id                        String   @id @default(cuid())
+  escrowId                  String
+  taskId                    String   // Links to project task
+  taskName                  String
+  paymentAmount             Float
+  contractorId              String
+  completionRequirements    String   // JSON object as string
+  verificationCriteria      String   // JSON object as string
+  approvalRequired          Boolean  @default(false)
+  approvedBy                String?
+  paymentStatus             String   @default("PENDING") // PENDING, VERIFIED, APPROVED, PAID, DISPUTED
+  approvedDate              DateTime?
+  paidDate                  DateTime?
+  paymentTransactionId      String?
+  qualityScore              Float?   // 1-10 quality assessment
+  complianceCheck           Boolean  @default(false)
+  photosRequired            Boolean  @default(false)
+  photosSubmitted           String?  // JSON array of photo URLs
+  verificationNotes         String?
+  
+  // Relations
+  escrow                    ProjectEscrow @relation("EscrowTaskPayments", fields: [escrowId], references: [id])
+  contractor                User     @relation("TaskPaymentContractor", fields: [contractorId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Payment Milestone Model - Manages milestone-based payments
+model PaymentMilestone {
+  id                        String   @id @default(cuid())
+  escrowId                  String
+  milestoneName             String
+  paymentAmount             Float
+  paymentPercentage         Float    // Percentage of total project value
+  deliverables              String   // JSON array as string
+  verificationCriteria      String   // JSON object as string
+  dueDate                   DateTime?
+  milestoneStatus           String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, VERIFIED, PAID
+  completedDate             DateTime?
+  verifiedBy                String?
+  verificationDate          DateTime?
+  paymentReleased           Boolean  @default(false)
+  paymentDate               DateTime?
+  paymentTransactionId      String?
+  contractorId              String
+  
+  // Relations
+  escrow                    ProjectEscrow @relation("EscrowMilestones", fields: [escrowId], references: [id])
+  contractor                User     @relation("MilestoneContractor", fields: [contractorId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Escrow Payment Model - Tracks all payments from escrow
+model EscrowPayment {
+  id                        String   @id @default(cuid())
+  escrowId                  String
+  recipientId               String
+  amount                    Float
+  paymentType               String   // 'TASK_COMPLETION', 'MILESTONE', 'RETENTION_RELEASE', 'REFUND'
+  transactionId             String   // External payment processor transaction ID
+  paymentMethod             String   // 'ACH', 'WIRE', 'CHECK', 'STRIPE'
+  paymentDate               DateTime @default(now())
+  paymentStatus             String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED
+  failureReason             String?
+  bankTransactionId         String?  // Bank reference number
+  clearingDate              DateTime? // When funds actually clear
+  
+  // Relations
+  escrow                    ProjectEscrow @relation("EscrowPayments", fields: [escrowId], references: [id])
+  recipient                 User     @relation("EscrowPaymentRecipient", fields: [recipientId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Payment Dispute Model - Manages payment disputes and resolution
+model PaymentDispute {
+  id                        String   @id @default(cuid())
+  escrowId                  String
+  paymentId                 String?  // Optional link to specific payment
+  disputeReason             String
+  disputeAmount             Float
+  submittedBy               String
+  respondentId              String
+  mediatorId                String?
+  evidenceProvided          String?  // JSON array of evidence URLs/descriptions
+  supportingDocs            String?  // JSON array of document URLs
+  disputeStatus             String   @default("SUBMITTED") // SUBMITTED, UNDER_REVIEW, MEDIATION, RESOLVED, CLOSED
+  resolution                String?
+  resolutionAmount          Float?
+  resolutionDate            DateTime?
+  responseDeadline          DateTime?
+  mediationDate             DateTime?
+  
+  // Relations
+  escrow                    ProjectEscrow @relation("EscrowDisputes", fields: [escrowId], references: [id])
+  submitter                 User     @relation("PaymentDisputeSubmitter", fields: [submittedBy], references: [id])
+  respondent                User     @relation("PaymentDisputeRespondent", fields: [respondentId], references: [id])
+  
+  // HubSpot sync fields (using tickets pipeline)
+  hubspotTicketId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Cash Flow Projection Model - Predictive analytics for project cash flow
+model CashFlowProjection {
+  id                        String   @id @default(cuid())
+  escrowId                  String
+  memberId                  String
+  projectionDate            DateTime
+  projectedInflow           Float    // Expected payments
+  projectedOutflow          Float    // Expected expenses
+  netCashFlow               Float    // Net projected cash flow
+  confidenceScore           Float    // 0-1 confidence in projection
+  riskFactors               String?  // JSON array of identified risks
+  recommendations           String?  // JSON array of recommendations
+  actualInflow              Float?   // Actual inflow (filled after the fact)
+  actualOutflow             Float?   // Actual outflow (filled after the fact)
+  varianceAnalysis          String?  // JSON object with variance analysis
+  
+  // Relations
+  escrow                    ProjectEscrow @relation("EscrowCashFlow", fields: [escrowId], references: [id])
+  member                    User     @relation("CashFlowProjectionMember", fields: [memberId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// HubSpot-Integrated Contractor Scheduling System Models
+
+// Contractor Schedule Model - Manages contractor availability and working hours
+model ContractorSchedule {
+  id                        String   @id @default(cuid())
+  contractorId              String   @unique
+  timezone                  String   @default("America/Los_Angeles")
+  workingHours              String   // JSON object with daily working hours
+  availabilityRules         String?  // JSON object with availability rules
+  bufferTime                Int      @default(15) // Minutes between appointments
+  advanceBookingDays        Int      @default(30) // How far in advance clients can book
+  minimumNoticeHours        Int      @default(24) // Minimum notice required for booking
+  isAcceptingBookings       Boolean  @default(true)
+  autoConfirmBookings       Boolean  @default(false)
+  requiresDeposit           Boolean  @default(true)
+  depositPercentage         Float    @default(25.0)
+  cancellationPolicy        String?  // JSON object with cancellation rules
+  
+  // Google Calendar integration
+  googleCalendarId          String?
+  googleCalendarSyncEnabled Boolean  @default(false)
+  googleCalendarLastSync    DateTime?
+  
+  // Relations
+  contractor                User     @relation("ContractorSchedule", fields: [contractorId], references: [id])
+  services                  ScheduleService[] @relation("ScheduleServices")
+  appointments              Appointment[] @relation("ScheduleAppointments")
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Schedule Service Model - Different appointment types with pricing and duration
+model ScheduleService {
+  id                        String   @id @default(cuid())
+  contractorId              String
+  scheduleId                String
+  serviceName               String
+  description               String?
+  duration                  Int      // Duration in minutes
+  price                     Float
+  depositRequired           Boolean  @default(true)
+  depositAmount             Float?
+  preparationTime           Int      @default(0) // Minutes needed before appointment
+  cleanupTime               Int      @default(0) // Minutes needed after appointment
+  isActive                  Boolean  @default(true)
+  category                  String?  // Service category
+  requirements              String?  // JSON array of requirements
+  
+  // Relations
+  contractor                User     @relation("ScheduleServiceContractor", fields: [contractorId], references: [id])
+  schedule                  ContractorSchedule @relation("ScheduleServices", fields: [scheduleId], references: [id])
+  appointments              Appointment[] @relation("ServiceAppointments")
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Appointment Model - Individual bookings with client details and HubSpot integration
+model Appointment {
+  id                        String   @id @default(cuid())
+  contractorId              String
+  clientId                  String?  // Optional if client is not a member
+  scheduleId                String
+  serviceId                 String
+  appointmentDate           DateTime
+  startTime                 DateTime
+  endTime                   DateTime
+  status                    String   @default("SCHEDULED") // SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED, NO_SHOW
+  
+  // Client information (for non-members)
+  clientName                String?
+  clientEmail               String?
+  clientPhone               String?
+  clientAddress             String?  // JSON object with address details
+  
+  // Appointment details
+  appointmentNotes          String?
+  internalNotes             String?
+  totalPrice                Float
+  depositPaid               Boolean  @default(false)
+  depositAmount             Float?
+  remainingBalance          Float?
+  paymentStatus             String   @default("PENDING") // PENDING, DEPOSIT_PAID, PAID, REFUNDED
+  
+  // Stripe payment integration
+  stripePaymentIntentId     String?
+  stripeDepositIntentId     String?
+  
+  // Cancellation and rescheduling
+  cancellationReason        String?
+  cancelledAt               DateTime?
+  rescheduledFrom           String?  // Original appointment ID if rescheduled
+  rescheduledTo             String?  // New appointment ID if rescheduled
+  
+  // Relations
+  contractor                User     @relation("ContractorAppointments", fields: [contractorId], references: [id])
+  client                    User?    @relation("ClientAppointments", fields: [clientId], references: [id])
+  schedule                  ContractorSchedule @relation("ScheduleAppointments", fields: [scheduleId], references: [id])
+  service                   ScheduleService @relation("ServiceAppointments", fields: [serviceId], references: [id])
+  refunds                   AppointmentRefund[] @relation("AppointmentRefunds")
+  
+  // HubSpot sync fields (creates deal for each appointment)
+  hubspotDealId             String?  @unique
+  hubspotContactId          String?  // For client contact
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Appointment Analytics Model - Tracks booking patterns and performance
+model AppointmentAnalytics {
+  id                        String   @id @default(cuid())
+  contractorId              String
+  analyticsDate             DateTime @default(now())
+  totalBookings             Int      @default(0)
+  confirmedBookings         Int      @default(0)
+  completedBookings         Int      @default(0)
+  cancelledBookings         Int      @default(0)
+  noShowBookings            Int      @default(0)
+  totalRevenue              Float    @default(0)
+  averageBookingValue       Float    @default(0)
+  bookingConversionRate     Float    @default(0)
+  clientSatisfactionScore   Float?
+  repeatClientPercentage    Float    @default(0)
+  
+  // Booking source tracking
+  directBookings            Int      @default(0)
+  referralBookings          Int      @default(0)
+  memberPortalBookings      Int      @default(0)
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+// Appointment Refund Model - Tracks refunds for cancelled appointments
+model AppointmentRefund {
+  id                        String   @id @default(cuid())
+  appointmentId             String
+  refundAmount              Float
+  refundReason              String
+  stripeRefundId            String?
+  processedAt               DateTime @default(now())
+  status                    String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  
+  // Relations
+  appointment               Appointment @relation("AppointmentRefunds", fields: [appointmentId], references: [id])
+  
+  // HubSpot sync fields
+  hubspotObjectId           String?  @unique
+  hubspotSyncStatus         String   @default("PENDING") // PENDING, SYNCED, ERROR
+  hubspotLastSync           DateTime?
+  hubspotSyncError          String?
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 }

@@ -1,484 +1,370 @@
 import { test, expect, devices } from '@playwright/test'
-import { HomePage } from '../pages/HomePage'
-import { RegistrationPage } from '../pages/RegistrationPage'
-import { SignInPage } from '../pages/SignInPage'
-import { MemberDashboardPage } from '../pages/MemberDashboardPage'
-import { TestHelpers } from '../utils/test-helpers'
 
-test.describe('Cross-Browser Compatibility Testing', () => {
-  test('should display consistently across all browsers', async ({ page, browserName }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step(`Test homepage consistency on ${browserName}`, async () => {
-      await homePage.goto()
-      await homePage.waitForHeroToLoad()
-      
-      // Core elements should exist across all browsers
-      await expect(homePage.heroTitle).toBeVisible()
-      await expect(homePage.becomeMemberButton).toBeVisible()
-      await expect(homePage.statsSection).toBeVisible()
-      
-      // Take screenshot for visual comparison
-      await page.screenshot({
-        path: `test-results/browser-screenshots/homepage-${browserName}.png`,
-        fullPage: true
+test.describe('Cross-Browser Compatibility Tests', () => {
+  const browsers = ['chromium', 'firefox', 'webkit']
+  
+  browsers.forEach(browserName => {
+    test.describe(`${browserName} Browser Tests`, () => {
+      test(`should render member dashboard correctly in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/dashboard')
+        
+        // Check core layout elements
+        await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible()
+        await expect(page.locator('[data-testid="navigation-menu"]')).toBeVisible()
+        await expect(page.locator('[data-testid="main-content"]')).toBeVisible()
+        
+        // Check CSS Grid support
+        const projectsGrid = page.locator('[data-testid="projects-grid"]')
+        const gridDisplay = await projectsGrid.evaluate(el => 
+          window.getComputedStyle(el).display
+        )
+        expect(gridDisplay).toBe('grid')
+        
+        // Check Flexbox support
+        const toolbar = page.locator('[data-testid="toolbar"]')
+        const flexDisplay = await toolbar.evaluate(el => 
+          window.getComputedStyle(el).display
+        )
+        expect(flexDisplay).toBe('flex')
       })
-    })
 
-    await test.step(`Test interactive elements on ${browserName}`, async () => {
-      // Test button clicks work across browsers
-      await homePage.becomeMemberButton.click()
-      await page.waitForTimeout(2000)
-      
-      // Should navigate correctly regardless of browser
-      const currentUrl = page.url()
-      expect(currentUrl).toContain('/auth/register')
-    })
-
-    await test.step(`Test CSS rendering on ${browserName}`, async () => {
-      await homePage.goto()
-      
-      // Check critical CSS properties work across browsers
-      const heroStyles = await homePage.heroTitle.evaluate(el => {
-        const styles = window.getComputedStyle(el)
-        return {
-          display: styles.display,
-          fontSize: styles.fontSize,
-          fontWeight: styles.fontWeight,
-          color: styles.color,
-          textAlign: styles.textAlign
-        }
-      })
-      
-      // Text should be visible and styled consistently
-      expect(heroStyles.display).not.toBe('none')
-      expect(heroStyles.fontSize).toBeTruthy()
-      expect(heroStyles.color).toBeTruthy()
-      
-      console.log(`${browserName} hero styles:`, heroStyles)
-    })
-  })
-
-  test('should handle form interactions consistently', async ({ page, browserName }) => {
-    const signInPage = new SignInPage(page)
-    
-    await test.step(`Test form rendering on ${browserName}`, async () => {
-      await signInPage.goto()
-      
-      // Verify form elements render consistently
-      await expect(signInPage.emailInput).toBeVisible()
-      await expect(signInPage.passwordInput).toBeVisible()
-      await expect(signInPage.signInButton).toBeVisible()
-      
-      // Check form styling
-      const inputStyles = await signInPage.emailInput.evaluate(el => {
-        const styles = window.getComputedStyle(el)
-        return {
-          border: styles.border,
-          borderRadius: styles.borderRadius,
-          padding: styles.padding,
-          fontSize: styles.fontSize
-        }
-      })
-      
-      expect(inputStyles.border).toBeTruthy()
-      expect(inputStyles.padding).toBeTruthy()
-      
-      console.log(`${browserName} input styles:`, inputStyles)
-    })
-
-    await test.step(`Test form validation on ${browserName}`, async () => {
-      // Test validation works across browsers
-      await signInPage.emailInput.fill('invalid-email')
-      await signInPage.emailInput.blur()
-      
-      // Allow time for validation
-      await page.waitForTimeout(1000)
-      
-      // Browser-specific validation behavior
-      const hasValidationMessage = await page.locator('.text-red-500, [role="alert"], :invalid').count() > 0
-      const emailValid = await signInPage.emailInput.evaluate(el => (el as HTMLInputElement).validity.valid)
-      
-      console.log(`${browserName} validation: hasMessage=${hasValidationMessage}, isValid=${emailValid}`)
-      
-      // Should show some form of validation feedback
-      expect(hasValidationMessage || !emailValid).toBeTruthy()
-    })
-
-    await test.step(`Test keyboard navigation on ${browserName}`, async () => {
-      // Test tab navigation works consistently
-      await signInPage.emailInput.focus()
-      await page.keyboard.press('Tab')
-      
-      const focusedElement = await page.evaluate(() => document.activeElement?.tagName.toLowerCase())
-      expect(focusedElement).toBe('input')
-      
-      console.log(`${browserName} keyboard navigation: focused=${focusedElement}`)
-    })
-  })
-
-  test('should handle JavaScript features consistently', async ({ page, browserName }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step(`Test scroll animations on ${browserName}`, async () => {
-      await homePage.goto()
-      
-      // Test scroll-triggered animations work
-      await homePage.scrollThroughSections()
-      
-      // Check if animations completed
-      const animationElements = await page.locator('[data-aos], .animate-fadeIn, .animate-slideIn').count()
-      console.log(`${browserName} animation elements found: ${animationElements}`)
-    })
-
-    await test.step(`Test event handlers on ${browserName}`, async () => {
-      // Test click events work consistently
-      let clickHandled = false
-      
-      page.on('console', msg => {
-        if (msg.text().includes('clicked')) {
-          clickHandled = true
-        }
-      })
-      
-      await homePage.becomeMemberButton.click()
-      await page.waitForTimeout(500)
-      
-      // Navigation should work regardless of browser
-      const urlChanged = !page.url().includes('/#')
-      expect(urlChanged).toBeTruthy()
-      
-      console.log(`${browserName} event handling: navigation=${urlChanged}`)
-    })
-  })
-
-  test('should handle responsive design consistently', async ({ page, browserName }) => {
-    const homePage = new HomePage(page)
-    await homePage.goto()
-    
-    const breakpoints = [
-      { name: 'mobile', width: 375, height: 667 },
-      { name: 'tablet', width: 768, height: 1024 },
-      { name: 'desktop', width: 1440, height: 900 }
-    ]
-
-    for (const breakpoint of breakpoints) {
-      await test.step(`Test ${breakpoint.name} layout on ${browserName}`, async () => {
-        await page.setViewportSize({
-          width: breakpoint.width,
-          height: breakpoint.height
+      test(`should handle camera AI functionality in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/project-intelligence/camera')
+        
+        // Check WebRTC support
+        const hasWebRTC = await page.evaluate(() => {
+          return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
         })
         
-        await page.waitForTimeout(500)
-        
-        // Check responsive layout
-        const heroVisible = await homePage.heroTitle.isVisible()
-        expect(heroVisible).toBeTruthy()
-        
-        // Take responsive screenshot
-        await page.screenshot({
-          path: `test-results/responsive-screenshots/${browserName}-${breakpoint.name}.png`,
-          fullPage: true
-        })
-        
-        console.log(`${browserName} ${breakpoint.name}: hero visible=${heroVisible}`)
+        if (hasWebRTC) {
+          await expect(page.locator('[data-testid="camera-supported"]')).toBeVisible()
+          
+          // Test camera initialization
+          await page.click('[data-testid="start-camera-button"]')
+          await expect(page.locator('[data-testid="camera-stream"]')).toBeVisible()
+        } else {
+          await expect(page.locator('[data-testid="camera-not-supported"]')).toBeVisible()
+          await expect(page.locator('[data-testid="fallback-upload"]')).toBeVisible()
+        }
       })
-    }
-  })
 
-  test('should handle CSS Grid and Flexbox consistently', async ({ page, browserName }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step(`Test CSS Grid layout on ${browserName}`, async () => {
-      await homePage.goto()
-      
-      // Check if CSS Grid is working
-      const gridElements = await page.locator('.grid, [style*="grid"], [class*="grid-"]').count()
-      const gridSupported = await page.evaluate(() => {
-        return CSS.supports('display', 'grid')
-      })
-      
-      console.log(`${browserName} CSS Grid: elements=${gridElements}, supported=${gridSupported}`)
-      expect(gridSupported).toBeTruthy()
-    })
-
-    await test.step(`Test Flexbox layout on ${browserName}`, async () => {
-      // Check if Flexbox is working
-      const flexElements = await page.locator('.flex, [style*="flex"], [class*="flex-"]').count()
-      const flexSupported = await page.evaluate(() => {
-        return CSS.supports('display', 'flex')
-      })
-      
-      console.log(`${browserName} Flexbox: elements=${flexElements}, supported=${flexSupported}`)
-      expect(flexSupported).toBeTruthy()
-    })
-  })
-
-  test('should handle ES6+ features consistently', async ({ page, browserName }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step(`Test modern JavaScript features on ${browserName}`, async () => {
-      await homePage.goto()
-      
-      // Test if modern JS features are supported
-      const jsFeatures = await page.evaluate(() => {
-        try {
+      test(`should support modern JavaScript features in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/dashboard')
+        
+        // Test ES6+ features
+        const jsFeatures = await page.evaluate(() => {
+          const results = {}
+          
+          // Test async/await
+          try {
+            eval('(async () => {})')
+            results.asyncAwait = true
+          } catch (e) {
+            results.asyncAwait = false
+          }
+          
           // Test arrow functions
-          const arrow = () => true
+          try {
+            eval('(() => {})')
+            results.arrowFunctions = true
+          } catch (e) {
+            results.arrowFunctions = false
+          }
           
           // Test template literals
-          const template = `template${arrow()}`
-          
-          // Test const/let
-          const testConst = 'test'
-          let testLet = 'test'
+          try {
+            eval('`template ${literal}`')
+            results.templateLiterals = true
+          } catch (e) {
+            results.templateLiterals = false
+          }
           
           // Test destructuring
-          const [first] = [1, 2, 3]
-          const { length } = 'test'
-          
-          // Test Promise
-          const hasPromise = typeof Promise !== 'undefined'
-          
-          // Test fetch API
-          const hasFetch = typeof fetch !== 'undefined'
-          
-          return {
-            arrowFunctions: typeof arrow === 'function',
-            templateLiterals: template === 'templetetrue',
-            constLet: testConst === 'test' && testLet === 'test',
-            destructuring: first === 1 && length === 4,
-            promises: hasPromise,
-            fetch: hasFetch
+          try {
+            eval('const {a} = {a: 1}')
+            results.destructuring = true
+          } catch (e) {
+            results.destructuring = false
           }
-        } catch (error) {
-          return { error: error.message }
-        }
-      })
-      
-      console.log(`${browserName} JS features:`, jsFeatures)
-      
-      // Modern browsers should support these features
-      if (!jsFeatures.error) {
-        expect(jsFeatures.arrowFunctions).toBeTruthy()
-        expect(jsFeatures.promises).toBeTruthy()
-      }
-    })
-  })
-
-  test('should handle touch events on mobile browsers', async ({ page, browserName }) => {
-    // Only run on mobile-configured browsers
-    if (browserName === 'chromium' || browserName === 'webkit') {
-      const homePage = new HomePage(page)
-      
-      await test.step(`Test touch interactions on ${browserName}`, async () => {
-        await page.setViewportSize({ width: 375, height: 667 })
-        await homePage.goto()
-        
-        // Test touch tap on mobile
-        await homePage.becomeMemberButton.tap()
-        await page.waitForTimeout(1000)
-        
-        // Should navigate on touch
-        const currentUrl = page.url()
-        expect(currentUrl).toContain('/auth/register')
-        
-        console.log(`${browserName} touch navigation successful`)
-      })
-    }
-  })
-
-  test('should handle print styles consistently', async ({ page, browserName }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step(`Test print styles on ${browserName}`, async () => {
-      await homePage.goto()
-      
-      // Emulate print media
-      await page.emulateMedia({ media: 'print' })
-      
-      // Check if print styles are applied
-      const printStyles = await page.evaluate(() => {
-        const body = document.body
-        const styles = window.getComputedStyle(body)
-        return {
-          backgroundColor: styles.backgroundColor,
-          color: styles.color,
-          fontSize: styles.fontSize
-        }
-      })
-      
-      console.log(`${browserName} print styles:`, printStyles)
-      
-      // Reset to screen media
-      await page.emulateMedia({ media: 'screen' })
-    })
-  })
-
-  test.afterEach(async ({ page, browserName }) => {
-    // Collect browser-specific performance metrics
-    const metrics = await TestHelpers.getPerformanceMetrics(page)
-    console.log(`${browserName} performance metrics:`, {
-      loadTime: metrics.loadComplete,
-      resources: metrics.resourceCount,
-      memory: metrics.memoryUsage?.used
-    })
-    
-    // Take screenshot on failure
-    if (test.info().status !== test.info().expectedStatus) {
-      await TestHelpers.takeTimestampedScreenshot(page, `${browserName}-compatibility-failure`)
-    }
-  })
-})
-
-test.describe('Mobile Device Testing', () => {
-  // Test specific mobile devices
-  const mobileDevices = [
-    { name: 'iPhone 12', device: devices['iPhone 12'] },
-    { name: 'iPad', device: devices['iPad'] },
-    { name: 'Samsung Galaxy S21', device: devices['Galaxy S8'] },
-    { name: 'Pixel 5', device: devices['Pixel 5'] }
-  ]
-
-  for (const { name, device } of mobileDevices) {
-    test(`should work correctly on ${name}`, async ({ browser }) => {
-      const context = await browser.newContext({
-        ...device,
-      })
-      const page = await context.newPage()
-      
-      const homePage = new HomePage(page)
-      
-      await test.step(`Test ${name} homepage`, async () => {
-        await homePage.goto()
-        await homePage.waitForHeroToLoad()
-        
-        // Verify mobile layout
-        await expect(homePage.heroTitle).toBeVisible()
-        await expect(homePage.becomeMemberButton).toBeVisible()
-        
-        // Check mobile navigation
-        const mobileMenu = page.locator('button[aria-label*="menu"], .mobile-menu-toggle, [data-testid="mobile-menu"]')
-        const mobileMenuExists = await mobileMenu.count() > 0
-        
-        if (mobileMenuExists) {
-          await mobileMenu.click()
-          await page.waitForTimeout(500)
-        }
-        
-        console.log(`${name}: Mobile menu exists=${mobileMenuExists}`)
-      })
-
-      await test.step(`Test ${name} touch interactions`, async () => {
-        // Test touch-specific interactions
-        await homePage.becomeMemberButton.tap()
-        await page.waitForTimeout(2000)
-        
-        // Should navigate correctly
-        const currentUrl = page.url()
-        expect(currentUrl).toContain('/auth/register')
-        
-        console.log(`${name}: Touch navigation successful`)
-      })
-
-      await test.step(`Test ${name} virtual keyboard`, async () => {
-        const registrationPage = new RegistrationPage(page)
-        await registrationPage.goto()
-        
-        // Focus on input to trigger virtual keyboard
-        await registrationPage.firstNameInput.focus()
-        await registrationPage.firstNameInput.fill('Test User')
-        
-        // Verify input still visible after virtual keyboard
-        await expect(registrationPage.firstNameInput).toBeVisible()
-        
-        console.log(`${name}: Virtual keyboard handling successful`)
-      })
-
-      await test.step(`Take ${name} screenshot`, async () => {
-        await homePage.goto()
-        await page.screenshot({
-          path: `test-results/device-screenshots/${name.replace(/\s+/g, '-')}.png`,
-          fullPage: true
+          
+          return results
         })
+        
+        expect(jsFeatures.asyncAwait).toBe(true)
+        expect(jsFeatures.arrowFunctions).toBe(true)
+        expect(jsFeatures.templateLiterals).toBe(true)
+        expect(jsFeatures.destructuring).toBe(true)
       })
-      
-      await context.close()
-    })
-  }
-})
 
-test.describe('Browser Feature Detection', () => {
-  test('should detect and adapt to browser capabilities', async ({ page, browserName }) => {
-    const homePage = new HomePage(page)
-    
-    await test.step(`Detect ${browserName} capabilities`, async () => {
-      await homePage.goto()
-      
-      const capabilities = await page.evaluate(() => {
-        return {
-          // CSS Features
-          cssGrid: CSS.supports('display', 'grid'),
-          cssFlexbox: CSS.supports('display', 'flex'),
-          cssVariables: CSS.supports('--test', '0'),
+      test(`should handle file uploads in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/scanner')
+        
+        // Test file input support
+        const fileInput = page.locator('[data-testid="card-file-input"]')
+        await expect(fileInput).toBeVisible()
+        
+        // Test drag and drop support
+        const dropZone = page.locator('[data-testid="drop-zone"]')
+        const hasDragDrop = await dropZone.evaluate(el => {
+          return 'ondrop' in el && 'ondragover' in el
+        })
+        
+        expect(hasDragDrop).toBe(true)
+        
+        // Test file upload
+        await fileInput.setInputFiles('tests/fixtures/business-card.jpg')
+        await expect(page.locator('[data-testid="file-uploaded"]')).toBeVisible()
+      })
+
+      test(`should support CSS custom properties in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/dashboard')
+        
+        // Check CSS custom properties (CSS variables) support
+        const customPropsSupport = await page.evaluate(() => {
+          const testEl = document.createElement('div')
+          testEl.style.setProperty('--test-prop', 'test-value')
+          document.body.appendChild(testEl)
           
-          // JavaScript APIs
-          intersectionObserver: 'IntersectionObserver' in window,
-          webGL: (() => {
-            try {
-              const canvas = document.createElement('canvas')
-              return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-            } catch (e) {
-              return false
-            }
-          })(),
-          serviceWorker: 'serviceWorker' in navigator,
-          localStorage: 'localStorage' in window,
-          sessionStorage: 'sessionStorage' in window,
+          const computedStyle = window.getComputedStyle(testEl)
+          const propValue = computedStyle.getPropertyValue('--test-prop')
           
-          // Network APIs
-          fetch: 'fetch' in window,
-          webSockets: 'WebSocket' in window,
-          
-          // Media APIs
-          mediaQueries: 'matchMedia' in window,
-          audio: (() => {
-            try {
-              return !!(document.createElement('audio').canPlayType)
-            } catch (e) {
-              return false
-            }
-          })(),
-          video: (() => {
-            try {
-              return !!(document.createElement('video').canPlayType)
-            } catch (e) {
-              return false
-            }
-          })(),
-          
-          // Security Features
-          https: location.protocol === 'https:',
-          
-          // Performance APIs
-          performanceObserver: 'PerformanceObserver' in window,
-          performanceNavigation: 'performance' in window && 'navigation' in performance
+          document.body.removeChild(testEl)
+          return propValue.trim() === 'test-value'
+        })
+        
+        expect(customPropsSupport).toBe(true)
+        
+        // Check NAMC brand colors are applied
+        const primaryButton = page.locator('[data-testid="primary-button"]').first()
+        if (await primaryButton.count() > 0) {
+          const buttonColor = await primaryButton.evaluate(el => {
+            return window.getComputedStyle(el).getPropertyValue('--namc-yellow')
+          })
+          expect(buttonColor.trim()).toBeTruthy()
         }
       })
+
+      test(`should handle local storage in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/dashboard')
+        
+        // Test localStorage support
+        const hasLocalStorage = await page.evaluate(() => {
+          try {
+            localStorage.setItem('test', 'value')
+            const value = localStorage.getItem('test')
+            localStorage.removeItem('test')
+            return value === 'value'
+          } catch (e) {
+            return false
+          }
+        })
+        
+        expect(hasLocalStorage).toBe(true)
+        
+        // Test sessionStorage support
+        const hasSessionStorage = await page.evaluate(() => {
+          try {
+            sessionStorage.setItem('test', 'value')
+            const value = sessionStorage.getItem('test')
+            sessionStorage.removeItem('test')
+            return value === 'value'
+          } catch (e) {
+            return false
+          }
+        })
+        
+        expect(hasSessionStorage).toBe(true)
+      })
+
+      test(`should support WebGL for 3D visualizations in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/project-intelligence')
+        
+        // Check WebGL support
+        const hasWebGL = await page.evaluate(() => {
+          const canvas = document.createElement('canvas')
+          const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+          return !!gl
+        })
+        
+        if (hasWebGL) {
+          await expect(page.locator('[data-testid="3d-visualization-supported"]')).toBeVisible()
+        } else {
+          await expect(page.locator('[data-testid="3d-fallback"]')).toBeVisible()
+        }
+      })
+
+      test(`should handle responsive images in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/dashboard')
+        
+        // Check picture element support
+        const hasPictureSupport = await page.evaluate(() => {
+          return 'HTMLPictureElement' in window
+        })
+        
+        if (hasPictureSupport) {
+          const pictureElements = page.locator('picture')
+          const pictureCount = await pictureElements.count()
+          
+          if (pictureCount > 0) {
+            // Check that source elements have proper media queries
+            const firstPicture = pictureElements.first()
+            const sources = firstPicture.locator('source')
+            const sourceCount = await sources.count()
+            
+            expect(sourceCount).toBeGreaterThan(0)
+            
+            // Check first source has media attribute
+            const firstSource = sources.first()
+            const mediaAttr = await firstSource.getAttribute('media')
+            expect(mediaAttr).toBeTruthy()
+          }
+        }
+        
+        // Check srcset support
+        const images = page.locator('img[srcset]')
+        const imageCount = await images.count()
+        
+        if (imageCount > 0) {
+          const firstImage = images.first()
+          const srcset = await firstImage.getAttribute('srcset')
+          expect(srcset).toContain('1x')
+        }
+      })
+
+      test(`should support form validation in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/cost-estimator')
+        
+        // Check HTML5 form validation support
+        const hasFormValidation = await page.evaluate(() => {
+          const input = document.createElement('input')
+          return typeof input.checkValidity === 'function'
+        })
+        
+        expect(hasFormValidation).toBe(true)
+        
+        // Test required field validation
+        const requiredInput = page.locator('[data-testid="project-name-input"]')
+        await requiredInput.fill('')
+        
+        const submitButton = page.locator('[data-testid="generate-estimate-button"]')
+        await submitButton.click()
+        
+        // Check validation message appears
+        const validationMessage = await requiredInput.evaluate(el => el.validationMessage)
+        expect(validationMessage).toBeTruthy()
+      })
+
+      test(`should handle print styles in ${browserName}`, async ({ page }) => {
+        await page.goto('/member/cost-estimator')
+        
+        // Generate an estimate first
+        await page.fill('[data-testid="project-name-input"]', 'Print Test Project')
+        await page.selectOption('[data-testid="project-type-select"]', 'residential')
+        await page.fill('[data-testid="square-footage-input"]', '1000')
+        await page.click('[data-testid="generate-estimate-button"]')
+        
+        await expect(page.locator('[data-testid="estimate-results"]')).toBeVisible()
+        
+        // Test print media query
+        await page.emulateMedia({ media: 'print' })
+        
+        // Check print-specific styles are applied
+        const printHidden = page.locator('[data-testid="print-hidden"]')
+        if (await printHidden.count() > 0) {
+          const display = await printHidden.evaluate(el => 
+            window.getComputedStyle(el).display
+          )
+          expect(display).toBe('none')
+        }
+        
+        // Check print-specific content is visible
+        const printOnly = page.locator('[data-testid="print-only"]')
+        if (await printOnly.count() > 0) {
+          const display = await printOnly.evaluate(el => 
+            window.getComputedStyle(el).display
+          )
+          expect(display).not.toBe('none')
+        }
+      })
+    })
+  })
+
+  test.describe('Browser-Specific Feature Tests', () => {
+    test('should handle Safari-specific behaviors', async ({ page, browserName }) => {
+      test.skip(browserName !== 'webkit', 'Safari-specific test')
       
-      console.log(`${browserName} capabilities:`, capabilities)
+      await page.goto('/member/project-intelligence/camera')
       
-      // Core capabilities should be available in modern browsers
-      expect(capabilities.cssFlexbox).toBeTruthy()
-      expect(capabilities.localStorage).toBeTruthy()
-      expect(capabilities.fetch).toBeTruthy()
+      // Test Safari's stricter camera permissions
+      const cameraButton = page.locator('[data-testid="start-camera-button"]')
+      await cameraButton.click()
       
-      // Log capability matrix for analysis
-      const supportMatrix = Object.entries(capabilities)
-        .map(([feature, supported]) => `${feature}: ${supported ? '✅' : '❌'}`)
-        .join('\n')
+      // Safari may show additional permission dialogs
+      await expect(page.locator('[data-testid="camera-permission-help"]')).toBeVisible()
+    })
+
+    test('should handle Firefox-specific behaviors', async ({ page, browserName }) => {
+      test.skip(browserName !== 'firefox', 'Firefox-specific test')
       
-      console.log(`${browserName} Support Matrix:\n${supportMatrix}`)
+      await page.goto('/member/scanner')
+      
+      // Test Firefox file upload behavior
+      const fileInput = page.locator('[data-testid="card-file-input"]')
+      await fileInput.setInputFiles('tests/fixtures/business-card.jpg')
+      
+      // Firefox may handle file processing differently
+      await expect(page.locator('[data-testid="firefox-file-processing"]')).toBeVisible()
+    })
+
+    test('should handle Chrome-specific behaviors', async ({ page, browserName }) => {
+      test.skip(browserName !== 'chromium', 'Chrome-specific test')
+      
+      await page.goto('/member/dashboard')
+      
+      // Test Chrome's performance API
+      const hasPerformanceAPI = await page.evaluate(() => {
+        return 'performance' in window && 'mark' in performance
+      })
+      
+      expect(hasPerformanceAPI).toBe(true)
+      
+      // Test Chrome-specific features
+      const hasWebP = await page.evaluate(() => {
+        const canvas = document.createElement('canvas')
+        return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
+      })
+      
+      expect(hasWebP).toBe(true)
+    })
+  })
+
+  test.describe('Polyfill and Fallback Tests', () => {
+    test('should provide fallbacks for unsupported features', async ({ page }) => {
+      await page.goto('/member/dashboard')
+      
+      // Test that polyfills are loaded when needed
+      const polyfillsLoaded = await page.evaluate(() => {
+        return window.polyfillsLoaded || false
+      })
+      
+      // Check that core functionality works regardless
+      await expect(page.locator('[data-testid="dashboard-content"]')).toBeVisible()
+      await expect(page.locator('[data-testid="navigation-menu"]')).toBeVisible()
+    })
+
+    test('should gracefully degrade advanced features', async ({ page }) => {
+      await page.goto('/member/project-intelligence/camera')
+      
+      // Simulate lack of camera support
+      await page.addInitScript(() => {
+        delete navigator.mediaDevices
+      })
+      
+      await page.reload()
+      
+      // Should show fallback upload option
+      await expect(page.locator('[data-testid="camera-fallback"]')).toBeVisible()
+      await expect(page.locator('[data-testid="upload-alternative"]')).toBeVisible()
     })
   })
 })

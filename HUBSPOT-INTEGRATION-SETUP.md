@@ -1,240 +1,372 @@
-# HubSpot Integration Setup & Testing Guide
+# HubSpot Integration Foundation Setup
 
-## 🔑 **Step 1: Configure Your HubSpot API Key**
+This document provides comprehensive setup instructions for the HubSpot integration foundation that powers the NAMC member portal features.
 
-### Where to Add Your Key:
-Edit the `.env.local` file in the project root:
+## Overview
 
-```bash
-# HubSpot Configuration
-HUBSPOT_ACCESS_TOKEN=your-hubspot-access-token-here
-HUBSPOT_PORTAL_ID=your-portal-id-here
+The HubSpot integration serves as the primary data repository and workflow engine for all member portal functionality, including:
+
+- **Tool Lending Library**: Custom objects for tools and reservations
+- **Interactive Onboarding**: Member progress tracking and automated workflows
+- **AI-Powered Business Growth Plans**: Custom objects and milestone tracking
+- **RS Means Cost API Integration**: Cost estimates and bid tracking
+- **Dual-Facing Shop System**: Order management and fulfillment workflows
+- **OCR Business Card Scanner**: Contact creation and networking workflows
+- **Camera AI Estimates**: Real-time cost estimation data
+- **Task Management**: Project task assignment and completion tracking
+
+## Prerequisites
+
+### HubSpot Account Requirements
+
+1. **HubSpot Account**: Professional or Enterprise tier recommended
+2. **Custom Objects**: Available in Professional tier and above
+3. **Workflows**: Available in Professional tier and above
+4. **API Access**: Private app with required scopes
+
+### Required HubSpot Scopes
+
+Your HubSpot private app must have the following scopes:
+
+```
+crm.objects.contacts.read
+crm.objects.contacts.write
+crm.objects.deals.read
+crm.objects.deals.write
+crm.objects.tasks.read
+crm.objects.tasks.write
+crm.objects.custom.read
+crm.objects.custom.write
+crm.schemas.custom.read
+crm.schemas.custom.write
+crm.properties.read
+crm.properties.write
+automation.workflows.read
+automation.workflows.write
+webhooks
 ```
 
-**Replace:**
-- `your-hubspot-access-token-here` with your actual HubSpot Private App access token
-- `your-portal-id-here` with your HubSpot portal/account ID
+## Environment Variables
 
-### How to Get Your HubSpot Keys:
+Add the following environment variables to your `.env.local` file:
 
-1. **Access Token:**
-   - Go to HubSpot Settings → Integrations → Private Apps
-   - Create a new Private App or use existing one
-   - Copy the access token
-
-2. **Portal ID:**
-   - Found in your HubSpot URL: `https://app.hubspot.com/contacts/{PORTAL_ID}`
-   - Or in Settings → Account & Billing → Account Information
-
----
-
-## 🚀 **Step 2: Test HubSpot Integration**
-
-### A. Newsletter Signup Test (Easy Start)
-1. **Navigate to:** http://localhost:3000 (homepage)
-2. **Scroll down** to the newsletter signup section
-3. **Enter test data:**
-   - Email: `test@example.com`
-   - First Name: `John`
-   - Last Name: `Doe`
-4. **Click "Subscribe"**
-5. **Check HubSpot:** Contact should appear in your HubSpot contacts
-
-### B. Contact Form Test
-1. **Navigate to:** http://localhost:3000/contact
-2. **Fill out the contact form** with test data
-3. **Submit the form**
-4. **Check HubSpot:** Contact and activity should be logged
-
-### C. API Endpoint Testing (Advanced)
-
-#### Test Contact Sync API:
 ```bash
-curl -X POST http://localhost:3000/api/hubspot/contacts/sync \
+# HubSpot Integration
+HUBSPOT_ACCESS_TOKEN=your_private_app_access_token
+HUBSPOT_PORTAL_ID=your_portal_id
+HUBSPOT_CLIENT_SECRET=your_app_client_secret
+
+# Optional: HubSpot Lists
+HUBSPOT_NAMC_MEMBERS_LIST_ID=your_members_list_id
+
+# Webhook Configuration
+NEXTAUTH_URL=https://your-domain.com
+```
+
+## Installation
+
+### 1. Install Dependencies
+
+```bash
+npm install @hubspot/api-client
+```
+
+### 2. Run HubSpot Integration Setup
+
+```bash
+# Full setup (recommended for first-time setup)
+npm run setup:hubspot
+
+# Or use the API endpoint
+curl -X POST http://localhost:3000/api/hubspot/setup \
   -H "Content-Type: application/json" \
-  -d '{
-    "userId": "test_user_123",
-    "properties": {
-      "email": "test@namc.org",
-      "firstName": "Test",
-      "lastName": "Member",
-      "companyName": "Test Construction Co",
-      "phone": "(555) 123-4567",
-      "specialties": ["Residential", "Commercial"],
-      "membership": {
-        "tier": "Gold",
-        "status": "Active"
-      }
-    }
-  }'
+  -d '{"action": "full_setup"}'
 ```
 
-#### Test Deal Creation API:
+### 3. Verify Setup
+
 ```bash
-curl -X POST http://localhost:3000/api/hubspot/deals/create \
-  -H "Content-Type: application/json" \
-  -d '{
-    "projectId": "proj_123",
-    "memberId": "member_456",
-    "dealName": "Downtown Office Renovation",
-    "amount": 150000,
-    "closeDate": "2025-09-01",
-    "projectType": "Commercial",
-    "location": "San Francisco, CA",
-    "budgetRange": "$100k-$200k"
-  }'
+# Check integration status
+curl http://localhost:3000/api/hubspot/setup
+
+# Run integration tests
+curl -X PUT http://localhost:3000/api/hubspot/setup
 ```
 
----
+## Custom Objects Created
 
-## 📋 **Step 3: Available HubSpot Features**
+The setup process creates the following custom objects in HubSpot:
 
-### Contact Management
-- ✅ **Sync member profiles** to HubSpot contacts
-- ✅ **Update contact properties** when user data changes
-- ✅ **Newsletter subscriptions** automatically added
-- ✅ **Search contacts** by email
-- ✅ **Batch contact operations** for bulk updates
+### 1. Tools
+- **Purpose**: Tool lending library inventory
+- **Properties**: tool_name, category, daily_rate, condition, serial_number, location, is_available
+- **Associations**: Contacts (members), Tool Reservations
 
-### Deal & Project Management
-- ✅ **Create deals** for project opportunities
-- ✅ **Track project progress** through deal stages
-- ✅ **Associate contacts** with deals
-- ✅ **Custom project properties** (type, location, budget)
+### 2. Tool Reservations
+- **Purpose**: Tool rental reservations and tracking
+- **Properties**: reservation_id, start_date, end_date, status, total_cost, checkout_condition, return_condition
+- **Associations**: Contacts (members), Tools
 
-### Form & Lead Management
-- ✅ **Newsletter signup forms** with HubSpot integration
-- ✅ **Contact forms** that create leads
-- ✅ **Member registration** sync
-- ✅ **Custom form submissions**
+### 3. Growth Plans
+- **Purpose**: AI-powered business growth planning
+- **Properties**: plan_name, current_phase, progress_score, ai_analysis, roadmap_data, milestones
+- **Associations**: Contacts (members), Deals (projects)
 
-### Automation & Workflows
-- ✅ **Trigger workflows** based on member actions
-- ✅ **Webhook handling** for real-time updates
-- ✅ **Custom properties** for NAMC-specific data
-- ✅ **List management** for segmentation
+### 4. Cost Estimates
+- **Purpose**: RS Means API cost estimation tracking
+- **Properties**: project_name, project_type, total_estimate, rs_means_data, ai_adjustments, confidence_score, bid_submitted, bid_result
+- **Associations**: Contacts (members), Deals (projects)
 
-### Analytics & Reporting
-- ✅ **Contact analytics** and engagement tracking
-- ✅ **Deal analytics** and conversion tracking
-- ✅ **Custom reporting** capabilities
+### 5. Camera Estimates
+- **Purpose**: Gemini Live AI camera-based cost estimation
+- **Properties**: session_id, scene_analysis, material_analysis, estimated_costs, confidence, media_url
+- **Associations**: Contacts (members), Cost Estimates
 
----
+### 6. Shop Orders
+- **Purpose**: E-commerce order management
+- **Properties**: order_number, total_amount, order_status, payment_status, items_data, shipping_address
+- **Associations**: Contacts (members)
 
-## 🧪 **Step 4: Testing Checklist**
+## Custom Properties Added
 
-### Basic Functionality ✅
-- [ ] Newsletter signup creates HubSpot contact
-- [ ] Contact form submissions logged in HubSpot
-- [ ] Member registration syncs to HubSpot
-- [ ] Deal creation for project opportunities
+The following custom properties are added to the Contact object for member portal tracking:
 
-### Advanced Features ✅
-- [ ] Contact search and deduplication
-- [ ] Deal progression tracking
-- [ ] Workflow automation triggers
-- [ ] Custom property synchronization
-- [ ] Batch operations for multiple contacts
+- `member_portal_access`: Boolean - Portal access status
+- `onboarding_progress`: Number - Onboarding completion percentage
+- `onboarding_step`: String - Current onboarding step
+- `tool_reservations_count`: Number - Total tool reservations
+- `growth_plan_active`: Boolean - Active growth plan status
+- `cost_estimates_count`: Number - Total cost estimates created
+- `shop_orders_count`: Number - Total shop orders placed
+- `last_portal_activity`: DateTime - Last portal activity timestamp
+- `portal_engagement_score`: Number - Engagement score (0-100)
 
-### Error Handling ✅
-- [ ] Invalid API key handling
-- [ ] Network error recovery
-- [ ] Duplicate contact management
-- [ ] Rate limit handling
+## Automated Workflows
 
----
+The setup configures the following automated workflows:
 
-## 🔧 **Step 5: Debugging & Troubleshooting**
+### 1. NAMC Member Onboarding Workflow
+- **Trigger**: member_portal_access = true
+- **Actions**: Welcome email, onboarding tasks, follow-up calls
 
-### Check Server Logs
+### 2. Tool Reservation Confirmation Workflow
+- **Trigger**: Tool reservation created
+- **Actions**: Confirmation email, staff notification, pickup reminder
+
+### 3. Growth Plan Milestone Celebration
+- **Trigger**: progress_score > 75
+- **Actions**: Celebration email, engagement score update, review scheduling
+
+### 4. Cost Estimate Follow-up Workflow
+- **Trigger**: Cost estimate created
+- **Actions**: Estimate ready email, bidding assistance, follow-up tasks
+
+### 5. Shop Order Processing Workflow
+- **Trigger**: Shop order created
+- **Actions**: Order confirmation, processing tasks, fulfillment webhook
+
+### 6. Member Engagement Scoring Workflow
+- **Trigger**: Portal activity detected
+- **Actions**: Engagement calculation, score updates
+
+### 7. Task Assignment Notification Workflow
+- **Trigger**: Task assigned to member
+- **Actions**: Assignment notification, webhook triggers
+
+### 8. Member Inactivity Re-engagement
+- **Trigger**: Engagement score < 30
+- **Actions**: Re-engagement emails, outreach tasks
+
+## Webhook Configuration
+
+The integration sets up webhook subscriptions for real-time data synchronization:
+
+### Webhook Endpoint
+```
+POST https://your-domain.com/api/webhooks/hubspot
+```
+
+### Subscribed Events
+- `contact.propertyChange` - Member profile updates
+- `contact.creation` - New member registration
+- `deal.propertyChange` - Project updates
+- `deal.creation` - New project creation
+- `task.propertyChange` - Task status changes
+- `task.creation` - New task assignment
+- Custom object events for all portal features
+
+### Webhook Security
+- Signature verification using HubSpot client secret
+- Request validation and error handling
+- Automatic retry logic for failed processing
+
+## API Endpoints
+
+### Setup and Management
+- `GET /api/hubspot/setup` - Check integration status
+- `POST /api/hubspot/setup` - Initialize integration components
+- `PUT /api/hubspot/setup` - Test integration functionality
+
+### Webhook Processing
+- `POST /api/webhooks/hubspot` - Process HubSpot webhook events
+- `GET /api/webhooks/hubspot` - Webhook verification endpoint
+
+## Usage Examples
+
+### Creating a Tool Reservation
+
+```typescript
+import HubSpotBackboneService from '@/lib/services/hubspot-backbone.service';
+
+const hubspotService = new HubSpotBackboneService({
+  accessToken: process.env.HUBSPOT_ACCESS_TOKEN!,
+  portalId: process.env.HUBSPOT_PORTAL_ID
+});
+
+const reservation = await hubspotService.createToolReservation({
+  memberId: 'contact-id',
+  toolId: 'tool-object-id',
+  startDate: '2024-12-01',
+  endDate: '2024-12-03',
+  totalCost: 150.00,
+  status: 'confirmed'
+});
+```
+
+### Creating a Growth Plan
+
+```typescript
+const growthPlan = await hubspotService.createGrowthPlan({
+  memberId: 'contact-id',
+  planName: 'Business Expansion Plan',
+  currentPhase: 'assessment',
+  progressScore: 25,
+  aiAnalysis: { /* AI analysis data */ },
+  roadmap: { /* roadmap data */ },
+  milestones: [ /* milestone array */ ]
+});
+```
+
+### Updating Member Portal Metrics
+
+```typescript
+await hubspotService.updateMemberPortalMetrics('contact-id', {
+  toolReservationsCount: 5,
+  costEstimatesCount: 12,
+  shopOrdersCount: 3,
+  lastPortalActivity: new Date(),
+  engagementScore: 85
+});
+```
+
+## Testing
+
+### Run Integration Tests
+
 ```bash
-# View development server logs for HubSpot API calls
-npm run dev
+# Run HubSpot integration tests
+npx playwright test tests/hubspot-integration/
+
+# Run specific test suite
+npx playwright test tests/hubspot-integration/hubspot-backbone-integration.spec.ts
 ```
 
-### Test API Key Validity
+### Manual Testing
+
+1. **Admin Dashboard**: Visit `/admin/integrations/hubspot`
+2. **Setup Interface**: Test initialization and configuration
+3. **Member Portal**: Test feature integration and data sync
+4. **Webhook Processing**: Monitor webhook events in HubSpot
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Authentication Errors
+```
+Error: HUBSPOT_ACCESS_TOKEN not configured
+```
+**Solution**: Verify your private app access token is correctly set in environment variables.
+
+#### 2. Custom Object Creation Fails
+```
+Error: Custom object already exists
+```
+**Solution**: This is expected if objects were previously created. Check the setup results for existing objects.
+
+#### 3. Webhook Signature Verification Fails
+```
+Error: Invalid HubSpot signature
+```
+**Solution**: Ensure `HUBSPOT_CLIENT_SECRET` matches your app's client secret.
+
+#### 4. Workflow Setup Issues
+```
+Error: Insufficient permissions for workflow creation
+```
+**Solution**: Workflows may need to be created manually in HubSpot UI. The setup provides configuration templates.
+
+### Debug Mode
+
+Enable debug logging by setting:
 ```bash
-curl -H "Authorization: Bearer YOUR_API_KEY" \
-     "https://api.hubapi.com/crm/v3/objects/contacts?limit=1"
+DEBUG=hubspot:*
 ```
-
-### Common Issues:
-1. **"HubSpot API key not configured"**
-   - Check `.env.local` file has correct `HUBSPOT_ACCESS_TOKEN`
-   - Restart development server after adding key
-
-2. **"Unauthorized" errors**
-   - Verify API key has correct permissions in HubSpot
-   - Check scopes include: contacts, deals, forms, workflows
-
-3. **"Contact not found" errors**
-   - Normal for new contacts - they'll be created automatically
-   - Check email format is valid
-
----
-
-## 📊 **Step 6: Monitor Results in HubSpot**
-
-### Where to Check:
-1. **Contacts:** HubSpot → Contacts → Contacts
-2. **Deals:** HubSpot → Sales → Deals
-3. **Forms:** HubSpot → Marketing → Forms
-4. **Workflows:** HubSpot → Automation → Workflows
-
-### Expected Data:
-- **Contact Properties:** Name, email, company, membership tier, specialties
-- **Deal Properties:** Project name, amount, close date, location, budget range
-- **Custom Fields:** NAMC-specific data like years of experience, certifications
-- **Activity Timeline:** Form submissions, email opens, workflow enrollments
-
----
-
-## 🎯 **Step 7: MCP Integration Benefits**
-
-### Real-Time Sync
-- Member profile changes instantly sync to HubSpot
-- Project opportunities automatically create deals
-- Newsletter signups immediately added to marketing lists
-
-### Workflow Automation
-- Welcome email sequences for new members
-- Project follow-up workflows
-- Membership renewal reminders
-- Event invitation targeting
-
-### Advanced Analytics
-- Member engagement scoring
-- Project conversion tracking
-- ROI analysis for membership tiers
-- Custom reporting dashboards
-
----
-
-## 🚨 **Important Notes**
 
 ### API Rate Limits
-- HubSpot has rate limits (100 requests/10 seconds for most endpoints)
-- The integration includes automatic retry logic
-- Batch operations used where possible for efficiency
 
-### Data Privacy
-- All data transmission uses HTTPS encryption
-- No sensitive data logged in console (production)
-- GDPR/CCPA compliant data handling
+HubSpot API has rate limits:
+- **Professional**: 100 requests per 10 seconds
+- **Enterprise**: 150 requests per 10 seconds
 
-### Required HubSpot Permissions
-Your Private App needs these scopes:
-- `crm.objects.contacts.read`
-- `crm.objects.contacts.write`
-- `crm.objects.deals.read`
-- `crm.objects.deals.write`
-- `forms`
-- `automation`
+The integration includes automatic retry logic and rate limiting.
 
----
+## Monitoring and Maintenance
 
-**Ready to test!** Add your HubSpot keys and start with the newsletter signup test for immediate results.
+### Health Checks
 
-<function_calls>
-<invoke name="TodoWrite">
-<parameter name="todos">[{"id": "1", "content": "Show HubSpot configuration locations and setup", "status": "completed", "priority": "high"}, {"id": "2", "content": "Test HubSpot MCP integration functionality", "status": "in_progress", "priority": "high"}, {"id": "3", "content": "Verify HubSpot API connections and data flow", "status": "pending", "priority": "medium"}, {"id": "4", "content": "Document HubSpot integration testing results", "status": "pending", "priority": "low"}]
+Monitor integration health using:
+```bash
+curl http://localhost:3000/api/hubspot/setup
+```
+
+### Data Synchronization
+
+- **Real-time**: Webhook events for immediate sync
+- **Batch**: Periodic sync for data consistency
+- **Manual**: Admin interface for manual sync operations
+
+### Performance Metrics
+
+Track integration performance:
+- Webhook processing time
+- API response times
+- Data sync success rates
+- Error rates and types
+
+## Security Considerations
+
+1. **API Keys**: Store securely in environment variables
+2. **Webhook Security**: Always verify signatures
+3. **Data Privacy**: Follow GDPR/CCPA compliance
+4. **Access Control**: Limit API scopes to minimum required
+5. **Audit Logging**: Log all data operations
+
+## Support
+
+For issues with the HubSpot integration:
+
+1. Check the troubleshooting section above
+2. Review HubSpot API documentation
+3. Verify environment configuration
+4. Test with minimal data sets
+5. Contact HubSpot support for API-specific issues
+
+## Changelog
+
+### Version 1.0.0
+- Initial HubSpot integration foundation
+- Custom objects for all member portal features
+- Automated workflows for member engagement
+- Real-time webhook synchronization
+- Comprehensive testing suite
